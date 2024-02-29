@@ -1,0 +1,77 @@
+.mainSignInPage{
+    display: flex;
+}
+
+.rightDiv{
+    width: 50vw;
+    height: 100vh;
+    background-color: wheat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.rightDiv > *{
+    width: 70%;
+    text-align: center;
+}
+
+.rightDiv form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.rightDiv form > *{
+    width: 65%;
+    margin: 8px;
+    padding: 10px;
+    background-color: transparent;
+    border: 2px soild black;
+    border-radius: 10px;
+}
+
+.rightDiv h1{
+    margin: 20px;
+    font-size: 3rem;
+}
+
+.rightDiv form > *:focus, .rightDiv form > *:active{
+    outline: none;
+    background-color: transparent;
+    border: 2px solid black;
+}
+
+
+.rightDiv form button:hover{
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+
+#leftDiv{
+    height: 100vh;
+    width: 50vw;
+    background-color: blueviolet;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+#leftDiv h1{
+    font-size: 3rem;
+    margin: 15px;
+}
+
+#leftDiv > *{
+    width: 70%;
+    font-size: 1.3rem;
+}
+
+.rightDiv form > *{
+    border: 2px solid black;
+}
