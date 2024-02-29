@@ -36,49 +36,6 @@ function Home() {
         })
 
     }
-    /*
-        // actual querying function
-        async function getQueryData(q) {
-            mySnippets = [];
-            const querySnapshot = await getDocs(q);
-            try {
-                querySnapshot.forEach((doc) => {
-                    let temp = doc.data();
-                    // console.log("temp : ", temp, typeof temp);
-                    mySnippets.push(temp);
-                })
-                // console.log("userSnippets after the loop : ", userSnippets);
-            } catch (e) {
-                console.log(e.message);
-            }
-    
-        }
-    
-    
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("user is logged in : from onAuthStateChanged");
-                uid = auth.currentUser.uid;
-                console.log("uid from onAuthStateChanged : ", uid);
-                setLoggedInUser(user);
-            } else {
-                console.log("no user is logged in from onAuthStateChanged");
-                setLoggedInUser(null);
-            }
-        });
-    
-        useEffect(() => {
-            if (loggedInUser) {
-                let myQuery = query(snippetsDB, where('uid', '==', uid));
-                console.log("useEffect is being executed");
-                getQueryData(myQuery)
-                    .then(() => {
-                        setUserSnippets(mySnippets);
-                    });
-            } else {
-                console.log("No user is logged in");
-            }
-        }, []);*/
 
     // Function to fetch snippets
     async function fetchSnippets(uid) {
@@ -121,21 +78,6 @@ function Home() {
                 });
         }
     }, [loggedInUser]);
-
-
-
-    // setTimeout(() => {
-    //     if (auth.currentUser) {
-
-    //     } else {
-    //         console.log("no user is logged in");
-    //         setTimeout(() => {
-    //             console.log("You logged out please sign in again!!");
-    //             navigate('/login');
-    //         }, 3000);
-    //     }
-    // }, 5000);
-
 
     function openSnippet(snippetId) {
         console.log(snippetId);
