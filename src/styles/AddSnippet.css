@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#addSnippetsDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(20px);
+    height: 100vh;
+    background-color: #222222;
+    color: white;
+}
+
+#addSnippetsDiv form {
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    width: 50%;
+    background-color: rgba(47, 47, 47, 0.697);
+    align-items: center;
+    justify-content: center;
+    margin: 25px;
+    border-radius: 8px;
+}
+
+#addSnippetsDiv form input, #addSnippetsDiv form textarea, button{
+    margin: 10px;
+    padding: 12px;
+    border-radius: 5px;
+    border: 2px solid white;
+    width: 80%;
+    background-color: rgba(46, 46, 46, 0.227);
+    color:white;
+}
+
+#addSnippetsDiv form >*:focus, #addSnippetsDiv form >*:active {
+    outline: 0;
+    background-color: inherit;
+}
+
+form button:hover{
+    background-color: white;
+    color: black;
+    cursor:pointer;
+}

@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
 import Home from './pages/Home'
 import YourSnippets from './pages/YourSnippets'
+import AddSnippet from './pages/AddSnippet'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -21,7 +22,8 @@ function App() {
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signUp' element={<SignUpPage />} />
         <Route path='/home' element={<Home />} />
-        <Route path='/yourSnippets/:id' element={<YourSnippets />} />
+        <Route path='/yourSnippets' element={<YourSnippets />} />
+        <Route path='/addSnippet' element={<AddSnippet />} />
       </Routes>
     </>
   )

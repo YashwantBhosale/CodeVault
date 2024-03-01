@@ -8,7 +8,7 @@ function Header(){
                 <li id="logo">CodeVault</li>
                 <li><Link to='/home'>Home</Link></li>
                 <li>About</li>
-                <li>Your Snippets</li>
+                <li><Link to='/addSnippet'>Add a Snippet</Link></li>
             </ul>
         </header>
     ) 

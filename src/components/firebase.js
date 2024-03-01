@@ -2,7 +2,7 @@
 // import initializeApp from "firebase/app/dist/"
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
-import { initializeFirestore } from "firebase/firestore";
+import { initializeFirestore, getFirestore } from "firebase/firestore";
 const firebaseConfig = {
     apiKey: "AIzaSyAdm-XsMxAmWc8JWbSqyZbsfK0QxUGzG5s",
     authDomain: "codevault-a6425.firebaseapp.com",
@@ -15,5 +15,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-export { auth, app };
+export { auth, app, db };

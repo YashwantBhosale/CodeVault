@@ -9,9 +9,9 @@ import '../styles/Home.css'
 import { collection, getFirestore, getDocs, query, where } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 import snippets from "../assets/snippets";
-import { app, auth } from "../components/firebase";
+import { app, auth, db } from "../components/firebase";
 import { browserSessionPersistence, setPersistence } from "firebase/auth";
-const db = getFirestore(app);
+
 const snippetsDB = collection(db, "snippets");
 
 // fetchData();
@@ -81,13 +81,13 @@ function Home() {
 
     function openSnippet(snippetId) {
         console.log(snippetId);
-        navigate('/yourSnippets/:' + `${snippetId}`)
+        navigate('/yourSnippets?id=' + `${snippetId}`)
     }
 
 
     function displaySnippets(snippet) {
         return (
-            <div className="snippetCards" key={snippet.snippetid} onClick={() => { openSnippet(snippet.id) }}>
+            <div className="snippetCards" key={snippet.snippetid} onClick={() => { openSnippet(snippet.snippetid) }}>
                 <h3>{snippet.title}</h3>
                 <p>{snippet.description}</p>
                 <p>{snippet.code}</p>
@@ -99,14 +99,22 @@ function Home() {
         signOut(auth);
         navigate('/');
     }
-    // getQueryData(myQuery)
-    // console.log("userSnippets : ", userSnippets);
+
+    function handleAddSnippet() {
+        navigate('/addSnippet')
+    }
+    // console.log(userSnippets);
     return (
         <div className="primaryBackground">
             <h1> Welcome User</h1>
             <button onClick={handleLogOut}>Log out</button>
             <div className="snippetContainer">
                 {userSnippets.map(displaySnippets)}
+                <div className="snippetCards" id="addSnippetCard" onClick={handleAddSnippet}>
+                    <h3>Add a Snippet</h3>
+                    <p>Click here to add a new snippet</p>
+                    <h1>+</h1>
+                </div>
             </div>
         </div>
     )
