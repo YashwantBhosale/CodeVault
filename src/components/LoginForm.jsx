@@ -3,6 +3,8 @@ import { BrowserRouter, Link, useNavigate } from "react-router-dom";
 import {auth} from "./firebase";
 import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 import { browserLocalPersistence, browserSessionPersistence, setPersistence } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/reducer";
 
 function LoginForm(props) {
     const [formData, setFormData] = useState({
@@ -10,18 +12,11 @@ function LoginForm(props) {
         password: ''
     });
     const navigate = useNavigate();
-    // function handleSignInSubmit(formData) {
-    //     const { email, password } = formData;
-    //     signInWithEmailAndPassword(auth, email, password)
-    //       .then((userCredential) => {
-    //         User_Name = userCredential.user.displayName;
-    //         console.log("Log in successful.. welcome", userCredential.user.displayName);
-    //         setVerification(true);
-    //       })
-    //   }
+    const dispatch = useDispatch();
 
     async function handleLogIn(e) {
         e.preventDefault();
+        dispatch(login());
         const { email, password } = formData;
         setPersistence(auth, browserSessionPersistence)
         .then(
