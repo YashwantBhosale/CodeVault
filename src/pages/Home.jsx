@@ -6,7 +6,7 @@ import '../styles/Home.css'
 // import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
 // import firebase from "firebase/compat/app";
 // Required for side-effects
-import { collection, getFirestore, getDocs, query, where } from "firebase/firestore";
+import { collection, getFirestore, getDocs, query, where, doc, deleteDoc } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 import snippets from "../assets/snippets";
 import { app, auth, db } from "../components/firebase";
@@ -84,13 +84,23 @@ function Home() {
         navigate('/yourSnippets?id=' + `${snippetId}`)
     }
 
+    async function deleteSnippet(snippetId) {
+        let docRef = doc(db, 'snippets', snippetId);
+        await deleteDoc(docRef);
+        setUserSnippets(userSnippets.filter(snippet => snippet.snippetid !== snippetId));
+        console.log("Snippet deleted with id: ", snippetId);
+    }
 
     function displaySnippets(snippet) {
         return (
-            <div className="snippetCards" key={snippet.snippetid} onClick={() => { openSnippet(snippet.snippetid) }}>
+            <div className="snippetCards" key={snippet.snippetid} >
                 <h3>{snippet.title}</h3>
                 <p>{snippet.description}</p>
-                <p>{snippet.code}</p>
+                {/* <p>{snippet.code}</p> */}
+                <div className="btnContainer">
+                    <button onClick={() => { openSnippet(snippet.snippetid) }}>Open snippet</button>
+                    <button onClick={() => { deleteSnippet(snippet.snippetid) }}>Delete</button>
+                </div>
             </div>
         )
     }
@@ -103,7 +113,8 @@ function Home() {
     function handleAddSnippet() {
         navigate('/addSnippet')
     }
-    // console.log(userSnippets);
+
+    console.log(userSnippets);
     return (
         <div className="primaryBackground">
             <h1> Welcome User</h1>

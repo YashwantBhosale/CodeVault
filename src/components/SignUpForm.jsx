@@ -2,9 +2,14 @@ import React, { useState } from "react";
 import { BrowserRouter, Link, useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
 import {auth} from "./firebase";
+import { useDispatch } from "react-redux";
+import { login, logout } from "../redux/reducer";
+
+
 
 function SignUpForm(props) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -12,6 +17,7 @@ function SignUpForm(props) {
     });
     function handleSignUp(e) {
         e.preventDefault();
+        dispatch(login());
         // props.onSubmit(formData);
         // function handleSignUpSubmit(formData) {
         //     const { username, email, password } = formData;
