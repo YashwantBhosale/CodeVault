@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.6.0",
     "@reduxjs/toolkit": "^2.2.1",
     "firebase": "^10.8.0",
     "generate-unique-id": "^2.0.3",
