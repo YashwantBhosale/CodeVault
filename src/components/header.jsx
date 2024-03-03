@@ -4,7 +4,7 @@ import '../styles/header.css'
 import { useSelector, useDispatch } from "react-redux";
 import { login, logout } from "../redux/reducer";
 import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 
 function Header() {
@@ -30,7 +30,7 @@ function Header() {
                 <li><Link to='/addSnippet'>Add a Snippet</Link></li>
                 {
                     userLoginStatus ?
-                        <li onClick={() =>{dispatch(logout());}}><Link to='/login'>Logout</Link></li> :
+                        <li onClick={() =>{console.log('dispatched logout');dispatch(logout()); signOut(auth)}}><Link to='/login'>Logout</Link></li> :
                         <li ><Link to='/login'>Login</Link></li>
                 }
             </ul>

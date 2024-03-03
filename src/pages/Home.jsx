@@ -11,6 +11,8 @@ import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/
 import snippets from "../assets/snippets";
 import { app, auth, db } from "../components/firebase";
 import { browserSessionPersistence, setPersistence } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { logout } from "../redux/reducer";
 
 const snippetsDB = collection(db, "snippets");
 
@@ -18,6 +20,8 @@ const snippetsDB = collection(db, "snippets");
 let areSnippetsFetched = false;
 
 function Home() {
+    const dispatch = useDispatch();
+    const [name, setName] = useState("User");
     setPersistence(auth, browserSessionPersistence);
     const navigate = useNavigate();
     const [userSnippets, setUserSnippets] = useState([]);
@@ -106,6 +110,7 @@ function Home() {
     }
 
     function handleLogOut(user) {
+        dispatch(logout());
         signOut(auth);
         navigate('/');
     }
@@ -114,10 +119,17 @@ function Home() {
         navigate('/addSnippet')
     }
 
+    useEffect(() => {
+        console.log("currently logged in user : ", loggedInUser);
+        if(loggedInUser){
+            setName(loggedInUser.displayName);
+        }
+    }, [loggedInUser]);
+
     console.log(userSnippets);
     return (
         <div className="primaryBackground">
-            <h1> Welcome User</h1>
+            <h1> Welcome {name}</h1>
             <button onClick={handleLogOut}>Log out</button>
             <div className="snippetContainer">
                 {userSnippets.map(displaySnippets)}
