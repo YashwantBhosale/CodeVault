@@ -1,15 +1,17 @@
 .mainSignInPage{
     display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .rightDiv{
     width: 50vw;
     height: 100vh;
-    background-color: wheat;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    color: #fff;
 }
 
 .rightDiv > *{
@@ -28,33 +30,33 @@
     width: 65%;
     margin: 8px;
     padding: 10px;
-    background-color: transparent;
-    border: 2px soild black;
+    background-color: #fff;
+    border: none;
+    outline: none;
     border-radius: 10px;
+    color: grey;
 }
 
 .rightDiv h1{
     margin: 20px;
     font-size: 3rem;
 }
-
-.rightDiv form > *:focus, .rightDiv form > *:active{
-    outline: none;
-    background-color: transparent;
-    border: 2px solid black;
+.rightDiv form button{
+    background-color: #344955;
+    color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-
 .rightDiv form button:hover{
-    background-color: black;
-    color: white;
+    background-color: #fff;
+    color: #344955;
     cursor: pointer;
 }
 
 #leftDiv{
-    height: 100vh;
-    width: 50vw;
-    background-color: blueviolet;
+
+    height: fit-content;
+    width: 50vw;    
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -71,7 +73,24 @@
     width: 70%;
     font-size: 1.3rem;
 }
+@media screen and (max-width :768px) {
+    .mainSignInPage{
+        flex-direction: column-reverse;
+        justify-content: flex-start;
+    }
 
-.rightDiv form > *{
-    border: 2px solid black;
+    #leftDiv{
+        margin-top: 10vh;
+        width: 100%;
+        margin-bottom: 18vh;
+    }
+    .rightDiv{
+        margin: 40px 0;
+        width: 100%;
+        height: fit-content;
+    }
+
+    .rightDiv form > *{
+        width: 100%;
+    }
 }
