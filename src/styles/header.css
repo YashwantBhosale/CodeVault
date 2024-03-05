@@ -6,9 +6,11 @@
 
 /* Navbar styles */
 header {
-  position: fixed;
+  position: relative;
   width: 100%;
-
+  z-index: 100;
+  top: 0;
+  left: 0;
 }
 
 #navList {

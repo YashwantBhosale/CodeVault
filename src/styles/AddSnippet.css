@@ -7,20 +7,25 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     backdrop-filter: blur(20px);
-    height: 100vh;
+    height: fit-content;
     background-color: #222222;
     color: white;
+}
+
+#addSnippetsDiv h1{
+    margin: 15px;
 }
 
 #addSnippetsDiv form {
     display: flex;
     flex-direction: column;
     padding: 25px;
-    width: 50%;
-    background-color: rgba(47, 47, 47, 0.697);
-    align-items: center;
+    width: 100%;
+    height: 100vh;
+    /* background-color: rgba(47, 47, 47, 0.697); */
+    /* align-items: center; */
     justify-content: center;
     margin: 25px;
     border-radius: 8px;
@@ -41,7 +46,7 @@
     padding: 12px;
     border-radius: 5px;
     border: 2px solid white;
-    width: 80%;
+    width: 20%;
     background-color: rgba(46, 46, 46, 0.227);
     color:white;
 }

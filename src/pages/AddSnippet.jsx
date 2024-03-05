@@ -5,24 +5,33 @@ import { auth } from '../components/firebase';
 import '../styles/AddSnippet.css';
 import generateUniqueId from 'generate-unique-id';
 const snippetsDB = collection(db, "snippets");
-import {toast} from "react-toastify"
+import { toast } from "react-toastify"
+import { Editor } from '@monaco-editor/react';
 
 function AddSnippet() {
+    const editorRef = React.useRef(null);
     const [lastId, setLastId] = useState(0);
 
     let id = generateUniqueId({
-        length:20,
+        length: 20,
     })
     console.log('unique id : ', id);
 
     async function handleAddSnippetFormSubmit(e) {
         e.preventDefault();
+        let codeToBeSaved = '';
+        if(editorRef){
+            codeToBeSaved = editorRef.current.getValue();
+        }else{
+            toast.error("Some error occurred code cannot be empty");
+            return;
+        }
         let snippet = {
             id: lastId + 1,
             title: e.target.title.value,
             description: e.target.description.value,
             language: e.target.language.value,
-            code: e.target.code.value,
+            code: codeToBeSaved,
             username: auth.currentUser.displayName,
             uid: auth.currentUser.uid,
             snippetid: ''
@@ -30,37 +39,54 @@ function AddSnippet() {
         console.log(auth.currentUser)
         setLastId(lastId + 1);
         console.log(snippet);
-        try{
+        try {
             const docref = await addDoc(snippetsDB, snippet);
-            const updatedDoc = await updateDoc(doc(db, "snippets", docref.id), {snippetid: docref.id});
-            // snippet.snippetid = docref.id;
-            /*
-            const currentDoc = doc(snippetsDB, "snippets", docref.id);
-            updateDoc(currentDoc, {
-                snippetid: docref.id
-            });
-            */
+            const updatedDoc = await updateDoc(doc(db, "snippets", docref.id), { snippetid: docref.id });
             console.log(docref.id);
             toast.success("snippet was added successfully!!")
             console.log("snippet was added successfully!!");
-        }catch(e){
+        } catch (e) {
             toast.error("Error adding document: ", e)
             console.log("Error adding document: ", e);
         }
 
 
-        e.target.title.value = e.target.description.value = e.target.language.value = e.target.code.value = ''; 
+        e.target.title.value = e.target.description.value = e.target.language.value  = '';
+        editorRef.current.setValue('');
         return snippet;
     }
+
+    function handleLanguageInput(e) {
+        let language = e.target.value;
+        if(editorRef){
+            editorRef.current.language = language;
+        }
+    }
+
+    function handleEditorDidMount(editor, monaco) {
+        editorRef.current = editor;
+        console.log(editor);
+    }
+    let myOptions = {
+        fontSize: 25,
+        fontFamily: 'monospace',
+    };
     return (
         <div id="addSnippetsDiv">
             <h1>Add Snippet</h1>
             <form onSubmit={handleAddSnippetFormSubmit}>
-                <input type="text" placeholder="Title" name='title' required/>
-                <input type="text" placeholder="Description" name='description' required/>
-                <input type="text" placeholder="Language" name='language' required/>
-                <textarea name="code" id="code" cols="30" rows="10" placeholder="Enter your code here" required></textarea>
                 <button type='submit'>Add Snippet</button>
+                <input type="text" placeholder="Title" name='title' required />
+                <input type="text" placeholder="Description" name='description' required />
+                <input type="text" placeholder="Language" name='language' onChange={handleLanguageInput} required />
+                {/* <textarea name="code" id="code" cols="30" rows="10" placeholder="Enter your code here" required></textarea> */}
+                <Editor
+                    theme='vs-dark'
+                    height={'100vh'}
+                    width={'100%'}
+                    options={myOptions}
+                    onMount={handleEditorDidMount}
+                />
             </form>
         </div>
     );

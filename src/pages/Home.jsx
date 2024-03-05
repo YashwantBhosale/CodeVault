@@ -67,6 +67,13 @@ function Home() {
         console.log("User is logged in from onAuthStateChanged");
         uid = auth.currentUser.uid;
         setLoggedInUser(user);
+        fetchSnippets(loggedInUser.uid)
+        .then((snippets) => {
+          setUserSnippets(snippets);
+        })
+        .catch((error) => {
+          console.error("Error fetching snippets:", error);
+        });
       } else {
         console.log("No user is logged in from onAuthStateChanged");
         setLoggedInUser(null);
@@ -104,6 +111,7 @@ function Home() {
       userSnippets.filter((snippet) => snippet.snippetid !== snippetId)
     );
     console.log("Snippet deleted with id: ", snippetId);
+    console.log("User snippets after deletion: ", userSnippets);
   }
 
   function displaySnippets(snippet) {
