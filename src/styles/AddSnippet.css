@@ -26,7 +26,17 @@
     border-radius: 8px;
 }
 
-#addSnippetsDiv form input, #addSnippetsDiv form textarea, button{
+#addSnippetsDiv form input, #addSnippetsDiv form textarea{
+    margin: 10px;
+    padding: 12px;
+    border-radius: 5px;
+    border: 2px solid white;
+    width: 80%;
+    background-color: rgba(46, 46, 46, 0.227);
+    color:white;
+}
+
+#addSnippetsDiv form > button {
     margin: 10px;
     padding: 12px;
     border-radius: 5px;

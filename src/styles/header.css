@@ -1,42 +1,138 @@
+* {
+  margin: 0;
+  padding: 0;
+  /* font-family: sans-serif; */
+}
 
-*{
-    margin: 0;
-    padding: 0;
-    /* font-family: sans-serif; */
-  }
-  
-  /* Navbar styles */
-  
-  #navList{
-    list-style: none;
-    display: flex;
-    background-color: black;
-    color: white;
-    font-family: sans-serif;
-  }
+/* Navbar styles */
+header {
+  position: fixed;
+  width: 100%;
 
-  #logo{
-    font-size: 1.5rem;
-    font-weight: 800;
-  }
-  
-  #navList li{
-    margin: 15px;
-    padding: 8px;
-    font-size: 1.2rem;
-    font-weight: bolder;
-  }
-  
-  #navList li:hover{
-    color: grey;
-    cursor: pointer;
-  }
-  
-  /* Main Page styles */
-  
-  /* .Main{
+}
+
+#navList {
+  list-style: none;
+  display: flex;
+  background: transparent;
+  backdrop-filter: blur(20px);
+  color: white;
+  font-family: sans-serif;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#navList>div {
+  display: flex;
+}
+
+#logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+#navList li {
+  margin: 15px;
+  padding: 8px;
+  font-size: 1.2rem;
+  font-weight: lighter;
+}
+
+#navList li:hover {
+  color: #344955;
+  cursor: pointer;
+}
+
+/* Main Page styles */
+
+/* .Main{
     display: flex;
     width: 50%;
     height: 100vh;
   } */
-  
+
+@media screen and (max-width :768px) {
+  #navList {
+    height: 10vh;
+  }
+}
+
+
+/* Hamburger menu styles */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+  margin-top: 2vh;
+  margin-left: 2vw;
+}
+
+.bar {
+  width: 30px;
+  height: 3px;
+  background: white;
+}
+
+#navList.open {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+#navList.open li {
+  margin: 10px 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+  animation-delay: 0.1s;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  #navList {
+    display: none;
+    position: relative;
+    flex-direction: column; 
+    background-color: #344955;
+    z-index: -1;
+  }
+  #navList>div {
+    flex-direction: column;
+    background: transparent;
+    background-color: #344955;
+    width: 100%;
+  }
+}

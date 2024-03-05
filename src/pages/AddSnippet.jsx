@@ -5,7 +5,7 @@ import { auth } from '../components/firebase';
 import '../styles/AddSnippet.css';
 import generateUniqueId from 'generate-unique-id';
 const snippetsDB = collection(db, "snippets");
-
+import {toast} from "react-toastify"
 
 function AddSnippet() {
     const [lastId, setLastId] = useState(0);
@@ -41,8 +41,10 @@ function AddSnippet() {
             });
             */
             console.log(docref.id);
+            toast.success("snippet was added successfully!!")
             console.log("snippet was added successfully!!");
         }catch(e){
+            toast.error("Error adding document: ", e)
             console.log("Error adding document: ", e);
         }
 

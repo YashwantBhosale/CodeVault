@@ -1,4 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
 a{
     text-decoration: none;
     color: inherit;
+}
+
+::-webkit-scrollbar{
+    display: none;
+}
+
+body{
+    background: url(https://i.pinimg.com/originals/44/6e/3b/446e3b79395a287ca32f7977dd83b290.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: "Raleway", sans-serif;
 }
