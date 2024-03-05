@@ -46,7 +46,8 @@ function Header() {
               onClick={() => {
                 console.log("Dispatched logout")
                 dispatch(logout());
-                signOut(auth)
+                navigate("/login");
+                signOut(auth);
               }}
             >
               <Link to="/login">Logout</Link>

@@ -22,7 +22,7 @@ import {
 import snippets from "../assets/snippets";
 import { app, auth, db } from "../components/firebase";
 import { browserSessionPersistence, setPersistence } from "firebase/auth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/reducer";
 const snippetsDB = collection(db, "snippets");
 
@@ -87,6 +87,8 @@ function Home() {
         .catch((error) => {
           console.error("Error fetching snippets:", error);
         });
+    } else{
+      console.log("no user is logged in!");
     }
   }, [loggedInUser]);
 
