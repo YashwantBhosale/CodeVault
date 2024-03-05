@@ -32,7 +32,6 @@ let areSnippetsFetched = false;
 function Home() {
   const dispatch = useDispatch();
   const [name, setName] = useState("User");
-  setPersistence(auth, browserSessionPersistence);
   const navigate = useNavigate();
   const [userSnippets, setUserSnippets] = useState([]);
   let mySnippets = [];
@@ -67,13 +66,6 @@ function Home() {
         console.log("User is logged in from onAuthStateChanged");
         uid = auth.currentUser.uid;
         setLoggedInUser(user);
-        fetchSnippets(loggedInUser.uid)
-        .then((snippets) => {
-          setUserSnippets(snippets);
-        })
-        .catch((error) => {
-          console.error("Error fetching snippets:", error);
-        });
       } else {
         console.log("No user is logged in from onAuthStateChanged");
         setLoggedInUser(null);
@@ -94,7 +86,7 @@ function Home() {
         .catch((error) => {
           console.error("Error fetching snippets:", error);
         });
-    } else{
+    } else {
       console.log("no user is logged in!");
     }
   }, [loggedInUser]);

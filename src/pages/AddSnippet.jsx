@@ -12,11 +12,6 @@ function AddSnippet() {
     const editorRef = React.useRef(null);
     const [lastId, setLastId] = useState(0);
 
-    let id = generateUniqueId({
-        length: 20,
-    })
-    console.log('unique id : ', id);
-
     async function handleAddSnippetFormSubmit(e) {
         e.preventDefault();
         let codeToBeSaved = '';

@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { Editor, useMonaco } from "@monaco-editor/react";
 import snippets from "../assets/snippets";
 import { db } from "../components/firebase";
+import { toast } from "react-toastify";
 import { query, collection, getDocs, where, updateDoc, doc } from "firebase/firestore";
 const snippetsDB = collection(db, "snippets");
 import '../styles/YourSnippets.css';
@@ -32,7 +33,7 @@ function YourSnippets() {
                 setSnippet(responseSnippet);
             }
             catch (e) {
-                console.error("Error fetching snippet: ", e);
+                toast.error("Error fetching snippet: ", e);
             }
             // return querySnapshot.docs[0].data();   
         }
@@ -48,9 +49,10 @@ function YourSnippets() {
         try{
             let updatedCode = editorRef.current.getValue();
             await updateDoc(doc(db, "snippets", snippetid), {code: updatedCode})
-            console.log("update was successful!, here's updated code : ", updatedCode);
+            toast.success("update was successful!");
         }catch(e){
-            console.error("Update failed with error : ", e);
+            console.log("update failed with an error : ", e);
+            toast.error("Update failed with error");
         }
 
     }
@@ -70,7 +72,6 @@ function YourSnippets() {
             </div>
             {snippet.code ? ( // Only render Editor if snippet.code is available
                 <Editor
-                    ref={editorRef}
                     theme="vs-dark"
                     language={snippet.language || "javascript"}
                     height="100vh"
