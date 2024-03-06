@@ -1,25 +1,47 @@
 .snippet-header{
-    background-color: #1e1e1e;
+
     color: white;
     font-family: monospace;
-    font-size: 1.2rem;
+    font-size: 1rem;
     padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    height: 30vh;
+    width: 100%;
+    margin-bottom: 3vh;
 }
-
-.snippet-header > *{
+.snipContainer{
+    backdrop-filter: blur(20px);
+    padding-top: 10vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+.snippet-header > div{
     margin: 8px;
     padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
 .snippet-header button{
     width: 100px;
     font-family: monospace;
-    padding: 10px;
     font-size: larger;
+    background-color: transparent;
+    border: 1px solid white;
+    outline: none;
+    color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 10px;
+    height: 5vh;
 }
 
 .snippet-header button:hover{
     background-color: white;
-    color: black;
+    color: #344955;
     cursor: pointer;
 }

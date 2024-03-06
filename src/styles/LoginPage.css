@@ -80,14 +80,14 @@
     }
 
     #leftDiv{
-        margin-top: 10vh;
+        /* margin-top: 10vh; */
         width: 100%;
         margin-bottom: 18vh;
     }
     .rightDiv{
         margin: 40px 0;
         width: 100%;
-        height: 90vh;
+        height: 70vh;
     }
 
     .rightDiv form > *{

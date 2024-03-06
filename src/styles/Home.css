@@ -12,10 +12,11 @@
 .snippetContainer{
     display: flex;
     gap: 25px;
-    width: 90vw;
+    width: 100vw;
     margin-top: 4vh;
     margin-left: 2vw;
     flex-wrap: wrap;
+    padding-left: 3vw;
 }
 
 .primaryBackground > h1{
@@ -138,7 +139,7 @@ h1 {
     display: inline-block;
     margin-right: 2px;
     margin-bottom: 1em;
-    width: 400px;
+    width: 370px;
 }
 .flip > .front,
 .flip > .back {

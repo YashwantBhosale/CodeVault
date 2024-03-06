@@ -6,11 +6,10 @@
 
 /* Navbar styles */
 header {
-  position: relative;
+  position: fixed;
   width: 100%;
   z-index: 100;
-  top: 0;
-  left: 0;
+  margin-bottom: 5vh;
 }
 
 #navList {

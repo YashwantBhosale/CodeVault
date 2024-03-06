@@ -70,15 +70,16 @@ function AddSnippet() {
         <div id="addSnippetsDiv">
             <h1>Add Snippet</h1>
             <form onSubmit={handleAddSnippetFormSubmit}>
-                <button type='submit'>Add Snippet</button>
+
                 <input type="text" placeholder="Title" name='title' required />
                 <input type="text" placeholder="Description" name='description' required />
                 <input type="text" placeholder="Language" name='language' onChange={handleLanguageInput} required />
+                <button type='submit' className='addSnipBtn'>Add Snippet</button>
                 {/* <textarea name="code" id="code" cols="30" rows="10" placeholder="Enter your code here" required></textarea> */}
                 <Editor
                     theme='vs-dark'
-                    height={'100vh'}
-                    width={'100%'}
+                    height={'80vh'}
+                    width={'80%'}
                     options={myOptions}
                     onMount={handleEditorDidMount}
                 />

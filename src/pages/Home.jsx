@@ -150,9 +150,9 @@ function Home() {
   return (
     <div className="primaryBackground">
       <h1> Welcome {name}!</h1>
+      
       <div className="snippetContainer">
-        {userSnippets.map(displaySnippets)}
-        <div className="flip" onClick={handleAddSnippet}>
+      <div className="flip" onClick={handleAddSnippet}>
           <div className="front">
             <h1 className="text-shadow">Add a Snippet</h1>
             <p>Click here to add a new snippet</p>
@@ -163,6 +163,8 @@ function Home() {
             </div>
           </div>
         </div>
+        {userSnippets.map(displaySnippets)}
+        
       </div>
     </div>
   );
