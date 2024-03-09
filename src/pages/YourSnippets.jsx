@@ -24,7 +24,7 @@ function YourSnippets() {
   let id = searchParams.get("id");
   console.log(id);
   let myOptions = {
-    fontSize: 25,
+    // fontSize: 25,
     fontFamily: "monospace",
   };
 

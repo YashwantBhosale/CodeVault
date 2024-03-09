@@ -11,6 +11,12 @@ import { Editor } from '@monaco-editor/react';
 function AddSnippet() {
     const editorRef = React.useRef(null);
     const [lastId, setLastId] = useState(0);
+    const [myOptions, setMyOptions] = useState(
+        {
+            // fontSize: 25,
+            fontFamily: 'monospace',
+        }
+    );
 
     async function handleAddSnippetFormSubmit(e) {
         e.preventDefault();
@@ -62,10 +68,10 @@ function AddSnippet() {
         editorRef.current = editor;
         console.log(editor);
     }
-    let myOptions = {
-        fontSize: 25,
-        fontFamily: 'monospace',
-    };
+    // myOptions = {
+    //     fontSize: 25,
+    //     fontFamily: 'monospace',
+    // };
     return (
         <div id="addSnippetsDiv">
             <h1>Add Snippet</h1>
@@ -76,13 +82,15 @@ function AddSnippet() {
                 <input type="text" placeholder="Language" name='language' onChange={handleLanguageInput} required />
                 <button type='submit' className='addSnipBtn'>Add Snippet</button>
                 {/* <textarea name="code" id="code" cols="30" rows="10" placeholder="Enter your code here" required></textarea> */}
-                <Editor
-                    theme='vs-dark'
-                    height={'80vh'}
-                    width={'80%'}
-                    options={myOptions}
-                    onMount={handleEditorDidMount}
-                />
+                <div id="editorDiv">
+                    <Editor
+                        theme='vs-dark'
+                        height={'80vh'}
+                        width={'100%'}
+                        options={myOptions}
+                        onMount={handleEditorDidMount}
+                    />
+                </div>
             </form>
         </div>
     );

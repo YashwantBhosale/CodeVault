@@ -15,7 +15,7 @@
     width: 100%;
 }
 
-#addSnippetsDiv h1{
+#addSnippetsDiv h1 {
     margin: 15px;
 }
 
@@ -26,43 +26,52 @@
     align-items: center;
     padding: 25px;
     width: 100%;
-    height: 100vh;
+    height: fit-content;
     /* background-color: rgba(47, 47, 47, 0.697); */
     /* align-items: center; */
     justify-content: center;
-    margin: 25px;
+    margin: 10px;
     border-radius: 8px;
 }
 
-#addSnippetsDiv form input, #addSnippetsDiv form textarea{
+#addSnippetsDiv form input,
+#addSnippetsDiv form textarea {
     margin: 10px;
     padding: 12px;
     border-radius: 5px;
     border: 2px solid white;
     width: 80%;
     background-color: rgba(46, 46, 46, 0.227);
-    color:white;
+    color: white;
 }
 
-#addSnippetsDiv form > button {
+#addSnippetsDiv form>button {
     margin: 10px;
     padding: 12px;
     border-radius: 5px;
     border: 2px solid white;
-    width: 20%;
+    width: fit-content;
     min-width: 80px;
-    background:transparent;
-    color:white;
+    background: transparent;
+    color: white;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-#addSnippetsDiv form >*:focus, #addSnippetsDiv form >*:active {
+#addSnippetsDiv form>*:focus,
+#addSnippetsDiv form>*:active {
     outline: 0;
     background-color: inherit;
 }
 
-.addSnipBtn:hover{
+.addSnipBtn:hover {
     background: white !important;
     color: #344955 !important;
     cursor: pointer;
+}
+
+#editorDiv {
+    width: 100%;
+    /* border: 2px solid white; */
+    padding: 15px;
+    background-color: #1e1e1e;
 }
