@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
 *{
     margin: 0;
     padding: 0;
@@ -14,14 +15,15 @@
     gap: 25px;
     width: 100vw;
     margin-top: 4vh;
-    margin-left: 2vw;
+    /* margin-left: 2vw; */
     flex-wrap: wrap;
-    padding-left: 3vw;
+    /* padding-left: 3vw; */
+    align-items: center;
+    justify-content: center;
 }
 
 .primaryBackground > h1{
     color: white;
-    display: inline;
     margin: 15px;
 }
 
@@ -57,12 +59,14 @@
     background-color: rgb(2, 6, 34);
     border: 2px solid rgb(36, 0, 52);
     color: white;
+    width: 200px;
     height: 200px;
     border-radius: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border: 2px solid white;
 
 }
 
@@ -83,7 +87,6 @@
 
 
 
-@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
 
 * {
   box-sizing: border-box;
@@ -101,6 +104,7 @@ h1 {
 .flip > .front,
 .flip > .back {
     display: block;
+    border: 2px solid white;
     transition-timing-function: cubic-bezier(.175, .885, .32, 1.275);
     transition-duration: .5s;
     transition-property: transform, opacity;
@@ -171,3 +175,12 @@ h1 {
     text-shadow: 1px 1px rgba(0, 0, 0, 0.04), 2px 2px rgba(0, 0, 0, 0.04), 3px 3px rgba(0, 0, 0, 0.04), 4px 4px rgba(0, 0, 0, 0.04), 0.125rem 0.125rem rgba(0, 0, 0, 0.04), 6px 6px rgba(0, 0, 0, 0.04), 7px 7px rgba(0, 0, 0, 0.04), 8px 8px rgba(0, 0, 0, 0.04), 9px 9px rgba(0, 0, 0, 0.04), 0.3125rem 0.3125rem rgba(0, 0, 0, 0.04), 11px 11px rgba(0, 0, 0, 0.04), 12px 12px rgba(0, 0, 0, 0.04), 13px 13px rgba(0, 0, 0, 0.04), 14px 14px rgba(0, 0, 0, 0.04), 0.625rem 0.625rem rgba(0, 0, 0, 0.04), 16px 16px rgba(0, 0, 0, 0.04), 17px 17px rgba(0, 0, 0, 0.04), 18px 18px rgba(0, 0, 0, 0.04), 19px 19px rgba(0, 0, 0, 0.04), 1.25rem 1.25rem rgba(0, 0, 0, 0.04);
 }
 
+
+@media (max-width: 405px) {
+    .flip .front, .flip .back{
+        width: 90%;
+        margin: auto;
+        min-height: 200px;
+        height: fit-content;
+    }
+}
