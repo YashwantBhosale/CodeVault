@@ -25,6 +25,7 @@ function YourSnippets() {
   console.log(id);
   let myOptions = {
     // fontSize: 25,
+    fontSize: 20,
     fontFamily: "monospace",
   };
 
@@ -66,12 +67,12 @@ function YourSnippets() {
   return (
     <div className="snipContainer">
       <div className="snippet-header">
-        <div>
+        {/* <div>
           <h1>Title : {snippet.title}</h1>
           <p>Description : {snippet.description}</p>
           <p>Language : {snippet.language}</p>
           <p>Author : {snippet.username}</p>
-        </div>
+        </div> */}
 
         <button
           onClick={() => {
