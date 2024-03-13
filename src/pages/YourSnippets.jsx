@@ -95,7 +95,7 @@ function YourSnippets() {
           options={myOptions}
           // onChange={handleChange}
           onMount={handleEditorDidMount}
-          defaultValue={snippet.code}
+          defaultValue={snippet.code == "" ? "//Write your code here" : snippet.code}
         />
       ) : (
         <p>Please wait while editor is loading</p>
