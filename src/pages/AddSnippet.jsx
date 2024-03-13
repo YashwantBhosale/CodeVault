@@ -32,7 +32,7 @@ function AddSnippet() {
             title: e.target.title.value,
             description: e.target.description.value,
             language: e.target.language.value,
-            code: codeToBeSaved,
+            code: codeToBeSaved === "" ? "//Write your code here" : codeToBeSaved,
             username: auth.currentUser.displayName,
             uid: auth.currentUser.uid,
             snippetid: ''
