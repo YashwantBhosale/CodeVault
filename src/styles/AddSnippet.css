@@ -13,6 +13,7 @@
     color: white;
     padding-top: 10vh;
     width: 100%;
+    background-color: rgba(47, 47, 47, 0.697);
 }
 
 #addSnippetsDiv h1 {
@@ -24,14 +25,14 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 25px;
+    padding: 25px 0;
     width: 100%;
     height: fit-content;
-    /* background-color: rgba(47, 47, 47, 0.697); */
+    
     /* align-items: center; */
     justify-content: center;
     margin: 10px;
-    border-radius: 8px;
+    border-radius: 8px; 
 }
 
 #addSnippetsDiv form input,
@@ -46,7 +47,7 @@
 }
 
 #addSnippetsDiv form>button {
-    margin: 10px;
+    margin: 30px;
     padding: 12px;
     border-radius: 5px;
     border: 2px solid white;

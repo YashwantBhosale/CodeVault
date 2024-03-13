@@ -13,7 +13,7 @@ function AddSnippet() {
     const [lastId, setLastId] = useState(0);
     const [myOptions, setMyOptions] = useState(
         {
-            // fontSize: 25,
+            fontSize: 20,
             fontFamily: 'monospace',
         }
     );

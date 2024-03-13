@@ -25,6 +25,10 @@ function YourSnippets() {
   console.log(id);
   let myOptions = {
     // fontSize: 25,
+    colorDecorators: true,
+    workspaceFileEditOptions: {
+      folder: true,
+    },
     fontSize: 20,
     fontFamily: "monospace",
   };
@@ -87,7 +91,7 @@ function YourSnippets() {
           theme="vs-dark"
           language={snippet.language || "javascript"}
           height="100vh"
-          width="90%"
+          width="100%"
           options={myOptions}
           // onChange={handleChange}
           onMount={handleEditorDidMount}
