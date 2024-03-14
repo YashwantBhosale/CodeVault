@@ -31,6 +31,10 @@ function YourSnippets() {
     },
     fontSize: 20,
     fontFamily: "monospace",
+    wordWrap: "on",
+    minimap: {
+      enabled: false
+    }
   };
 
   useEffect(() => {
@@ -40,7 +44,7 @@ function YourSnippets() {
         const querySnapshot = await getDocs(dbQuery);
         responseSnippet = querySnapshot.docs[0].data();
         console.log("responseSnippet: ", responseSnippet);
-        if(responseSnippet.code === ""){
+        if (responseSnippet.code === "") {
           responseSnippet.code = "//Write your code here";
         }
         setSnippet(responseSnippet);

@@ -15,6 +15,10 @@ function AddSnippet() {
         {
             fontSize: 20,
             fontFamily: 'monospace',
+            wordWrap: "on",
+            minimap: {
+                enabled: false
+            }
         }
     );
 
@@ -61,6 +65,8 @@ function AddSnippet() {
         let language = e.target.value;
         if(editorRef){
             editorRef.current.language = language;
+            console.log(editorRef.current.language);
+            console.log('language changed to: ', language);
         }
     }
 
