@@ -28,11 +28,11 @@
     padding: 25px 0;
     width: 100%;
     height: fit-content;
-    
+
     /* align-items: center; */
     justify-content: center;
     margin: 10px;
-    border-radius: 8px; 
+    border-radius: 8px;
 }
 
 #addSnippetsDiv form input,
@@ -73,6 +73,6 @@
 #editorDiv {
     width: 100%;
     /* border: 2px solid white; */
-    padding: 15px;
+    padding: 15px 0;
     background-color: #1e1e1e;
 }
