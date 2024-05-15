@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Snippet = require("./snippetModel");
 const mongodb = require("mongodb");
+const { signupUser } = require("../controllers/usercontroller");
 
 const mongoClient = mongodb.MongoClient;
 
@@ -87,7 +88,7 @@ userSchema.statics.loginWithUsername = async function (username, password) {
 
   const passwordValidation = await bcrypt.compare(
     password,
-    usernameExists.password
+    user.password
   );
   if (passwordValidation) {
     return user;
@@ -110,7 +111,7 @@ userSchema.statics.loginWithEmail = async function (email, password) {
 
   const passwordValidation = await bcrypt.compare(
     password,
-    emailExists.password
+    user.password
   );
   if (passwordValidation) {
     return user;
