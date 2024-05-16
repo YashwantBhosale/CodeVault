@@ -224,10 +224,9 @@ function Home() {
 
   // function to display snippets
   function displaySnippets(snippet) {
-    let date = null;
-    if (snippet.dateCreated) {
-      date = toDateTime(snippet.dateCreated.seconds);
-    }
+    const month = getMonthFromIndex(Number.parseInt(snippet.dateCreated.split("-")[1])-1);
+    const day = snippet.dateCreated.split("-")[2].split("T")[0];
+    const date = `${month} ${day}`;
     return (
       <article
         key={snippet._id}
@@ -235,13 +234,13 @@ function Home() {
       >
         <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
           <time
-            dateTime={date}
+            // dateTime={date}
             className="flex items-center justify-between gap-4 text-xs font-bold uppercase text-gray-900"
           >
-            {/* <span>{snippet.dateCreated}</span> */}
+            <span>{date}</span>
             <span className="w-px flex-1 bg-gray-900/10"></span>
             <span>
-              {getMonthAndDayFromSeconds(snippet.dateCreated.seconds)}
+              {/* {getMonthAndDayFromSeconds(snippet.dateCreated.seconds)} */}
             </span>
           </time>
         </div>
