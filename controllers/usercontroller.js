@@ -1,8 +1,15 @@
-const User = require('../models/userModel');
-const jwt = require('jsonwebtoken');
+const User = require("../models/userModel");
+const jwt = require("jsonwebtoken");
 
 function createToken(id) {
-  return jwt.sign({id}, process.env.SECRET, {expiresIn: "1d"});
+  return jwt.sign({ id }, process.env.SECRET, { expiresIn: "1d" });
+}
+
+function verifyjwt(token) {
+  jwt.verify(process.env.SECRET, token, (err, decoded) => {
+    if (err) return 400;
+    return 200;
+  });
 }
 
 async function loginWithUsername(req, res) {
@@ -11,7 +18,13 @@ async function loginWithUsername(req, res) {
   try {
     const user = await User.loginWithUsername(username, password);
     const token = createToken(user._id);
-    res.status(200).json(user.username, user.avtar, user.email, token);
+    const response = {
+      username: user.username,
+      avtar: user.avtar,
+      email: user.email,
+      token
+    };
+    res.status(200).json(response);
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
@@ -24,7 +37,13 @@ async function loginWithEmail(req, res) {
   try {
     const user = await User.loginWithEmail(email, password);
     const token = createToken(user._id);
-    res.status(200).json(user.username, user.avtar, user.email, token);
+    const response = {
+      username: user.username,
+      avtar: user.avtar,
+      email: user.email,
+      token
+    };
+    res.status(200).json(response);
   } catch (error) {
     console.log("error signup : ", error.message);
     res.status(400).json({ message: error.message });
@@ -37,7 +56,12 @@ async function signupUser(req, res) {
   try {
     const user = await User.signup(username, email, password, avtar);
     const token = createToken(user._id);
-    const response = { username: user.username, avtar: user.avtar, email: user.email, token };
+    const response = {
+      username: user.username,
+      avtar: user.avtar,
+      email: user.email,
+      token,
+    };
     res.status(200).json(response);
   } catch (error) {
     console.log("error signup : ", error.message);
@@ -67,6 +91,7 @@ async function getPublicSnippets(req, res) {
 
 async function getSnippets(req, res) {
   const { email } = req.body;
+  console.log("email: ", email);
 
   try {
     const snippets = await User.getSnippets(email);
