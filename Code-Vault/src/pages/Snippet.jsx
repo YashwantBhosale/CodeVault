@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { db, auth } from "../utils/firebase";
 import { toast } from "react-toastify";
-import { doc, getDoc } from "firebase/firestore";
 import CodeMirror from "@uiw/react-codemirror";
 import { EditorState } from "@codemirror/state";
 import { javascript } from "@codemirror/lang-javascript";
 import { githubDark } from "@uiw/codemirror-themes-all";
 import { FaCog, FaEdit } from "react-icons/fa";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 export const Snippet = () => {
   const [searchParams] = useSearchParams();
   const [snippet, setSnippet] = useState({});
-  const [user, loading, error] = useAuthState(auth);
   const [code, setCode] = useState("// Write your code here..");
   const [showSettings, setShowSettings] = useState(false);
   const [editField, setEditField] = useState("");
+  const { user } = useAuthContext();
 
   const id = searchParams.get("id");
   const state = EditorState.create({
@@ -24,18 +22,21 @@ export const Snippet = () => {
     extensions: [githubDark, javascript({ jsx: true })],
   });
 
-  async function fetchSnippet(id, uid) {
+  async function fetchSnippet(id) {
     try {
-      const docRef = doc(db, "users", uid);
-      const userObject = await getDoc(docRef);
-      const data = userObject.data();
-
-      let snippet = data.snippets.filter((snippet) => snippet.id === id);
-      if (snippet[0].code === "") {
-        snippet[0].code = "// Write your code here..";
+      const res = await fetch("http://localhost:4000/api/user/getsnippet", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: user.email, snippetId: id }),
+      });
+      const data = await res.json();
+      if(data) {
+        setSnippet(data);
+        setCode(data.code);
       }
-      setSnippet(snippet[0]);
-      setCode(snippet[0].code);
     } catch (e) {
       console.log("Error fetching snippet!!", e.message);
       toast.error("Error fetching snippet!!");
@@ -43,10 +44,8 @@ export const Snippet = () => {
   }
 
   useEffect(() => {
-    if (id && user && !loading) {
-      fetchSnippet(id, user.uid);
-    } else if (id && loading) {
-      toast.info("Please wait while snippet is loading!");
+    if (user && id) {
+      fetchSnippet(id);
     } else {
       console.log("Error fetching snippet! NO such id!");
       toast.error("No such snippet!!");

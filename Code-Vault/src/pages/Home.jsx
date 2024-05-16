@@ -265,7 +265,7 @@ function Home() {
           <div className="flex items-end justify-end">
             <button
               onClick={() => {
-                navigate(`/snippets?id=${snippet.id}`);
+                navigate(`/snippets?id=${snippet._id}`);
               }}
               className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
             >

@@ -154,6 +154,30 @@ async function deleteSnippet(req, res) {
   }
 }
 
+async function getSnippet(req, res) {
+  const token = getToken(req);
+  if(token === 401){
+    res.status(401).json({message: "unauthorised"});
+  }
+  let verifcation = verifyjwt(token);
+
+  if(verifcation === 400){
+    res.status(400).json({message: "Invalid token"});
+  }
+  
+    const { email, snippetId } = req.body;
+    console.log("email, id : ", email, snippetId);
+  
+    try {
+      const snippet = await User.getSnippetById(email, snippetId);
+      console.log("snippet ; ", snippet);
+      res.status(200).json(snippet);
+    }catch(e){
+      console.log(e.message);
+      res.status(400).json({ message: e.message });
+    }
+}
+
 module.exports = {
   loginWithUsername,
   loginWithEmail,
@@ -162,5 +186,6 @@ module.exports = {
   getPublicSnippets,
   getSnippets,
   addSnippet,
-  deleteSnippet
+  deleteSnippet,
+  getSnippet
 };

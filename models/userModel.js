@@ -171,5 +171,17 @@ userSchema.statics.deleteSnippet = async function (email, snippetId) {
   await Snippet.deleteOne({ _id: snippetId });
 }
 
+userSchema.statics.getSnippetById = async function (email, snippetId) {
+  const user = await this.findOne({ email });
+  if(!user){
+    throw Error("User not found");
+  }
+  const snippet = await Snippet.findOne({ _id: snippetId });
+  if(!snippet){
+    throw Error("Snippet not found");
+  }
+  return snippet;
+}
+
 
 module.exports = mongoose.model("User", userSchema);
