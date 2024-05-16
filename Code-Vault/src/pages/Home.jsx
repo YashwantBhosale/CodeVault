@@ -230,12 +230,12 @@ function Home() {
     }
     return (
       <article
-        key={snippet.id}
+        key={snippet._id}
         className="flex bg-white transition hover:shadow-xl w-[29%] border-2 rounded-xl m-[20px] min-w-[340px]"
       >
         <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
           <time
-            datetime={snippet.dateCreated}
+            dateTime={date}
             className="flex items-center justify-between gap-4 text-xs font-bold uppercase text-gray-900"
           >
             {/* <span>{snippet.dateCreated}</span> */}

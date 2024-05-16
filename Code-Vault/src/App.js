@@ -22,16 +22,16 @@ function App() {
       <Header userObj={user}/>
 
       <Routes>
-        <Route path='/' element={ <Login />} />
-        <Route path="/login" element={ <Login />} />
-        <Route path="/signup" element={  <SignUp />} />
+        <Route path='/' element={!user ? <Login /> : <Navigate to="/home" />} />
+        <Route path="/login" element={ !user ? <Login /> : <Navigate to="/home" />} />
+        <Route path="/signup" element={  !user ? <SignUp /> : <Navigate to="/home" />} />
         
           
-        <Route path="/home" element={ <Home />} />
-        <Route path='/snippets' element={ <Snippet />} />
-        <Route path='/profile' element={ <Profile />} />
-        <Route path='/explore' element={ <Explore userObj={user}/>} />
-        <Route path='/viewpost' element={ <ViewPost />} />
+        <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />} />
+        <Route path='/snippets' element={ user ? <Snippet /> : <Navigate to="/login" />} />
+        <Route path='/profile' element={ user ? <Profile /> : <Navigate to="/login" />} />
+        <Route path='/explore' element={ user ? <Explore userObj={user}/> : <Navigate to="/login" />} />
+        <Route path='/viewpost' element={ user ? <ViewPost /> : <Navigate to="/login" />} />
         
       </Routes>
       <Footer />
