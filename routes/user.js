@@ -8,7 +8,8 @@ const {
   getSnippets,
   addSnippet,
   deleteSnippet,
-  getSnippet
+  getSnippet,
+  updateSnippet
 } = require("../controllers/usercontroller");
 
 const router = express.Router();
@@ -26,6 +27,7 @@ router.post("/addsnippet", addSnippet);
 router.post("/deletesnippet", deleteSnippet);
 
 router.post("/getsnippet", getSnippet);
+router.post("/updatesnippet", updateSnippet)
 
 
 module.exports = router;

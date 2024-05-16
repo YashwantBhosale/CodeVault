@@ -27,19 +27,47 @@ export const Snippet = () => {
       const res = await fetch("http://localhost:4000/api/user/getsnippet", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: user.email, snippetId: id }),
       });
       const data = await res.json();
-      if(data) {
+      if (data) {
         setSnippet(data);
         setCode(data.code);
       }
     } catch (e) {
       console.log("Error fetching snippet!!", e.message);
       toast.error("Error fetching snippet!!");
+    }
+  }
+
+  async function handleSave(e) {
+    console.log(code, snippet);
+
+    const response = await fetch("http://localhost:4000/api/user/updatesnippet", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: user.email,
+        snippetId: id,
+        title: snippet.title,
+        code: code,
+        language: snippet.language,
+        description: snippet.description,
+        tags: snippet.tags,
+        isPublic: snippet.isPublic,
+      }),
+    });
+
+    if(response.ok) {
+      toast.success("Snippet saved successfully!");
+    }else {
+      toast.error("Error updating snippet!");
     }
   }
 
@@ -59,7 +87,11 @@ export const Snippet = () => {
 
   const handleEditField = (fieldName) => {
     setEditField(fieldName);
-    setShowSettings(true); 
+    setShowSettings(true);
+  };
+
+  const handleChange = (value, viewUpdate) => {
+    setCode(value);
   };
 
   return (
@@ -171,6 +203,7 @@ export const Snippet = () => {
               width="100%"
               height="60vh"
               theme={githubDark}
+              onChange={handleChange}
               basicSetup={{ lineNumbers: true }}
               extensions={[javascript({ jsx: true })]}
               onBeforeChange={(editor, data, value) => {
@@ -178,6 +211,7 @@ export const Snippet = () => {
               }}
             />
           </div>
+          <button onClick={handleSave}>SAVE</button>
         </div>
       </article>
     </div>

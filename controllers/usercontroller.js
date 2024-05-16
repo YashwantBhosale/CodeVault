@@ -178,6 +178,26 @@ async function getSnippet(req, res) {
     }
 }
 
+async function updateSnippet(req, res) {
+  const token = getToken(req);
+  if(token === 401)
+    res.status(401).json({message: "unauthorised"});
+  let verification = verifyjwt(token);
+
+  if(verification === 400){
+    res.status(400).json({message: "Invalid token"});
+  }
+  const { email, snippetId, title, code, language, description, tags, isPublic } = req.body;
+  try {
+    await User.updateSnippet(email, snippetId, title, code, language, description, tags, isPublic)
+    res.status(200).json({message: "Success!"});
+  }catch(e) {
+    console.log(e.message);
+    res.status(400).json({message: e.message});
+  }
+}
+
+
 module.exports = {
   loginWithUsername,
   loginWithEmail,
@@ -187,5 +207,6 @@ module.exports = {
   getSnippets,
   addSnippet,
   deleteSnippet,
-  getSnippet
+  getSnippet,
+  updateSnippet
 };

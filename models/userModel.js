@@ -183,5 +183,23 @@ userSchema.statics.getSnippetById = async function (email, snippetId) {
   return snippet;
 }
 
+userSchema.statics.updateSnippet = async function (email, snippetId, title, code, language, description, tags, isPublic) {
+  const user = await this.findOne({ email });
+  if(!user){
+    throw Error("User not found");
+  }
+  const snippet = await Snippet.findOne({ _id: snippetId });
+  if(!snippet){
+    throw Error("Snippet not found");
+  }
+  snippet.title = title;
+  snippet.code = code;
+  snippet.language = language;
+  snippet.description = description;
+  snippet.tags = tags;
+  snippet.isPublic = isPublic;
+  await snippet.save();
+}
+
 
 module.exports = mongoose.model("User", userSchema);
