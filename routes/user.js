@@ -6,6 +6,8 @@ const {
   checkUser,
   getPublicSnippets,
   getSnippets,
+  addSnippet,
+  deleteSnippet
 } = require("../controllers/usercontroller");
 
 const router = express.Router();
@@ -18,6 +20,9 @@ router.post("/checkuser", checkUser);
 
 router.post("/getpublicsnippets", getPublicSnippets);
 router.post("/getsnippets", getSnippets);
+
+router.post("/addsnippet", addSnippet);
+router.post("/deletesnippet", deleteSnippet);
 
 
 module.exports = router;

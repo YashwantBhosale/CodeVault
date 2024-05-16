@@ -46,15 +46,16 @@ function Home() {
       method: "POST",
       headers: {
         authorization: `Bearer ${user.token}`,
-        'content-type': 'application/json'
+        "content-type": "application/json",
       },
       body: JSON.stringify({
         email: user.email,
-      })
+      }),
     });
-    console.log(response);
-    // let json = await response.json();
-    // console.log(json.snippets);
+    // console.log(response);
+    let json = await response.json();
+    console.log("snippets: ", json);
+    setUserSnippets(json);
     setdataloading(false);
   }
 
@@ -151,15 +152,75 @@ function Home() {
 
   // Main functions
   // Function to delete a snippet
-  async function deleteSnippet(snippetId) {}
+  async function deleteSnippet(snippetId) {
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/user/deletesnippet",
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            email: user.email,
+            snippetId: snippetId,
+          }),
+        }
+      );
+      let json = await response.json();
+      console.log("response: ", json);
+      if(response.ok){
+        toast.success("Snippet deleted successfully!");
+        fetchsnippets();
+      }else{
+        toast.error("Error deleting snippet!");
+      }
+    } catch (e) {
+      console.error("Error deleting snippet : ", e.message);
+      toast.error("Error deleting snippet!");
+    }
+  }
 
   // function to save snippet
-  const handleSaveButtonClick = async () => {};
+  const handleSaveButtonClick = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/user/addsnippet",
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            email: user.email,
+            title: snippetName,
+            code: codeValue,
+            language: snippetLanguage,
+            description: description,
+            tags: ["trending"],
+            isPublic: true,
+          }),
+        }
+      );
+      let json = await response.json();
+      console.log("response: ", json);
+      if(response.ok){
+        toast.success("Snippet saved successfully!");
+        fetchsnippets();
+        setShowPopup(false);
+      }else{
+        toast.error("Error saving snippet!");
+      }
+    } catch (e) {
+      console.error("Error saving snippet : ", e.message);
+      toast.error("Error saving snippet!");
+    }
+  };
 
   // Submit function for post
   async function handlePostSubmit(e) {}
-
- 
 
   // function to display snippets
   function displaySnippets(snippet) {
@@ -211,7 +272,7 @@ function Home() {
               Open
             </button>
             <button
-              onClick={() => handleDeleteButtonClick(snippet.id)}
+              onClick={() => handleDeleteButtonClick(snippet._id)}
               className="block bg-red-500 px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-red-600 rounded-br-xl mt-2 ml-2"
             >
               Delete

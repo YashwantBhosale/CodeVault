@@ -144,7 +144,32 @@ userSchema.statics.getSnippets = async function (email) {
     }
     const snippets = await Snippet.find({ author: user._id});
     return snippets;
-
 }
+
+userSchema.statics.addSnippet = async function (email, title, code, language, description, tags, isPublic)  {
+  const user = await this.findOne({ email });
+  if(!user){
+    throw Error("User not found");
+  }
+  let author = user._id;
+  const snippet = new Snippet({title, code, language, description, tags, isPublic, author});
+  await snippet.save();
+  console.log("user ; ", user, user.snippets);
+  user.snipeets.push(snippet._id);
+  await user.save();
+}
+
+userSchema.statics.deleteSnippet = async function (email, snippetId) {
+  const user = await this.findOne({ email });
+  if(!user){
+    throw Error("User not found");
+  }
+  const snippet = await Snippet.findOne({ _id: snippetId });
+  if(!snippet){
+    throw Error("Snippet not found");
+  }
+  await Snippet.deleteOne({ _id: snippetId });
+}
+
 
 module.exports = mongoose.model("User", userSchema);

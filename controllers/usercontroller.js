@@ -5,6 +5,16 @@ function createToken(id) {
   return jwt.sign({ id }, process.env.SECRET, { expiresIn: "1d" });
 }
 
+function getToken(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return 401;
+  }
+
+  const token = authHeader.split(' ')[1];
+  return token;
+}
+
 function verifyjwt(token) {
   jwt.verify(process.env.SECRET, token, (err, decoded) => {
     if (err) return 400;
@@ -101,6 +111,49 @@ async function getSnippets(req, res) {
   }
 }
 
+async function addSnippet(req, res) {
+  const token = getToken(req);
+  if(token === 401){
+    res.status(401).json({message: "unauthorised"});
+  }
+  let verifcation = verifyjwt(token);
+
+  if(verifcation === 400){
+    res.status(400).json({message: "Invalid token"});
+  }
+
+  const { email, title, code, language, description, tags, isPublic } = req.body;
+
+  try {
+    await User.addSnippet(email, title, code, language, description, tags, isPublic);
+    res.status(200).json({ message: "Success!" });
+  }catch(e){
+    res.status(400).json({ message: e.message });
+  }
+
+}
+
+async function deleteSnippet(req, res) {
+  const token = getToken(req);
+  if(token === 401){
+    res.status(401).json({message: "unauthorised"});
+  }
+  let verifcation = verifyjwt(token);
+
+  if(verifcation === 400){
+    res.status(400).json({message: "Invalid token"});
+  }
+
+  const { email, snippetId } = req.body;
+
+  try {
+    await User.deleteSnippet(email, snippetId);
+    res.status(200).json({ message: "Success!" });
+  }catch(e){
+    res.status(400).json({ message: e.message });
+  }
+}
+
 module.exports = {
   loginWithUsername,
   loginWithEmail,
@@ -108,4 +161,6 @@ module.exports = {
   checkUser,
   getPublicSnippets,
   getSnippets,
+  addSnippet,
+  deleteSnippet
 };

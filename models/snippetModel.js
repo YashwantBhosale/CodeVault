@@ -26,6 +26,10 @@ const snippetSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
     dateCreated: {
         type: Date,
         default: Date.now,
@@ -33,10 +37,6 @@ const snippetSchema = new mongoose.Schema({
     DataModified: {
         type: Date,
         default: Date.now,
-    },
-    author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
     },
 });
 
