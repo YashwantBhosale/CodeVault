@@ -1,35 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useDocument } from "react-firebase-hooks/firestore";
-import { auth, db } from "../utils/firebase";
-import { doc } from "firebase/firestore";
 import { Navigate, useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { useAuthState, useSignOut } from "react-firebase-hooks/auth";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useLogout } from "../hooks/useLogout";
+
 import "./profile.css";
 import { FaUser, FaWindowClose } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { iconSrcList } from "../utils/icons";
 export const Profile = () => {
-  const [userdocref, setuserdocref] = useState(null);
-  const [value, dataloading, dataerror] = useDocument(userdocref);
   const [userobj, setuserobj] = useState(null);
-  const [user, loading, error] = useAuthState(auth);
-  const [signOut] = useSignOut(auth);
   const [followerspopup, setfollowerspopup] = useState(false);
   const [followingpopup, setfollowingpopup] = useState(false);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user && !loading) setuserdocref(doc(db, "users", user.uid));
-  }, [user, loading]);
-
-  useEffect(() => {
-    if (user && !dataloading && value) {
-      setuserobj(value.data());
-      console.log(iconSrcList[value.data()?.avtar], value.data()?.avtar); 
-    }
-  }, [dataloading, value, user]);
+  const { user } = useAuthContext();
+  const { logout } = useLogout();
 
   return (
     <>
@@ -44,56 +30,53 @@ export const Profile = () => {
           backgroundPosition: "0 0, 20px 20px",
         }}
       >
-        {loading ? (
-          <h1>Loading...</h1>
-        ) : user ? (
-          dataloading ? (
-            <h1>Loading...</h1>
-          ) : userobj ? (
+        {user ? (
             <div className="profile-box-container">
               <aside class="profile-card">
                 <header>
                   <a href="">
                     <img
                       src={
-                        iconSrcList[userobj?.avtar] ||
+                        iconSrcList[user?.avtar] ||
                         "https://avataaars.io/?accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&facialHairColor=Platinum&clotheType=ShirtScoopNeck&clotheColor=White&eyeType=Happy&eyebrowType=RaisedExcited&mouthType=Smile&skinColor=Light"
                       }
                       class="hoverZoomLink"
                     />
                   </a>
-                  <h1 className="font-bold">{userobj?.username}</h1>
-                  <h2>{userobj?.email}</h2>
+                  <h1 className="font-bold">{user?.username}</h1>
+                  <h2>{user?.email}</h2>
                 </header>
                 <div class="profile-bio">
                   <div>
                     <h1 className="font-bold">about me:</h1>
-                    <p>{userobj?.about || "I like guys"}</p>
+                    <p>{user?.about || "I like guys"}</p>
                   </div>
                   <div className="flex w-full justify-between">
                     <div
                       className="flex flex-col items-center justify-between cursor-pointer"
                       onClick={() => setfollowerspopup(true)}
                     >
-                      <p className="text-2xl">{userobj?.followers?.length}</p>
+                      <p className="text-2xl">{user?.followers?.length}</p>
                       <h3 className="font-bold">Followers</h3>
                     </div>
                     <div
                       className="flex flex-col items-center justify-between cursor-pointer"
                       onClick={() => setfollowingpopup(true)}
                     >
-                      <p className="text-2xl">{userobj?.following?.length}</p>
+                      <p className="text-2xl">{user?.following?.length}</p>
                       <h3 className="font-bold ">Following</h3>
                     </div>
                   </div>
                   <button
                     className="logout-btn hover:bg-slate-600"
                     onClick={async () => {
-                      const res = await signOut();
-                      if (res) {
+                      
+                      try {
+                        logout();
                         navigate("/login");
                         toast.success("Successfully logged out!");
-                      } else {
+                      } catch(e) {
+                        console.error(e.message);
                         toast.error(
                           "we are having trouble logging you out! Please try again!"
                         );
@@ -105,8 +88,7 @@ export const Profile = () => {
                 </div>
               </aside>
             </div>
-          ) : null
-        ) : (
+          ) : (
           <Navigate to="/login" />
         )}
       </div>

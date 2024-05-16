@@ -32,6 +32,8 @@ async function loginWithUsername(req, res) {
       username: user.username,
       avtar: user.avtar,
       email: user.email,
+      followers: user.followers,
+      following: user.following,
       token
     };
     res.status(200).json(response);
@@ -51,6 +53,8 @@ async function loginWithEmail(req, res) {
       username: user.username,
       avtar: user.avtar,
       email: user.email,
+      followers: user.followers,
+      following: user.following,
       token
     };
     res.status(200).json(response);
@@ -70,6 +74,8 @@ async function signupUser(req, res) {
       username: user.username,
       avtar: user.avtar,
       email: user.email,
+      followers: user.followers,
+      following: user.following,
       token,
     };
     res.status(200).json(response);

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Snippet = require("./snippetModel");
+const Post = require("./postModel");
 const mongodb = require("mongodb");
 const { signupUser } = require("../controllers/usercontroller");
 
@@ -33,6 +34,12 @@ const userSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Snippet",
+    },
+  ],
+  posts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
     },
   ],
   createdAt: {
@@ -199,6 +206,19 @@ userSchema.statics.updateSnippet = async function (email, snippetId, title, code
   snippet.tags = tags;
   snippet.isPublic = isPublic;
   await snippet.save();
+}
+
+userSchema.statics.createPost = async function (email, title, content, author, tags, isPublic) {
+  const user = await this.findOne({ email });
+  if(!user){
+    throw Error("User not found");
+  }
+
+  const post = new Post({title, content, author, tags, isPublic});
+  await post.save();
+
+  user.posts.push(post._id);
+  await user.save();
 }
 
 

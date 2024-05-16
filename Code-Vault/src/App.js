@@ -10,8 +10,8 @@ import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { Snippet } from './pages/Snippet';
 import { Profile } from './pages/Profile';
-import { Explore } from './pages/Explore';
-import { ViewPost } from './pages/ViewPost';
+// import { Explore } from './pages/Explore';
+// import { ViewPost } from './pages/ViewPost';
 import { useAuthContext } from './hooks/useAuthContext';
 
 function App() {
@@ -30,8 +30,8 @@ function App() {
         <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />} />
         <Route path='/snippets' element={ user ? <Snippet /> : <Navigate to="/login" />} />
         <Route path='/profile' element={ user ? <Profile /> : <Navigate to="/login" />} />
-        <Route path='/explore' element={ user ? <Explore userObj={user}/> : <Navigate to="/login" />} />
-        <Route path='/viewpost' element={ user ? <ViewPost /> : <Navigate to="/login" />} />
+        {/* <Route path='/explore' element={ user ? <Explore userObj={user}/> : <Navigate to="/login" />} /> */}
+        {/* <Route path='/viewpost' element={ user ? <ViewPost /> : <Navigate to="/login" />} /> */}
         
       </Routes>
       <Footer />
