@@ -240,14 +240,13 @@ function Home() {
       title: postTitle,
       content: postContent,
       author: {
-        id: user._id,
         username: user.username,
         avtar: user.avtar,
       },
       isPublic: true,
       tags: ["trending"],
     }
-
+    console.log(post);
     try {
       const response = await fetch("http://localhost:4000/api/user/createPost", {
         method: "POST",
@@ -265,6 +264,7 @@ function Home() {
 
       let json = await response.json();
       console.log("response: ", json);
+      toast.success("Post created successfully!");
     }
     catch(err) {
       console.log("error adding post: ", err.message);

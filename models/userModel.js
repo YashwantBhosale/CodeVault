@@ -213,7 +213,7 @@ userSchema.statics.createPost = async function (email, title, content, author, t
   if(!user){
     throw Error("User not found");
   }
-
+  author = {...author, id: user._id};
   const post = new Post({title, content, author, tags, isPublic});
   await post.save();
 

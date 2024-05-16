@@ -213,6 +213,7 @@ async function createPost(req, res) {
     res.status(400).json({message: "Invalid token"});
   }
   const { email, title, content, author, tags, isPublic } = req.body;
+
   try {
     await User.createPost(email, title, content, author, tags, isPublic);
     res.status(200).json({ message: "Success!" });
