@@ -9,14 +9,28 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  upvotes: {
-    type: Number,
-    default: 0,
-  },
-  downvotes: {
-    type: Number,
-    default: 0,
-  },
+  upvotes: [
+    {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      username: {
+        type: String,
+      },
+    },
+  ],
+  downvotes: [
+    {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      username: {
+        type: String,
+      },
+    },
+  ],
   comments: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -30,13 +44,13 @@ const postSchema = new mongoose.Schema({
     },
   ],
   author: {
-    id:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
     username: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     avtar: {
       type: String,
@@ -47,7 +61,7 @@ const postSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
-  isPublic:{
+  isPublic: {
     type: Boolean,
     default: true,
   },

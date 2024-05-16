@@ -20,6 +20,10 @@ const state = EditorState.create({
 
 function Home() {
   const navigate = useNavigate();
+
+  const [postTitle, setPostTitle] = useState("");
+  const [postContent, setPostContent] = useState("");
+
   const [showPopup, setShowPopup] = React.useState(false);
   const [snippetName, setSnippetName] = React.useState("");
   const [snippetLanguage, setSnippetLanguage] = React.useState("");
@@ -27,6 +31,8 @@ function Home() {
   const [codeValue, setCodeValue] = React.useState(
     "console.log('hello world!');"
   );
+
+  const [showCreatePost, setShowCreatePost] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteSnippetId, setDeleteSnippetId] = useState(null);
   const [usersnippets, setUserSnippets] = React.useState([]);
@@ -80,6 +86,10 @@ function Home() {
 
   const handleChange = (value, viewUpdate) => {
     setCodeValue(value);
+  };
+
+  const handleCreatePost = () => {
+    setShowCreatePost(true);
   };
 
   // Utitlity functions
@@ -170,10 +180,10 @@ function Home() {
       );
       let json = await response.json();
       console.log("response: ", json);
-      if(response.ok){
+      if (response.ok) {
         toast.success("Snippet deleted successfully!");
         fetchsnippets();
-      }else{
+      } else {
         toast.error("Error deleting snippet!");
       }
     } catch (e) {
@@ -206,11 +216,11 @@ function Home() {
       );
       let json = await response.json();
       console.log("response: ", json);
-      if(response.ok){
+      if (response.ok) {
         toast.success("Snippet saved successfully!");
         fetchsnippets();
         setShowPopup(false);
-      }else{
+      } else {
         toast.error("Error saving snippet!");
       }
     } catch (e) {
@@ -220,11 +230,54 @@ function Home() {
   };
 
   // Submit function for post
-  async function handlePostSubmit(e) {}
+  async function handlePostSubmit(e) {
+    e.preventDefault();
+    console.log("postTitle: ", postTitle);
+    console.log("postContent: ", postContent);
+
+    const post = {
+      email: user.email,
+      title: postTitle,
+      content: postContent,
+      author: {
+        id: user._id,
+        username: user.username,
+        avtar: user.avtar,
+      },
+      isPublic: true,
+      tags: ["trending"],
+    }
+
+    try {
+      const response = await fetch("http://localhost:4000/api/user/createPost", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${user.token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(post),
+      })
+      
+      if(!response.ok){
+        toast.error("Failed to create post! Please try again.");
+        return;
+      }
+
+      let json = await response.json();
+      console.log("response: ", json);
+    }
+    catch(err) {
+      console.log("error adding post: ", err.message);
+      toast.error("Error creating post!");
+    }
+
+  }
 
   // function to display snippets
   function displaySnippets(snippet) {
-    const month = getMonthFromIndex(Number.parseInt(snippet.dateCreated.split("-")[1])-1);
+    const month = getMonthFromIndex(
+      Number.parseInt(snippet.dateCreated.split("-")[1]) - 1
+    );
     const day = snippet.dateCreated.split("-")[2].split("T")[0];
     const date = `${month} ${day}`;
     return (
@@ -319,6 +372,82 @@ function Home() {
           </div>
         </div>
       </article>
+      <article className="mt-[90px] flex bg-white transition hover:shadow-xl w-1/5 border-2 rounded-xl m-[10px] min-w-[340px]">
+        <div className="flex flex-1 flex-col justify-between">
+          <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6">
+            <a href="#">
+              <h3 className="font-bold uppercase text-gray-900">
+                Create a New Post
+              </h3>
+            </a>
+
+            <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
+              Create a post....
+            </p>
+          </div>
+
+          <div className="sm:flex sm:items-end sm:justify-end">
+            <a
+              onClick={handleCreatePost}
+              href="#"
+              className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
+            >
+              Create
+            </a>
+          </div>
+        </div>
+      </article>
+      {showCreatePost && (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white p-8 rounded-xl w-4/5 m-[20px]">
+            <h2 className="text-xl font-bold mb-4">Create New Post</h2>
+            <form className="space-y-4">
+              <div>
+                <label htmlFor="snippetName" className="block font-medium">
+                  Post title
+                </label>
+                <input
+                  type="text"
+                  id="snippetName"
+                  value={postTitle}
+                  onChange={(e) => setPostTitle(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                />
+              </div>
+              <div>
+                <label
+                  for="description"
+                  class="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  rows="4"
+                  class="block p-2.5 w-full text-sm bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Write your thoughts here..."
+                  value={postContent}
+                  onChange={(e) => setPostContent(e.target.value)}
+                ></textarea>
+              </div>
+              <button
+                type="button"
+                onClick={() => {setShowCreatePost(false)}}
+                className="bg-gray-300 px-4 py-2 rounded-md mr-4"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handlePostSubmit}
+                className="bg-black text-white px-4 py-2 rounded-md"
+              >
+                Save
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
       <div className="mb-[15px] flex flex-wrap items-center justify-center sm:justify-start">
         {user && !dataloading ? (
           usersnippets.map(displaySnippets)

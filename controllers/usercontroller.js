@@ -203,6 +203,25 @@ async function updateSnippet(req, res) {
   }
 }
 
+async function createPost(req, res) {
+  const token = getToken(req);
+  if(token === 401)
+    res.status(401).json({message: "unauthorised"});
+  let verification = verifyjwt(token);
+
+  if(verification === 400){
+    res.status(400).json({message: "Invalid token"});
+  }
+  const { email, title, content, author, tags, isPublic } = req.body;
+  try {
+    await User.createPost(email, title, content, author, tags, isPublic);
+    res.status(200).json({ message: "Success!" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+
+}
+
 
 module.exports = {
   loginWithUsername,
@@ -214,5 +233,6 @@ module.exports = {
   addSnippet,
   deleteSnippet,
   getSnippet,
-  updateSnippet
+  updateSnippet,
+  createPost
 };
