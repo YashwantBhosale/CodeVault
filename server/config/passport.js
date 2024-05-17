@@ -25,10 +25,12 @@ passport.use(
           const newUser = await User.create({
             githubId: profile?.id,
             username: profile?.username,
-            email: profile?.emails?.[0].value,
+            email: profile?.profileUrl,
             avtar: profile?.photos?.[0].value,
             token,
           });
+
+          console.log("newUser" , newUser);
           if(newUser) {
             done(null, newUser);
           }

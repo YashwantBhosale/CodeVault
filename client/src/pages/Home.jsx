@@ -338,7 +338,7 @@ function Home() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center mt-[15vh] md:mt-18 mb-[100px]"
+      className="flex flex-col items-center mt-[15vh] md:mt-18 mb-[100px]"
       style={{
         backgroundColor: "#fff",
         backgroundImage:

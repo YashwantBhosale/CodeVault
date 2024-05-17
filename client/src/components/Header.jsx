@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router";
 
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   FaBell,
   FaDumbbell,

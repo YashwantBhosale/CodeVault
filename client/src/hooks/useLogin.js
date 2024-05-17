@@ -68,7 +68,7 @@ export const useLogin = () => {
             dispatch({ type: "LOGIN", payload: response.data.user });
             setIsLoading(false);
             toast.success("Login Successful!");
-            navigate("/");
+            navigate("/home");
         }
     }
 

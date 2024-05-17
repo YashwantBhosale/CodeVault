@@ -20,7 +20,10 @@ function App() {
   console.log("App user: ", user);
   return (
     <>
-      <ToastContainer />
+      <ToastContainer 
+        stacked= "true"
+        theme="dark"
+       />
       <Header userObj={user}/>
 
       <Routes>
