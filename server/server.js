@@ -2,10 +2,14 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+
 const userRoutes = require("./routes/user");
+const publicRoutes = require("./routes/public");
+
 const passport = require("passport");
 const session = require("express-session");
 require("./config/passport");
+
 
 //for environment variables
 dotenv.config();
@@ -29,6 +33,8 @@ app.use(passport.session());
 
 //routes
 app.use("/api/user", userRoutes);
+app.use("/api/public", publicRoutes);
+
 app.get("/", (req, res) => {
   res.send('<i>A Computer is like air conditioning - it becomes useless when you open Windows- Linus Torvalds</i>');
 });
