@@ -31,7 +31,7 @@ function googleAuthenticate(req, res, next){
 
 function googleRedirect(req, res, next){
   return passport.authenticate("google", {
-    successRedirect: "http://localhost:3000/test",
+    successRedirect: "http://localhost:3000/oauth",
     failureRedirect: "http://localhost:3000/login",
   })(req, res, next);
 }
@@ -44,7 +44,7 @@ function githubAuthenticate(req, res, next){
 
 function githubRedirect(req, res, next){
   return passport.authenticate("github", {
-    successRedirect: "http://localhost:3000/test",
+    successRedirect: "http://localhost:3000/oauth",
     failureRedirect: "http://localhost:3000/login",
   })(req, res, next);
 }

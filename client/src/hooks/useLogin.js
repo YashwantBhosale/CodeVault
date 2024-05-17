@@ -3,11 +3,12 @@ import { useAuthContext } from "./useAuthContext";
 import axios from "axios";
 import {toast} from "react-toastify"
 import { set } from "mongoose";
+import { useNavigate } from "react-router";
 
 export const useLogin = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { dispatch } = useAuthContext();
-    
+    const navigate = useNavigate();
     const loginWithEmail = async (email, password) => {
         setIsLoading(true);
         console.log(email, password);
@@ -67,6 +68,7 @@ export const useLogin = () => {
             dispatch({ type: "LOGIN", payload: response.data.user });
             setIsLoading(false);
             toast.success("Login Successful!");
+            navigate("/");
         }
     }
 
