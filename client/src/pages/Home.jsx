@@ -400,59 +400,6 @@ function Home() {
           </div>
         </article>
       </div>
-      {showCreatePost && (
-        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white p-8 rounded-xl w-4/5 m-[20px]">
-            <h2 className="text-xl font-bold mb-4">Create New Post</h2>
-            <form className="space-y-4">
-              <div>
-                <label htmlFor="snippetName" className="block font-medium">
-                  Post title
-                </label>
-                <input
-                  type="text"
-                  id="snippetName"
-                  value={postTitle}
-                  onChange={(e) => setPostTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-                />
-              </div>
-              <div>
-                <label
-                  for="description"
-                  class="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  rows="4"
-                  class="block p-2.5 w-full text-sm bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Write your thoughts here..."
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                ></textarea>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowCreatePost(false);
-                }}
-                className="bg-gray-300 px-4 py-2 rounded-md mr-4"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handlePostSubmit}
-                className="bg-black text-white px-4 py-2 rounded-md"
-              >
-                Save
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
       <div className="mb-[15px] flex flex-wrap items-center justify-center ">
         {user && !dataloading ? (
           usersnippets.map(displaySnippets)
@@ -545,7 +492,7 @@ function Home() {
                       <button
                         type="button"
                         onClick={handleSaveButtonClick}
-                        className="bg-black text-white px-4 py-2 rounded-md"
+                        className="bg-black text-white px-4 py-2 rounded-md hover:bg-slate-700"
                       >
                         Save
                       </button>
@@ -651,6 +598,74 @@ function Home() {
           onDelete={handleDeleteConfirmation}
         />
       </div>
+      <AnimatePresence>
+        {showCreatePost && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50"
+          >
+            <motion.div
+              initial={{ y: "-100vh" }}
+              animate={{ y: 0 }}
+              transition={{ type: "spring", stiffness: 150 }}
+              className="bg-white rounded-xl lg:w-2/5 m-[20px]"
+            >
+              <div className="bg-white p-2 rounded-xl w-4/5 m-[20px]">
+                <h2 className="text-xl font-bold mb-4">Create New Post</h2>
+                <form className="space-y-4">
+                  <div>
+                    <label htmlFor="snippetName" className="block font-medium">
+                      Post title
+                    </label>
+                    <input
+                      type="text"
+                      id="snippetName"
+                      value={postTitle}
+                      onChange={(e) => setPostTitle(e.target.value)}
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="description"
+                      class="block mb-2 text-sm font-medium text-gray-900"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      id="description"
+                      rows="4"
+                      class="block p-2.5 w-full text-sm bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Write your thoughts here..."
+                      value={postContent}
+                      onChange={(e) => setPostContent(e.target.value)}
+                    ></textarea>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCreatePost(false);
+                    }}
+                    className="bg-gray-300 px-4 py-2 rounded-md mr-4"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePostSubmit}
+                    className="bg-black text-white px-4 py-2 rounded-md hover:bg-slate-700"
+                  >
+                    Save
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

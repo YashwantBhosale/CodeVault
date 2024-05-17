@@ -46,27 +46,30 @@ export const Snippet = () => {
   async function handleSave(e) {
     console.log(code, snippet);
 
-    const response = await fetch("http://localhost:4000/api/user/updatesnippet", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: user.email,
-        snippetId: id,
-        title: snippet.title,
-        code: code,
-        language: snippet.language,
-        description: snippet.description,
-        tags: snippet.tags,
-        isPublic: snippet.isPublic,
-      }),
-    });
+    const response = await fetch(
+      "http://localhost:4000/api/user/updatesnippet",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          snippetId: id,
+          title: snippet.title,
+          code: code,
+          language: snippet.language,
+          description: snippet.description,
+          tags: snippet.tags,
+          isPublic: snippet.isPublic,
+        }),
+      }
+    );
 
-    if(response.ok) {
+    if (response.ok) {
       toast.success("Snippet saved successfully!");
-    }else {
+    } else {
       toast.error("Error updating snippet!");
     }
   }
@@ -105,7 +108,7 @@ export const Snippet = () => {
         height: "100vh",
       }}
     >
-      <article className="mt-28 mx-auto max-w-3xl px-4">
+      <article className="mt-[13vh] mx-auto max-w-3xl px-4">
         <div
           className="rounded-lg shadow-[rgba(0,_0,_0,_0.4)_0px_30px_90px] p-4"
           style={{ backgroundColor: "#fff" }}
@@ -211,7 +214,14 @@ export const Snippet = () => {
               }}
             />
           </div>
-          <button onClick={handleSave}>SAVE</button>
+          <div className="flex justify-end">
+            <button
+              onClick={handleSave}
+              className="mt-2 block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-xl"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
       </article>
     </div>
