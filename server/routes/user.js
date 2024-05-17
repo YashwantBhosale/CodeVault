@@ -16,7 +16,8 @@ const {
   githubAuthenticate,
   githubRedirect,
   loginSuccess,
-  logout
+  logout,
+  verifyjwt
 } = require("../controllers/usercontroller");
 const passport = require("passport");
 const router = express.Router();
@@ -40,12 +41,12 @@ router.post("/checkuser", checkUser);
 router.post("/getpublicsnippets", getPublicSnippets);
 router.post("/getsnippets", getSnippets);
 
-router.post("/addsnippet", addSnippet);
-router.post("/deletesnippet", deleteSnippet);
+router.post("/addsnippet",verifyjwt, addSnippet);
+router.post("/deletesnippet",verifyjwt, deleteSnippet);
 
-router.post("/getsnippet", getSnippet);
-router.post("/updatesnippet", updateSnippet)
+router.post("/getsnippet",verifyjwt, getSnippet);
+router.post("/updatesnippet",verifyjwt, updateSnippet)
 
-router.post("/createpost", createPost);
+router.post("/createpost",verifyjwt, createPost);
 
 module.exports = router;

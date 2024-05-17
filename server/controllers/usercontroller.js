@@ -6,69 +6,72 @@ function createToken(id) {
   return jwt.sign({ id }, process.env.SECRET, { expiresIn: "1d" });
 }
 
-function getToken(req) {
+
+function verifyjwt(req, res, next) {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return 401;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    res.status(401).json({ message: "unauthorised" });
   }
+  
+  const token = authHeader.split(" ")[1];
 
-  const token = authHeader.split(' ')[1];
-  return token;
-}
-
-function verifyjwt(token) {
-  jwt.verify(process.env.SECRET, token, (err, decoded) => {
-    if (err) return 400;
-    return 200;
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      res.status(400).json({ message: "Invalid token" });
+    }
+    req.user = decoded;
+    console.log("successfully verified token!", next)
+    next();
   });
 }
 
-function googleAuthenticate(req, res, next){
+function googleAuthenticate(req, res, next) {
   return passport.authenticate("google", {
     scope: ["email", "profile"],
   })(req, res, next);
 }
 
-function googleRedirect(req, res, next){
+function googleRedirect(req, res, next) {
   return passport.authenticate("google", {
     successRedirect: "http://localhost:3000/oauth",
     failureRedirect: "http://localhost:3000/login",
   })(req, res, next);
 }
 
-function githubAuthenticate(req, res, next){
+function githubAuthenticate(req, res, next) {
   return passport.authenticate("github", {
     scope: ["email", "profile"],
   })(req, res, next);
 }
 
-function githubRedirect(req, res, next){
+function githubRedirect(req, res, next) {
   return passport.authenticate("github", {
     successRedirect: "http://localhost:3000/oauth",
     failureRedirect: "http://localhost:3000/login",
   })(req, res, next);
 }
 
-
-function loginSuccess(req, res){
+function loginSuccess(req, res) {
   if (req.user) {
-    res.json({
-      success: true,
-      message: "user has successfully authenticated",
-      user: req.user,
-      cookies: req.cookies,
-    }).status(200);
+    res
+      .json({
+        success: true,
+        message: "user has successfully authenticated",
+        user: req.user,
+        cookies: req.cookies,
+      })
+      .status(200);
   }
 }
 
-function logout(req, res, next){
-  req.logout(function(err) {
-    if (err) { return next(err); }
-    res.redirect('http://localhost:3000/');
+function logout(req, res, next) {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("http://localhost:3000/");
   });
 }
-
-
 
 async function loginWithUsername(req, res) {
   const { username, password } = req.body;
@@ -82,7 +85,7 @@ async function loginWithUsername(req, res) {
       email: user.email,
       followers: user.followers,
       following: user.following,
-      token
+      token,
     };
     res.status(200).json(response);
   } catch (error) {
@@ -103,7 +106,7 @@ async function loginWithEmail(req, res) {
       email: user.email,
       followers: user.followers,
       following: user.following,
-      token
+      token,
     };
     res.status(200).json(response);
   } catch (error) {
@@ -166,100 +169,82 @@ async function getSnippets(req, res) {
 }
 
 async function addSnippet(req, res) {
-  const token = getToken(req);
-  if(token === 401){
-    res.status(401).json({message: "unauthorised"});
-  }
-  let verifcation = verifyjwt(token);
-
-  if(verifcation === 400){
-    res.status(400).json({message: "Invalid token"});
-  }
-
-  const { email, title, code, language, description, tags, isPublic } = req.body;
-
+  const { email, title, code, language, description, tags, isPublic } =
+    req.body;
+    console.log("req.user.emai : ", req.user.email, req.user);
   try {
-    await User.addSnippet(email, title, code, language, description, tags, isPublic);
+    await User.addSnippet(
+      email,
+      title,
+      code,
+      language,
+      description,
+      tags,
+      isPublic
+    );
     res.status(200).json({ message: "Success!" });
-  }catch(e){
+  } catch (e) {
     res.status(400).json({ message: e.message });
   }
-
 }
 
 async function deleteSnippet(req, res) {
-  const token = getToken(req);
-  if(token === 401){
-    res.status(401).json({message: "unauthorised"});
-  }
-  let verifcation = verifyjwt(token);
-
-  if(verifcation === 400){
-    res.status(400).json({message: "Invalid token"});
-  }
-
   const { email, snippetId } = req.body;
 
   try {
     await User.deleteSnippet(email, snippetId);
     res.status(200).json({ message: "Success!" });
-  }catch(e){
+  } catch (e) {
     res.status(400).json({ message: e.message });
   }
 }
 
 async function getSnippet(req, res) {
-  const token = getToken(req);
-  if(token === 401){
-    res.status(401).json({message: "unauthorised"});
-  }
-  let verifcation = verifyjwt(token);
 
-  if(verifcation === 400){
-    res.status(400).json({message: "Invalid token"});
+  const { email, snippetId } = req.body;
+  console.log("email, id : ", email, snippetId);
+
+  try {
+    const snippet = await User.getSnippetById(email, snippetId);
+    console.log("snippet ; ", snippet);
+    res.status(200).json(snippet);
+  } catch (e) {
+    console.log(e.message);
+    res.status(400).json({ message: e.message });
   }
-  
-    const { email, snippetId } = req.body;
-    console.log("email, id : ", email, snippetId);
-  
-    try {
-      const snippet = await User.getSnippetById(email, snippetId);
-      console.log("snippet ; ", snippet);
-      res.status(200).json(snippet);
-    }catch(e){
-      console.log(e.message);
-      res.status(400).json({ message: e.message });
-    }
 }
 
 async function updateSnippet(req, res) {
-  const token = getToken(req);
-  if(token === 401)
-    res.status(401).json({message: "unauthorised"});
-  let verification = verifyjwt(token);
-
-  if(verification === 400){
-    res.status(400).json({message: "Invalid token"});
-  }
-  const { email, snippetId, title, code, language, description, tags, isPublic } = req.body;
+  const {
+    email,
+    snippetId,
+    title,
+    code,
+    language,
+    description,
+    tags,
+    isPublic,
+  } = req.body;
   try {
-    await User.updateSnippet(email, snippetId, title, code, language, description, tags, isPublic)
-    res.status(200).json({message: "Success!"});
-  }catch(e) {
+    await User.updateSnippet(
+      email,
+      snippetId,
+      title,
+      code,
+      language,
+      description,
+      tags,
+      isPublic
+    );
+    res.status(200).json({ message: "Success!" });
+  } catch (e) {
     console.log(e.message);
-    res.status(400).json({message: e.message});
+    res.status(400).json({ message: e.message });
   }
 }
 
 async function createPost(req, res) {
-  const token = getToken(req);
-  if(token === 401)
-    res.status(401).json({message: "unauthorised"});
-  let verification = verifyjwt(token);
 
-  if(verification === 400){
-    res.status(400).json({message: "Invalid token"});
-  }
   const { email, title, content, author, tags, isPublic } = req.body;
 
   try {
@@ -268,9 +253,7 @@ async function createPost(req, res) {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-
 }
-
 
 module.exports = {
   loginWithUsername,
@@ -289,5 +272,6 @@ module.exports = {
   githubAuthenticate,
   githubRedirect,
   loginSuccess,
-  logout
+  logout,
+  verifyjwt
 };
