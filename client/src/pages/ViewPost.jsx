@@ -46,7 +46,7 @@ export const ViewPost = () => {
                 src={iconSrcList[post ? post?.author?.avtar : "panda"]}
                 className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
               />
-              {post?.author.username || "user"}
+              {post?.author?.username || "user"}
             </p>
             <h1 className="text-xl mb-2">
               <p
