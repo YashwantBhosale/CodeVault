@@ -1,14 +1,104 @@
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
-import { FaUser, FaRegArrowAltCircleUp, FaRegArrowAltCircleDown } from "react-icons/fa";
+import {
+  FaUser,
+  FaRegArrowAltCircleUp,
+  FaRegArrowAltCircleDown,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 import { iconSrcList } from "../utils/icons";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const Explore = () => {
   const [posts, setPosts] = useState([]);
   const { user } = useAuthContext();
   const navigate = useNavigate();
+
+  async function Upvote(e, post) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      let userObj = {
+        username: user.username,
+        avtar: user.avtar,
+      };
+      if (post.upvotes.some(obj => obj.username == user.username)) {
+        console.log("already upvoted");
+        return;
+      }
+      e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
+      post.upvotes.push({
+        username: user.username,
+        avtar: user.avtar,
+      });
+      if (post.downvotes.some(obj => obj.username == user.username)) {
+        e.target.nextSibling.lastElementChild.innerHTML =
+          post.downvotes.length - 1;
+        post.downvotes = post.downvotes.filter(
+          (obj) => obj.username !== user.username
+        );
+        // setposts([...posts, post]);
+      }
+      let response = await fetch(
+        "http://localhost:4000/api/public/updateupvotes",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: post._id, userObj }),
+        }
+      );
+      if (response.ok) {
+        toast.success("added to upvoted posts");
+      } else {
+        toast.error("error upvoting post");
+      }
+    } catch (error) {
+      console.log("error upvoting post : ", error.message);
+    }
+  }
+
+  async function Downvote(e, post) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      let userObj = {
+        username: user.username,
+        avtar: user.avtar,
+      };
+
+      if (post.downvotes.some(obj => obj.username == user.username)) {
+        console.log("already downvoted");
+        return;
+      }
+      e.target.lastElementChild.innerHTML = post.downvotes.length + 1;
+      post.downvotes.push(userObj);
+      if (post.upvotes.some(obj => obj.username == user.username)) {
+        e.target.previousSibling.lastElementChild.innerHTML =
+          post.upvotes.length - 1;
+        post.upvotes = post.upvotes.filter(
+          (obj) => obj.username !== user.username
+        );
+      }
+
+      let response = await fetch("http://localhost:4000/api/public/updatedownvotes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: post._id, userObj }),
+      });
+
+      if(response.ok){
+        toast.success("added to downvoted posts");
+      }else{
+        toast.error("error downvoting post");
+      }
+    } catch (error) {
+      console.log("error downvoting post : ", error.message);
+    }
+  }
 
   async function fetchPublicPosts() {
     try {
@@ -74,37 +164,7 @@ export const Explore = () => {
         <div className="flex items-center justify-evenly">
           <div
             className="flex items-center gap-4 cursor-pointer z-99 my-2"
-            onClick={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              try {
-                if (post.upvotes.includes(user.displayName)) {
-                  console.log("already upvoted");
-                  return;
-                }
-                e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
-                post.upvotes.push({
-                  username: user.username,
-                  avtar: user.avtar,
-                });
-                if (
-                  post.downvotes.includes({
-                    username: user.username,
-                    avtar: user.avtar,
-                  })
-                ) {
-                  e.target.nextSibling.lastElementChild.innerHTML =
-                    post.downvotes.length - 1;
-                  post.downvotes = post.downvotes.filter(
-                    (obj) => obj.username !== user.username
-                  );
-                  // setposts([...posts, post]);
-                }
-                toast.success("added to upvoted posts");
-              } catch (error) {
-                console.log("error upvoting post : ", error.message);
-              }
-            }}
+            onClick={e => Upvote(e, post)}
           >
             <FaRegArrowAltCircleUp
               style={{ zIndex: -1 }}
@@ -116,38 +176,7 @@ export const Explore = () => {
           </div>
           <div
             className="flex items-center z-99 gap-4 cursor-pointer"
-            onClick={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              try {
-                if (post.downvotes.includes(user.displayName)) {
-                  console.log("already downvoted");
-                  return;
-                }
-                e.target.lastElementChild.innerHTML = post.downvotes.length + 1;
-                post.downvotes.push({
-                  username: user.username,
-                  avtar: user.avtar,
-                });
-                // setposts([...posts, post]);
-                if (
-                  post.upvotes.includes({
-                    username: user.username,
-                    avtar: user.avtar,
-                  })
-                ) {
-                  e.target.previousSibling.lastElementChild.innerHTML =
-                    post.upvotes.length - 1;
-                  post.upvotes = post.upvotes.filter(
-                    (obj) => obj.username !== user.username
-                  );
-                  // setposts([...posts, post]);
-                }
-                toast.success("added to downvoted posts");
-              } catch (error) {
-                console.log("error downvoting post : ", error.message);
-              }
-            }}
+            onClick={e => Downvote(e, post)}
           >
             <FaRegArrowAltCircleDown
               style={{ zIndex: -1 }}
@@ -187,7 +216,7 @@ export const Explore = () => {
 
   return (
     <div className="mt-[10vh] mb-[10vh]">
-      Explore
+      <h1 className="mx-[10vw]">Explore</h1>
       {posts.map((post, index) => createPostsDiv(post, index))}
     </div>
   );
