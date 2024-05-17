@@ -8,10 +8,11 @@ import { toast } from "react-toastify";
 import { SyncLoader } from "react-spinners";
 import generateUniqueId from "generate-unique-id";
 import DeleteConfirmation from "../components/DeleteConfirmation";
-// firebase imports
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext.js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
 
 const state = EditorState.create({
   doc: "my source code",
@@ -19,11 +20,8 @@ const state = EditorState.create({
 });
 
 function Home() {
-  const navigate = useNavigate();
-
   const [postTitle, setPostTitle] = useState("");
   const [postContent, setPostContent] = useState("");
-
   const [showPopup, setShowPopup] = React.useState(false);
   const [snippetName, setSnippetName] = React.useState("");
   const [snippetLanguage, setSnippetLanguage] = React.useState("");
@@ -31,23 +29,20 @@ function Home() {
   const [codeValue, setCodeValue] = React.useState(
     "console.log('hello world!');"
   );
-
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteSnippetId, setDeleteSnippetId] = useState(null);
   const [usersnippets, setUserSnippets] = React.useState([]);
-
   const { user } = useAuthContext();
-  // firebase hooks
-  const [userdocref, setuserdocref] = useState(null);
   const [dataloading, setdataloading] = useState(false);
   const [value, setValue] = useState(null);
   const [fetched, setfetched] = useState(false);
-  // const [value, dataloading, dataerror] = useDocument(userdocref);
-
+  const [pinnedSnippets, setPinnedSnippets] = useState([]);
+  const navigate = useNavigate();
+  
+  // Function to fetch snippets
   async function fetchsnippets() {
     setdataloading(true);
-    console.log(user);
     const response = await fetch("http://localhost:4000/api/user/getsnippets", {
       method: "POST",
       headers: {
@@ -58,11 +53,49 @@ function Home() {
         email: user.email,
       }),
     });
-    // console.log(response);
     let json = await response.json();
-    console.log("snippets: ", json);
-    setUserSnippets(json);
+    const pinned = json.filter((snippet) => snippet.isPinned);
+    const unpinned = json.filter((snippet) => !snippet.isPinned);
+
+    setPinnedSnippets(pinned);
+    setUserSnippets(unpinned);
+    console.log("snippets: ", usersnippets);
     setdataloading(false);
+  }
+
+  useEffect(() => {
+    fetchsnippets();
+  }, []);
+
+  // Function to toggle pin status of a snippet
+  async function togglePinSnippet(snippetId, isPinned) {
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/user/togglepinstatus",
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            email: user.email,
+            snippetId: snippetId,
+            isPinned: !isPinned,
+          }),
+        }
+      );
+      let json = await response.json();
+      if (response.ok) {
+        toast.success("Snippet pin status updated!");
+        fetchsnippets();
+      } else {
+        toast.error("Error updating snippet pin status!");
+      }
+    } catch (e) {
+      console.error("Error updating snippet pin status : ", e.message);
+      toast.error("Error updating snippet pin status!");
+    }
   }
 
   // state handlers
@@ -275,7 +308,7 @@ function Home() {
   }
 
   // function to display snippets
-  function displaySnippets(snippet) {
+  function displaySnippets(snippet, isPinned = false) {
     const month = getMonthFromIndex(
       Number.parseInt(snippet.dateCreated.split("-")[1]) - 1
     );
@@ -286,6 +319,9 @@ function Home() {
         key={snippet._id}
         className="flex bg-white transition hover:shadow-xl w-[29%] border-2 rounded-xl m-[20px] min-w-[340px]"
       >
+        {isPinned && (
+          <FontAwesomeIcon icon={faThumbtack} className="text-yellow-500 text-xl ml-2 mt-2" />
+        )}
         <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
           <time
             // dateTime={date}
@@ -305,7 +341,6 @@ function Home() {
                 {snippet.title}
               </h3>
             </a>
-
             <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
               <span className="font-bold text-gray-900">Description:</span>{" "}
               {snippet.description || "N/A"}
@@ -316,6 +351,12 @@ function Home() {
             </p>
           </div>
           <div className="flex items-end justify-end">
+            <button
+              className="block bg-black px-5 py-3 text-center mr-2 text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
+              onClick={() => togglePinSnippet(snippet._id, isPinned)}
+            >
+              {isPinned ? "Unpin" : "Pin"}
+            </button>
             <button
               onClick={() => {
                 navigate(`/snippets?id=${snippet._id}`);
@@ -402,7 +443,10 @@ function Home() {
       </div>
       <div className="mb-[15px] flex flex-wrap items-center justify-center ">
         {user && !dataloading ? (
-          usersnippets.map(displaySnippets)
+          <>
+            {pinnedSnippets.map((snippet) => displaySnippets(snippet, true))}
+            {usersnippets.map((snippet) => displaySnippets(snippet))}
+          </>
         ) : (
           <SyncLoader />
         )}

@@ -5,10 +5,13 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+
+// for creating token
 function createToken(id) {
   return jwt.sign({ id }, process.env.SECRET, { expiresIn: "1d" });
 }
 
+//for Github OAuth2.0
 passport.use(
   new GithubStrategy(
     {
@@ -29,8 +32,6 @@ passport.use(
             avtar: profile?.photos?.[0].value,
             token,
           });
-
-          console.log("newUser" , newUser);
           if(newUser) {
             done(null, newUser);
           }
@@ -44,6 +45,8 @@ passport.use(
   )
 );
 
+
+//for Google OAuth2.0
 passport.use(
   new GoogleStrategy(
     {
@@ -76,10 +79,13 @@ passport.use(
   )
 );
 
+
+//for serializing user
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
+//for deserializing user
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);

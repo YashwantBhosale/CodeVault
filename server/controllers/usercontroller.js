@@ -1,18 +1,19 @@
 const User = require("../models/userModel");
+const Snippet = require("../models/snippetModel");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
-
+// for creating token
 function createToken(id) {
   return jwt.sign({ id }, process.env.SECRET, { expiresIn: "1d" });
 }
 
-
+//for verifying token
 function verifyjwt(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     res.status(401).json({ message: "unauthorised" });
   }
-  
+
   const token = authHeader.split(" ")[1];
 
   jwt.verify(token, process.env.SECRET, (err, decoded) => {
@@ -20,11 +21,12 @@ function verifyjwt(req, res, next) {
       res.status(400).json({ message: "Invalid token" });
     }
     req.user = decoded;
-    console.log("successfully verified token!", next)
+    console.log("successfully verified token!", next);
     next();
   });
 }
 
+//for Google OAuth2.0
 function googleAuthenticate(req, res, next) {
   return passport.authenticate("google", {
     scope: ["email", "profile"],
@@ -38,6 +40,7 @@ function googleRedirect(req, res, next) {
   })(req, res, next);
 }
 
+//for Github OAuth2.0
 function githubAuthenticate(req, res, next) {
   return passport.authenticate("github", {
     scope: ["email", "profile"],
@@ -51,6 +54,7 @@ function githubRedirect(req, res, next) {
   })(req, res, next);
 }
 
+//fetching user details after successful login from OAuth 2.0
 function loginSuccess(req, res) {
   if (req.user) {
     res
@@ -64,6 +68,7 @@ function loginSuccess(req, res) {
   }
 }
 
+//for logout
 function logout(req, res, next) {
   req.logout(function (err) {
     if (err) {
@@ -73,6 +78,7 @@ function logout(req, res, next) {
   });
 }
 
+//for login with username
 async function loginWithUsername(req, res) {
   const { username, password } = req.body;
   console.log("username: ", username, "password: ", password);
@@ -94,6 +100,7 @@ async function loginWithUsername(req, res) {
   }
 }
 
+//for login with email
 async function loginWithEmail(req, res) {
   const { email, password } = req.body;
 
@@ -115,6 +122,7 @@ async function loginWithEmail(req, res) {
   }
 }
 
+//for signup
 async function signupUser(req, res) {
   const { username, email, password, avtar } = req.body;
   console.log("username: ", username, "password: ", password);
@@ -136,6 +144,7 @@ async function signupUser(req, res) {
   }
 }
 
+//for checking user
 async function checkUser(req, res) {
   const { email } = req.body;
   try {
@@ -146,6 +155,7 @@ async function checkUser(req, res) {
   }
 }
 
+//for fetching public snippets
 async function getPublicSnippets(req, res) {
   const { email } = req.body;
   try {
@@ -156,6 +166,7 @@ async function getPublicSnippets(req, res) {
   }
 }
 
+//for fetching snippets
 async function getSnippets(req, res) {
   const { email } = req.body;
   console.log("email: ", email);
@@ -168,10 +179,11 @@ async function getSnippets(req, res) {
   }
 }
 
+//for adding snippets
 async function addSnippet(req, res) {
   const { email, title, code, language, description, tags, isPublic } =
     req.body;
-    console.log("req.user.emai : ", req.user.email, req.user);
+  console.log("req.user.email : ", req.body.email, req.user);
   try {
     await User.addSnippet(
       email,
@@ -188,6 +200,7 @@ async function addSnippet(req, res) {
   }
 }
 
+//for deleting snippets
 async function deleteSnippet(req, res) {
   const { email, snippetId } = req.body;
 
@@ -199,8 +212,8 @@ async function deleteSnippet(req, res) {
   }
 }
 
+//for fetching snippet with id
 async function getSnippet(req, res) {
-
   const { email, snippetId } = req.body;
   console.log("email, id : ", email, snippetId);
 
@@ -214,6 +227,7 @@ async function getSnippet(req, res) {
   }
 }
 
+//for updating snippet
 async function updateSnippet(req, res) {
   const {
     email,
@@ -243,10 +257,9 @@ async function updateSnippet(req, res) {
   }
 }
 
+//for creating post
 async function createPost(req, res) {
-
   const { email, title, content, author, tags, isPublic } = req.body;
-
   try {
     await User.createPost(email, title, content, author, tags, isPublic);
     res.status(200).json({ message: "Success!" });
@@ -255,6 +268,23 @@ async function createPost(req, res) {
   }
 }
 
+//for toggling pin status
+async function togglePinStatus(req, res) {
+  const { email, snippetId, isPinned } = req.body;
+  try {
+    const snippet = await Snippet.findOne({ _id: snippetId });
+    if (!snippet) {
+      return res.status(404).json({ message: "Snippet not found" });
+    }
+    snippet.isPinned = isPinned;
+    await snippet.save();
+
+    res.json(snippet);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+//exporting all the functions
 module.exports = {
   loginWithUsername,
   loginWithEmail,
@@ -273,5 +303,6 @@ module.exports = {
   githubRedirect,
   loginSuccess,
   logout,
-  verifyjwt
+  verifyjwt,
+  togglePinStatus,
 };

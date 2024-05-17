@@ -7,6 +7,7 @@ const { signupUser } = require("../controllers/usercontroller");
 
 const mongoClient = mongodb.MongoClient;
 
+// User Schema
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -60,7 +61,6 @@ const userSchema = new mongoose.Schema({
 });
 
 // static Signup function
-
 userSchema.statics.signup = async function (username, email, password, avtar) {
   const isEmailValid = await this.findOne({ email: email });
   if (isEmailValid) {
@@ -126,6 +126,7 @@ userSchema.statics.loginWithEmail = async function (email, password) {
   }
 };
 
+// static checkUser function
 userSchema.statics.checkUser = async function (email) {
     const user = await this.findOne({ email });
     if (!user) {
@@ -134,6 +135,8 @@ userSchema.statics.checkUser = async function (email) {
     return user;
 }
 
+
+// static getPublicSnippets function
 userSchema.statics.getPublicSnippets = async function (email) {
     const user = await this.findOne({ email });
     if (!user) {
@@ -143,6 +146,7 @@ userSchema.statics.getPublicSnippets = async function (email) {
     return snippets;
 }
 
+// static getSnippets function
 userSchema.statics.getSnippets = async function (email) {
     const user = await this.findOne({ email });
     if (!user) {
@@ -152,6 +156,7 @@ userSchema.statics.getSnippets = async function (email) {
     return snippets;
 }
 
+// static addSnippet function
 userSchema.statics.addSnippet = async function (email, title, code, language, description, tags, isPublic)  {
   const user = await this.findOne({ email });
   if(!user){
@@ -160,11 +165,12 @@ userSchema.statics.addSnippet = async function (email, title, code, language, de
   let author = user._id;
   const snippet = new Snippet({title, code, language, description, tags, isPublic, author});
   await snippet.save();
-  console.log("user ; ", user, user.snippets);
+  console.log("user", user, user.snipeets);
   user.snipeets.push(snippet._id);
   await user.save();
 }
 
+// static deleteSnippet function
 userSchema.statics.deleteSnippet = async function (email, snippetId) {
   const user = await this.findOne({ email });
   if(!user){
@@ -177,6 +183,8 @@ userSchema.statics.deleteSnippet = async function (email, snippetId) {
   await Snippet.deleteOne({ _id: snippetId });
 }
 
+
+// static getSnippetById function
 userSchema.statics.getSnippetById = async function (email, snippetId) {
   const user = await this.findOne({ email });
   if(!user){
@@ -189,6 +197,7 @@ userSchema.statics.getSnippetById = async function (email, snippetId) {
   return snippet;
 }
 
+// static updateSnippet function
 userSchema.statics.updateSnippet = async function (email, snippetId, title, code, language, description, tags, isPublic) {
   const user = await this.findOne({ email });
   if(!user){
@@ -207,6 +216,8 @@ userSchema.statics.updateSnippet = async function (email, snippetId, title, code
   await snippet.save();
 }
 
+
+// static createPost function
 userSchema.statics.createPost = async function (email, title, content, author, tags, isPublic) {
   const user = await this.findOne({ email });
   if(!user){
