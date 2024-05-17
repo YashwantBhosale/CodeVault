@@ -30,7 +30,7 @@ app.use(passport.session());
 //routes
 app.use("/api/user", userRoutes);
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("Linux is Gay!");
 });
 
 
