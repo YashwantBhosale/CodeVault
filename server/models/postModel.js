@@ -72,4 +72,10 @@ const postSchema = new mongoose.Schema({
   },
 });
 
+
+postSchema.statics.getPublicPosts = async function () {
+  const posts = await this.find({ isPublic: true }).sort({ createdAt: -1 });
+  return posts;
+};
+
 module.exports = mongoose.model("Post", postSchema);
