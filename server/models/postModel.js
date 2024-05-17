@@ -30,6 +30,9 @@ const postSchema = new mongoose.Schema({
       username: {
         type: String,
       },
+      avtar: {
+        type: String
+      }
     },
   ],
   comments: [
@@ -77,5 +80,37 @@ postSchema.statics.getPublicPosts = async function () {
   const posts = await this.find({ isPublic: true }).sort({ createdAt: -1 });
   return posts;
 };
+
+postSchema.statics.updateUpvotes = async function (id, userObj) {
+  const post = await this.findById(id);
+  if(!post)
+    throw new Error("Post not found!");
+
+  if(post.upvotes.some(obj => obj.username === userObj.username))
+    throw new Error("Already upvoted post!");
+
+  if(post.downvotes.some(obj => obj.username === userObj.username)){
+    post.downvotes = post.downvotes.filter((obj) => obj.username !== userObj.username);
+  }
+
+  post.upvotes.push(userObj);
+  await post.save();
+}
+
+postSchema.statics.updateDownvotes = async function (id, userObj) {
+  const post = await this.findById(id);
+  if(!post)
+    throw new Error("Post not found!");
+
+  if(post.downvotes.some(obj => obj.username == userObj.username))
+    throw new Error("Already downvoted post!");
+
+  if(post.upvotes.some(obj => obj.username == userObj.username)){
+    post.upvotes = post.upvotes.filter((obj) => obj.username !== userObj.username);
+  }
+  
+  post.downvotes.push(userObj);
+  await post.save();
+}
 
 module.exports = mongoose.model("Post", postSchema);
