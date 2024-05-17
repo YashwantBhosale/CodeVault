@@ -30,7 +30,7 @@ app.use(passport.session());
 //routes
 app.use("/api/user", userRoutes);
 app.get("/", (req, res) => {
-  res.send("Linux is Gay!");
+  res.send('<i>A Computer is like air conditioning - it becomes useless when you open Windows- Linus Torvalds</i>');
 });
 
 
