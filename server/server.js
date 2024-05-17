@@ -36,7 +36,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/public", publicRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send("Linux is Gay!");
 });
 
 
