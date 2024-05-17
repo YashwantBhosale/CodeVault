@@ -35,8 +35,33 @@ async function updateDownvotes(req, res) {
     }
 }
 
+async function addComment(req, res) {
+    try {
+        const { id, author, content } = req.body;
+        const post = await Post.addComment(id, author, content);
+        res.status(200).json(post);
+    }catch (error) {
+        console.log(error.message);
+        res.status(400).json({ error: error.message });
+    }
+}
+
+async function getPostById (req, res) {
+    try {
+        console.log(req.query.id);
+        const post = await Post.findById(req.query.id);
+        console.log(post);
+        res.status(200).json(post);
+    } catch (error) {
+        console.log(error.message);
+        res.status(400).json({ error: error.message });
+    }
+}
+
 module.exports = {
     getPublicPosts,
     updateUpvotes,
     updateDownvotes,
+    addComment,
+    getPostById
 };

@@ -113,4 +113,16 @@ postSchema.statics.updateDownvotes = async function (id, userObj) {
   await post.save();
 }
 
+postSchema.statics.addComment = async function (id, author, content, ) {
+  const post = await this.findById(id);
+  if(!post)
+    throw new Error("Post not found!");
+
+  const comment = await mongoose.model("Comment").create({ author, content, post: id });
+  post.comments.push(comment);
+  await post.save();
+  return comment;
+
+}
+
 module.exports = mongoose.model("Post", postSchema);

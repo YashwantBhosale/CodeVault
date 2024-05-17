@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Snippet } from './pages/Snippet';
 import { Profile } from './pages/Profile';
 import { Explore } from './pages/Explore';
-// import { ViewPost } from './pages/ViewPost';
+import { ViewPost } from './pages/ViewPost';
 import { useAuthContext } from './hooks/useAuthContext';
 import OAuth from './pages/OAuth';
 
@@ -37,7 +37,7 @@ function App() {
         <Route path='/profile' element={ user ? <Profile /> : <Navigate to="/login" />} />
         <Route path='/oauth' element={<OAuth />} />
         <Route path='/explore' element={ user ? <Explore /> : <Navigate to="/login" />} />
-        {/* <Route path='/viewpost' element={ user ? <ViewPost /> : <Navigate to="/login" />} /> */}
+        <Route path='/viewpost' element={ user ? <ViewPost /> : <Navigate to="/login" />} />
         
       </Routes>
       <Footer />

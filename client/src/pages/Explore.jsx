@@ -23,7 +23,6 @@ export const Explore = () => {
         avtar: user.avtar,
       };
       if (post.upvotes.some(obj => obj.username == user.username)) {
-        console.log("already upvoted");
         return;
       }
       e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
@@ -37,7 +36,6 @@ export const Explore = () => {
         post.downvotes = post.downvotes.filter(
           (obj) => obj.username !== user.username
         );
-        // setposts([...posts, post]);
       }
       let response = await fetch(
         "http://localhost:4000/api/public/updateupvotes",
@@ -69,9 +67,9 @@ export const Explore = () => {
       };
 
       if (post.downvotes.some(obj => obj.username == user.username)) {
-        console.log("already downvoted");
         return;
       }
+      
       e.target.lastElementChild.innerHTML = post.downvotes.length + 1;
       post.downvotes.push(userObj);
       if (post.upvotes.some(obj => obj.username == user.username)) {
@@ -129,7 +127,6 @@ export const Explore = () => {
   function createPostsDiv(post, id) {
     return (
       <div
-        // onClick={(e) => {e.preventDefault(); e.stopPropagation(); navigate(`/viewpost?id=${id}`)}}
         key={id}
         className="w-[90%] mx-auto border border-gray-300 p-4 my-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
         style={{ zIndex: -99 }}
@@ -206,7 +203,7 @@ export const Explore = () => {
         </form>
         <button
           className="px-2 py-1 bg-blue-500 text-white rounded-md mt-4"
-          onClick={() => navigate(`/viewpost?id=${id}&avtar=${post.avtar}`)}
+          onClick={() => navigate(`/viewpost?id=${post._id}&avtar=${post.author.avtar}`)}
         >
           Comments
         </button>
