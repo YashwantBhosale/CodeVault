@@ -2,6 +2,10 @@ const User = require("../models/userModel");
 const Snippet = require("../models/snippetModel");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
+const puppeteer = require("puppeteer");
+const path = require("path");
+const fs = require("fs");
+
 // for creating token
 function createToken(id) {
   return jwt.sign({ id }, process.env.SECRET, { expiresIn: "1d" });
@@ -284,6 +288,58 @@ async function togglePinStatus(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
+
+//for delay
+function delay(time) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, time);
+  });
+}
+
+//for generating image
+async function generateImage(req, res) {
+  const { code } = req.body;
+
+  if (!code) {
+    return res.status(400).json({ error: "No code provided" });
+  }
+
+  try {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.goto("https://carbon.now.sh");
+    await page.setViewport({
+      width: 1440,
+      height: 1080,
+    });
+
+    await page.evaluate((code) => {
+      const editor = document.querySelector(".CodeMirror");
+      editor.CodeMirror.setValue(code);
+    }, code);
+
+    await page.click("#export-menu");
+    await page.click("button.jsx-1176784731");
+    await page.click("div.jsx-3924734343.popout > div:nth-child(4) > button");
+    await delay(3000);
+    const buffer = await page.screenshot({ type: "png" });
+    await browser.close();
+
+    const filePath = path.join(__dirname, "snippet.png");
+    fs.writeFileSync(filePath, buffer);
+
+    res.download(filePath, "snippet.png", (err) => {
+      if (err) {
+        console.error(err);
+      }
+      fs.unlinkSync(filePath);
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to generate image" });
+  }
+}
 //exporting all the functions
 module.exports = {
   loginWithUsername,
@@ -305,4 +361,5 @@ module.exports = {
   logout,
   verifyjwt,
   togglePinStatus,
+  generateImage,
 };

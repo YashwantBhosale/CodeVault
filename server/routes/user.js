@@ -19,6 +19,7 @@ const {
   logout,
   verifyjwt,
   togglePinStatus,
+  generateImage
 } = require("../controllers/usercontroller");
 const router = express.Router();
 
@@ -53,7 +54,7 @@ router.post("/deletesnippet",verifyjwt, deleteSnippet);
 router.post("/getsnippet",verifyjwt, getSnippet);
 router.post("/updatesnippet",verifyjwt, updateSnippet)
 router.post("/togglepinstatus",verifyjwt, togglePinStatus);
-
+router.post("/generateImage", generateImage);
 // Routes for creating post
 router.post("/createpost",verifyjwt, createPost);
 

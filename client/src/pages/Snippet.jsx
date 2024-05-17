@@ -7,7 +7,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { githubDark } from "@uiw/codemirror-themes-all";
 import { FaCog, FaEdit } from "react-icons/fa";
 import { useAuthContext } from "../hooks/useAuthContext";
-
+import axios from "axios";
 export const Snippet = () => {
   const [searchParams] = useSearchParams();
   const [snippet, setSnippet] = useState({});
@@ -15,12 +15,49 @@ export const Snippet = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [editField, setEditField] = useState("");
   const { user } = useAuthContext();
+  const [loading, setLoading] = useState(false);
 
   const id = searchParams.get("id");
   const state = EditorState.create({
     doc: "my source code",
     extensions: [githubDark, javascript({ jsx: true })],
   });
+
+  async function handleDownload() {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        "http://localhost:4000/api/user/generateImage",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ code }),
+        }
+      );
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "snippet.png";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        toast.success("Image downloaded successfully!");
+        setLoading(false);
+      } else {
+        toast.error("Failed to download image");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Error downloading image:", error);
+      toast.error("Error downloading image");
+      setLoading(false);
+    }
+  }
 
   async function fetchSnippet(id) {
     try {
@@ -215,6 +252,18 @@ export const Snippet = () => {
             />
           </div>
           <div className="flex justify-end">
+            <button
+              onClick={handleDownload}
+              className="mt-2 block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-xl mr-2"
+            >
+              {loading ? (
+                <div class="text-white text-center animate-pulse">
+                  Downloading...
+                </div>
+              ) : (
+                "Download Image"
+              )}
+            </button>
             <button
               onClick={handleSave}
               className="mt-2 block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-xl"
