@@ -12,8 +12,7 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
-
+import { faThumbtack } from "@fortawesome/free-solid-svg-icons"; 
 const state = EditorState.create({
   doc: "my source code",
   extensions: [githubDark, javascript({ jsx: true })],
@@ -41,8 +40,10 @@ function Home() {
   const navigate = useNavigate();
   
   // Function to fetch snippets
-  async function fetchsnippets() {
-    setdataloading(true);
+  async function fetchsnippets(initial=false) {
+    if(initial){
+      setdataloading(true);
+    }
     const response = await fetch("http://localhost:4000/api/user/getsnippets", {
       method: "POST",
       headers: {
@@ -64,7 +65,7 @@ function Home() {
   }
 
   useEffect(() => {
-    fetchsnippets();
+    fetchsnippets(true);
   }, []);
 
   // Function to toggle pin status of a snippet
