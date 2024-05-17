@@ -245,19 +245,22 @@ function Home() {
       },
       isPublic: true,
       tags: ["trending"],
-    }
+    };
     console.log(post);
     try {
-      const response = await fetch("http://localhost:4000/api/user/createPost", {
-        method: "POST",
-        headers: {
-          authorization: `Bearer ${user.token}`,
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(post),
-      })
-      
-      if(!response.ok){
+      const response = await fetch(
+        "http://localhost:4000/api/user/createPost",
+        {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${user.token}`,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(post),
+        }
+      );
+
+      if (!response.ok) {
         toast.error("Failed to create post! Please try again.");
         return;
       }
@@ -265,12 +268,10 @@ function Home() {
       let json = await response.json();
       console.log("response: ", json);
       toast.success("Post created successfully!");
-    }
-    catch(err) {
+    } catch (err) {
       console.log("error adding post: ", err.message);
       toast.error("Error creating post!");
     }
-
   }
 
   // function to display snippets
@@ -337,7 +338,7 @@ function Home() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center sm:justify-start mt-20 md:mt-10 mb-[100px]"
+      className="flex flex-col items-center justify-center mt-[15vh] md:mt-18 mb-[100px]"
       style={{
         backgroundColor: "#fff",
         backgroundImage:
@@ -347,56 +348,58 @@ function Home() {
         height: "100vh",
       }}
     >
-      <article className="mt-[90px] flex bg-white transition hover:shadow-xl w-1/5 border-2 rounded-xl m-[10px] min-w-[340px]">
-        <div className="flex flex-1 flex-col justify-between">
-          <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6">
-            <a href="#">
-              <h3 className="font-bold uppercase text-gray-900">
-                Create a New Code Snippet
-              </h3>
-            </a>
+      <div className="flex w-full justify-center items-center md:items-stretch flex-col md:flex-row">
+        <article className="flex bg-white transition hover:shadow-xl w-1/5 border-2 rounded-xl m-[10px] min-w-[340px]">
+          <div className="flex flex-1 flex-col justify-between">
+            <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6">
+              <a href="#">
+                <h3 className="font-bold uppercase text-gray-900">
+                  Create a New Code Snippet
+                </h3>
+              </a>
 
-            <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
-              Add a code Snippet in Your favourite language
-            </p>
-          </div>
+              <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
+                Add a code Snippet in Your favourite language
+              </p>
+            </div>
 
-          <div className="sm:flex sm:items-end sm:justify-end">
-            <a
-              onClick={handleAddButtonClick}
-              href="#"
-              className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
-            >
-              Add
-            </a>
+            <div className="sm:flex sm:items-end sm:justify-end">
+              <a
+                onClick={handleAddButtonClick}
+                href="#"
+                className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
+              >
+                Add
+              </a>
+            </div>
           </div>
-        </div>
-      </article>
-      <article className="mt-[90px] flex bg-white transition hover:shadow-xl w-1/5 border-2 rounded-xl m-[10px] min-w-[340px]">
-        <div className="flex flex-1 flex-col justify-between">
-          <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6">
-            <a href="#">
-              <h3 className="font-bold uppercase text-gray-900">
-                Create a New Post
-              </h3>
-            </a>
+        </article>
+        <article className="flex bg-white transition hover:shadow-xl w-1/5 border-2 rounded-xl m-[10px] min-w-[340px]">
+          <div className="flex flex-1 flex-col justify-between">
+            <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6">
+              <a href="#">
+                <h3 className="font-bold uppercase text-gray-900">
+                  Create a New Post
+                </h3>
+              </a>
 
-            <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
-              Create a post....
-            </p>
-          </div>
+              <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
+                Create a post....
+              </p>
+            </div>
 
-          <div className="sm:flex sm:items-end sm:justify-end">
-            <a
-              onClick={handleCreatePost}
-              href="#"
-              className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
-            >
-              Create
-            </a>
+            <div className="sm:flex sm:items-end sm:justify-end">
+              <a
+                onClick={handleCreatePost}
+                href="#"
+                className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
+              >
+                Create
+              </a>
+            </div>
           </div>
-        </div>
-      </article>
+        </article>
+      </div>
       {showCreatePost && (
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50">
           <div className="bg-white p-8 rounded-xl w-4/5 m-[20px]">
@@ -432,7 +435,9 @@ function Home() {
               </div>
               <button
                 type="button"
-                onClick={() => {setShowCreatePost(false)}}
+                onClick={() => {
+                  setShowCreatePost(false);
+                }}
                 className="bg-gray-300 px-4 py-2 rounded-md mr-4"
               >
                 Cancel
@@ -448,7 +453,7 @@ function Home() {
           </div>
         </div>
       )}
-      <div className="mb-[15px] flex flex-wrap items-center justify-center sm:justify-start">
+      <div className="mb-[15px] flex flex-wrap items-center justify-center ">
         {user && !dataloading ? (
           usersnippets.map(displaySnippets)
         ) : (
