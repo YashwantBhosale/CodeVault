@@ -14,6 +14,6 @@ let iconSrcList = {};
 icons.keys().map((icon) => {
      iconSrcList = {...iconSrcList, [extractImageName(icon)]:icons(icon)}
 });
-console.log(iconSrcList);
+// console.log(iconSrcList);
 export {iconSrcList};
 export default iconsList;

@@ -56,6 +56,27 @@ async function getPostById (req, res) {
         console.log(error.message);
         res.status(400).json({ error: error.message });
     }
+};
+
+async function getPublicInfo (req, res) {
+    const username = req.query.username;
+    try {
+        const publicinfo = await User.getPublicInfo(username);
+        res.status(200).json(publicinfo);
+    }catch (error) {
+        console.log(error.message);
+        res.status(400).json({ error: error.message });
+    }
+}
+
+async function getAllUsers(req, res) {
+    try {
+        const users = await User.getAllUsers();
+        res.status(200).json(users);
+    } catch (error) {
+        console.log(error.message);
+        res.status(400).json({ error: error.message });
+    }
 }
 
 module.exports = {
@@ -63,5 +84,7 @@ module.exports = {
     updateUpvotes,
     updateDownvotes,
     addComment,
-    getPostById
+    getPostById,
+    getPublicInfo,
+    getAllUsers
 };

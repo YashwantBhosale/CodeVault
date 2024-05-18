@@ -60,7 +60,7 @@ function Home() {
 
     setPinnedSnippets(pinned);
     setUserSnippets(unpinned);
-    console.log("snippets: ", usersnippets);
+    // console.log("snippets: ", usersnippets);
     setdataloading(false);
   }
 

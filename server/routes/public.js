@@ -6,6 +6,8 @@ const {
   updateDownvotes,
   addComment,
   getPostById,
+  getPublicInfo,
+  getAllUsers
 } = require("../controllers/publiccontroller");
 
 router.get("/getpublicposts", getPublicPosts);
@@ -14,5 +16,8 @@ router.post("/updatedownvotes", updateDownvotes);
 
 router.post("/addcomment", addComment);
 router.get("/post", getPostById);
+router.get("/viewuser", getPublicInfo);
+
+router.get("/getallusers", getAllUsers);
 
 module.exports = router;

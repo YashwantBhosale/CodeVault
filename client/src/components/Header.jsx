@@ -67,7 +67,7 @@ export default function Header(props) {
                     <img
                       src={user.avtar.length > 15? user.avtar :
                         iconSrcList[user.avtar]}
-                      className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
+                        className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
                     />
                   ) || <FaUser />}
                   {user.username || "User"}
