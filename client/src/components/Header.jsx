@@ -153,7 +153,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/explore");
               }}
-              className="text-md font-semibold leading-6 text-gray-900"
+              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer" 
             >
               Explore
             </a>
