@@ -5,9 +5,11 @@ import CodeMirror from "@uiw/react-codemirror";
 import { EditorState } from "@codemirror/state";
 import { javascript } from "@codemirror/lang-javascript";
 import { githubDark } from "@uiw/codemirror-themes-all";
-import { FaCog, FaEdit } from "react-icons/fa";
+import { FaCog, FaEdit, FaClipboard } from "react-icons/fa";
 import { useAuthContext } from "../hooks/useAuthContext";
 import axios from "axios";
+import { AnimatePresence, motion } from "framer-motion";
+
 export const Snippet = () => {
   const [searchParams] = useSearchParams();
   const [snippet, setSnippet] = useState({});
@@ -16,6 +18,7 @@ export const Snippet = () => {
   const [editField, setEditField] = useState("");
   const { user } = useAuthContext();
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const id = searchParams.get("id");
   const state = EditorState.create({
@@ -23,7 +26,7 @@ export const Snippet = () => {
     extensions: [githubDark, javascript({ jsx: true })],
   });
 
-  async function handleDownload() {
+  async function confirmDownload() {
     try {
       setLoading(true);
       const response = await fetch(
@@ -58,6 +61,23 @@ export const Snippet = () => {
       setLoading(false);
     }
   }
+
+  async function handleDownload() {
+    if (code.split("\n").length > 40) {
+      setShowPopup(true);
+      return;
+    }
+    confirmDownload();
+  }
+
+  const handlePopupConfirm = () => {
+    setShowPopup(false);
+    confirmDownload();
+  };
+
+  const handlePopupCancel = () => {
+    setShowPopup(false);
+  };
 
   async function fetchSnippet(id) {
     try {
@@ -132,6 +152,14 @@ export const Snippet = () => {
 
   const handleChange = (value, viewUpdate) => {
     setCode(value);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(code).then(() => {
+      toast.success("Code copied to clipboard!");
+    }).catch(err => {
+      toast.error("Failed to copy code to clipboard!");
+    });
   };
 
   return (
@@ -237,7 +265,13 @@ export const Snippet = () => {
               </div>
             </div>
           )}
-          <div style={{ height: "fit-content" }}>
+          <div className="relative" style={{ height: "fit-content" }}>
+            <button
+              className="absolute top-2 right-2 bg-gray-200 rounded p-1 hover:bg-gray-300 z-10"
+              onClick={copyToClipboard}
+            >
+              <FaClipboard className="w-5 h-5 text-white-600" />
+            </button>
             <CodeMirror
               value={code}
               width="100%"
@@ -257,7 +291,7 @@ export const Snippet = () => {
               className="mt-2 block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-xl mr-2"
             >
               {loading ? (
-                <div class="text-white text-center animate-pulse">
+                <div className="text-white text-center animate-pulse">
                   Downloading...
                 </div>
               ) : (
@@ -273,6 +307,48 @@ export const Snippet = () => {
           </div>
         </div>
       </article>
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50"
+          >
+            <motion.div
+              initial={{ y: "-100vh" }}
+              animate={{ y: 0 }}
+              transition={{ type: "spring", stiffness: 150 }}
+              className="bg-white p-8 rounded-xl lg:w-2/5 m-[20px]"
+            >
+              <h2 className="text-xl font-bold mb-4">
+                Snippets are meant to be small.
+              </h2>
+              <p className="mb-4">
+                Your snippet is too big to have a good picture.
+                <br />
+                Are you sure you want to continue?
+              </p>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={handlePopupCancel}
+                  className="bg-gray-300 px-4 py-2 rounded-md mr-4"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handlePopupConfirm}
+                  className="bg-green-500 text-white px-4 py-2 rounded-md"
+                >
+                  Continue
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

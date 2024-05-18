@@ -309,19 +309,30 @@ function Home() {
   }
 
   // function to display snippets
+  function truncateDescription(description, maxLength) {
+    if (description.length > maxLength) {
+      return description.slice(0, maxLength) + "...";
+    }
+    return description;
+  }
+  
   function displaySnippets(snippet, isPinned = false) {
     const month = getMonthFromIndex(
       Number.parseInt(snippet.dateCreated.split("-")[1]) - 1
     );
     const day = snippet.dateCreated.split("-")[2].split("T")[0];
     const date = `${month} ${day}`;
+  
     return (
       <article
         key={snippet._id}
         className="flex bg-white transition hover:shadow-xl w-[29%] border-2 rounded-xl m-[20px] min-w-[340px]"
       >
         {isPinned && (
-          <FontAwesomeIcon icon={faThumbtack} className="text-yellow-500 text-xl ml-2 mt-2" />
+          <FontAwesomeIcon
+            icon={faThumbtack}
+            className="text-yellow-500 text-xl ml-2 mt-2"
+          />
         )}
         <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
           <time
@@ -344,7 +355,7 @@ function Home() {
             </a>
             <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
               <span className="font-bold text-gray-900">Description:</span>{" "}
-              {snippet.description || "N/A"}
+              {truncateDescription(snippet.description || "N/A", 17)}
             </p>
             <p>
               <span className="font-bold text-gray-900">Language:</span>{" "}
@@ -377,6 +388,7 @@ function Home() {
       </article>
     );
   }
+  
 
   return (
     <div
