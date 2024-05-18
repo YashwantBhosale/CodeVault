@@ -22,14 +22,38 @@ import { useLogout } from "../hooks/useLogout";
 
 import { AnimatePresence, motion } from "framer-motion";
 import { iconSrcList } from "../utils/icons";
+import { useAuthContext } from "../hooks/useAuthContext";
 export default function Header(props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const {logout} = useLogout();
+  const [notifications, setnotifications] = useState([]);
   // const [user, loading, error] = useAuthState(auth);
-  const user = props.userObj;
+  const {user} = useAuthContext();
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+
+  async function getNotifications () {
+    try{
+      const response = await fetch("http://localhost:4000/api/user/getnotifications", {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: user.username,
+        })
+      });
+      console.log(response);
+      const data = await response.json();
+      console.log(data.notifications);
+      setnotifications(data);
+    }catch(error) {
+      console.log(error.message);
+
+    }
+  }
 
   function getHoursAndMinutesFromTimestamp(timestamp) {
     const date = new Date(timestamp.seconds * 1000);
@@ -51,6 +75,10 @@ export default function Header(props) {
       </div>
     );
   }
+
+  useEffect(() => {
+    getNotifications();
+  }, [user]);
   // console.log("userobj : ", userObj);
   return (
     <>

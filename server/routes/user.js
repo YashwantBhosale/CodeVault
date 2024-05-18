@@ -21,7 +21,8 @@ const {
   togglePinStatus,
   generateImage,
   followUser,
-  unfollowUser
+  unfollowUser,
+  getnotifications
 } = require("../controllers/usercontroller");
 const router = express.Router();
 
@@ -63,6 +64,6 @@ router.post("/generateImage", generateImage);
 // Routes for creating post
 router.post("/createpost",verifyjwt, createPost);
 
-
+router.post("/getnotifications", getnotifications);
 
 module.exports = router;

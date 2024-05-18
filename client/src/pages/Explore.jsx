@@ -254,7 +254,7 @@ export const Explore = () => {
 
   function createMostFollowedUsersDiv(userobj) {
     return (
-      <div class="w-[18vw] min-w-[250px] bg-gray-900 rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center">
+      <div class="w-[18vw] min-w-[250px] bg-gray-100 rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center">
         <div class="mb-8">
           <img
             class="object-center object-cover rounded-full h-36 w-36"
@@ -267,7 +267,7 @@ export const Explore = () => {
           />
         </div>
         <div class="text-center">
-          <p class="text-xl text-white font-bold mb-2">{userobj.username}</p>
+          <p class="text-xl text-black font-bold mb-2">{userobj.username}</p>
           <button
             onClick={(e) => handleFollowButton(e, userobj)}
             className="px-4 py-2 bg-gray-800 text-white rounded-md mt-2 hover:bg-slate-700"
@@ -380,7 +380,7 @@ export const Explore = () => {
               />
               </div>
         </div>
-        <form onSubmit={(e) => handleCommentSubmit(e, id)} className="mt-4">
+        {/* <form onSubmit={(e) => handleCommentSubmit(e, id)} className="mt-4">
           <h1 className="text-lg font-bold">Comments</h1>
           <div className="flex justify-between">
             <input
@@ -396,15 +396,15 @@ export const Explore = () => {
               POST
             </button>
           </div>
-        </form>
-        <button
+        </form> */}
+        {/* <button
           className="px-2 py-1 bg-blue-500 text-white rounded-md mt-4"
           onClick={() =>
             navigate(`/viewpost?id=${post._id}&avtar=${post.author.avtar}`)
           }
         >
           Comments
-        </button>
+        </button> */}
       </div>
     );
   }
