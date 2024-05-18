@@ -6,7 +6,6 @@ import { iconSrcList } from "../utils/icons";
 export const Autocomplete = ({ data }) => {
   const [searchString, setSearchString] = useState("");
   const navigate = useNavigate();
-  console.log("data: ", data);
 
   function formatResult(item) {
     return (

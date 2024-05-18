@@ -12,22 +12,45 @@ import { Autocomplete } from "../components/Autocomplete";
 
 export const Explore = () => {
   const [posts, setPosts] = useState([]);
-  const { user } = useAuthContext();
+  const { user, dispatch } = useAuthContext();
   const navigate = useNavigate();
   const [allstudents, setAllStudents] = useState([]);
+  const [mostfollowed, setmostfollowed] = useState([]);
 
   async function fetchAllUsers() {
     try {
-      const response = await fetch("http://localhost:4000/api/public/getallusers", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "http://localhost:4000/api/public/getallusers",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await response.json();
       setAllStudents(data);
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  async function fetchMostFollowed() {
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/public/mostfollowed",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      setmostfollowed(data);
+    } catch (error) {
+      console.error(error.message);
     }
   }
 
@@ -39,7 +62,7 @@ export const Explore = () => {
         username: user.username,
         avtar: user.avtar,
       };
-      if (post.upvotes.some(obj => obj.username == user.username)) {
+      if (post.upvotes.some((obj) => obj.username == user.username)) {
         return;
       }
       e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
@@ -47,7 +70,7 @@ export const Explore = () => {
         username: user.username,
         avtar: user.avtar,
       });
-      if (post.downvotes.some(obj => obj.username == user.username)) {
+      if (post.downvotes.some((obj) => obj.username == user.username)) {
         e.target.nextSibling.lastElementChild.innerHTML =
           post.downvotes.length - 1;
         post.downvotes = post.downvotes.filter(
@@ -83,13 +106,13 @@ export const Explore = () => {
         avtar: user.avtar,
       };
 
-      if (post.downvotes.some(obj => obj.username == user.username)) {
+      if (post.downvotes.some((obj) => obj.username == user.username)) {
         return;
       }
-      
+
       e.target.lastElementChild.innerHTML = post.downvotes.length + 1;
       post.downvotes.push(userObj);
-      if (post.upvotes.some(obj => obj.username == user.username)) {
+      if (post.upvotes.some((obj) => obj.username == user.username)) {
         e.target.previousSibling.lastElementChild.innerHTML =
           post.upvotes.length - 1;
         post.upvotes = post.upvotes.filter(
@@ -97,17 +120,20 @@ export const Explore = () => {
         );
       }
 
-      let response = await fetch("http://localhost:4000/api/public/updatedownvotes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: post._id, userObj }),
-      });
+      let response = await fetch(
+        "http://localhost:4000/api/public/updatedownvotes",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: post._id, userObj }),
+        }
+      );
 
-      if(response.ok){
+      if (response.ok) {
         toast.success("added to downvoted posts");
-      }else{
+      } else {
         toast.error("error downvoting post");
       }
     } catch (error) {
@@ -126,9 +152,7 @@ export const Explore = () => {
           },
         }
       );
-      console.log(response);
       const data = await response.json();
-      console.log(data);
       setPosts(data);
     } catch (error) {
       console.error(error);
@@ -137,10 +161,126 @@ export const Explore = () => {
 
   useEffect(() => {
     fetchAllUsers();
+    fetchMostFollowed();
     fetchPublicPosts();
   }, []);
 
+  function localFollow(e, userObj) {
+    switch (e.target.innerText) {
+      case "Follow": {
+        user.following.push(userObj);
+        console.log(user);
+        dispatch({ type: "UPDATE", payload: user });
+        return;
+      }
+      case "Unfollow": {
+        user.following = user.following.filter(
+          (User) => userObj.username != User.username
+        );
+        console.log(user);
+        dispatch({ type: "UPDATE", payload: user });
+        return;
+      }
+      default: {
+        toast.warn("Unexpected Behaviour!");
+        return;
+      }
+    }
+  }
+
+  async function handleFollowButton(e, userobj) {
+    console.log(e.target.innerText);
+    localFollow(e, userobj);
+    switch (e.target.innerText) {
+      case "Follow": {
+        try {
+          const response = await fetch(
+            "http://localhost:4000/api/user/follow",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: user.email,
+                username: user.username,
+                followObj: userobj,
+              }),
+            }
+          );
+          if (response.ok) {
+            toast.success("Follow successful!");
+          }
+        } catch (error) {
+          console.error(error.message);
+          toast.error("Error following user!");
+        }
+        return;
+      }
+      case "Unfollow": {
+        try {
+          const response = await fetch(
+            "http://localhost:4000/api/user/unfollow",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: user.email,
+                username: user.username,
+                followObj: userobj,
+              }),
+            }
+          );
+          if (response.ok) {
+            toast.success("Follow successful!");
+          }
+        } catch (error) {
+          console.error(error.message);
+          toast.error("Error unfollowing user!");
+        }
+        return;
+      }
+      default: {
+        toast.warn("Unexpected Behaviour!");
+        return;
+      }
+    }
+  }
+
   function handleCommentSubmit(e, id) {}
+
+  function createMostFollowedUsersDiv(userobj) {
+    return (
+      <div class="w-[18vw] min-w-[250px] bg-gray-900 rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center">
+        <div class="mb-8">
+          <img
+            class="object-center object-cover rounded-full h-36 w-36"
+            src={
+              userobj?.avtar.length > 15
+                ? userobj.avtar
+                : iconSrcList[userobj?.avtar || "user"]
+            }
+            alt="photo"
+          />
+        </div>
+        <div class="text-center">
+          <p class="text-xl text-white font-bold mb-2">{userobj.username}</p>
+          <button
+            onClick={(e) => handleFollowButton(e, userobj)}
+            className="px-4 py-2 bg-gray-800 text-white rounded-md mt-2 hover:bg-slate-700"
+          >
+            {user.following.some(
+              (followingUser) => followingUser.username === userobj.username
+            )
+              ? "Unfollow"
+              : "Follow"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   function createPostsDiv(post, id) {
     return (
@@ -149,9 +289,12 @@ export const Explore = () => {
         className="w-[90%] mx-auto border border-gray-300 p-4 my-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
         style={{ zIndex: -99 }}
       >
-        <p 
-        onClick={() => navigate(`/viewprofile?username=${post.author.username}`)}
-        className="flex items-center gap-2 text-black text-xl font-bold mb-2 border-b border-gray-200 p-4">
+        <p
+          onClick={() =>
+            navigate(`/viewprofile?username=${post.author.username}`)
+          }
+          className="flex items-center gap-2 text-black text-xl font-bold mb-2 border-b border-gray-200 p-4"
+        >
           {(
             <img
               src={iconSrcList[post.author.avtar]}
@@ -181,7 +324,7 @@ export const Explore = () => {
         <div className="flex items-center justify-evenly">
           <div
             className="flex items-center gap-4 cursor-pointer z-99 my-2"
-            onClick={e => Upvote(e, post)}
+            onClick={(e) => Upvote(e, post)}
           >
             <FaRegArrowAltCircleUp
               style={{ zIndex: -1 }}
@@ -193,7 +336,7 @@ export const Explore = () => {
           </div>
           <div
             className="flex items-center z-99 gap-4 cursor-pointer"
-            onClick={e => Downvote(e, post)}
+            onClick={(e) => Downvote(e, post)}
           >
             <FaRegArrowAltCircleDown
               style={{ zIndex: -1 }}
@@ -223,7 +366,9 @@ export const Explore = () => {
         </form>
         <button
           className="px-2 py-1 bg-blue-500 text-white rounded-md mt-4"
-          onClick={() => navigate(`/viewpost?id=${post._id}&avtar=${post.author.avtar}`)}
+          onClick={() =>
+            navigate(`/viewpost?id=${post._id}&avtar=${post.author.avtar}`)
+          }
         >
           Comments
         </button>
@@ -234,7 +379,12 @@ export const Explore = () => {
   return (
     <div className="mt-[10vh] mb-[10vh]">
       <h1 className="mx-[10vw]">Explore</h1>
-      <Autocomplete data={allstudents}/>
+      <Autocomplete data={allstudents} />
+
+      <div className="my-6 flex overflow-x-auto gap-5 w-[90%] mx-auto">
+        {mostfollowed.map(createMostFollowedUsersDiv)}
+      </div>
+
       {posts.map((post, index) => createPostsDiv(post, index))}
     </div>
   );

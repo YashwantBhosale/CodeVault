@@ -7,7 +7,8 @@ const {
   addComment,
   getPostById,
   getPublicInfo,
-  getAllUsers
+  getAllUsers,
+  getMostFollowedUsers
 } = require("../controllers/publiccontroller");
 
 router.get("/getpublicposts", getPublicPosts);
@@ -19,5 +20,6 @@ router.get("/post", getPostById);
 router.get("/viewuser", getPublicInfo);
 
 router.get("/getallusers", getAllUsers);
+router.get("/mostfollowed", getMostFollowedUsers);
 
 module.exports = router;

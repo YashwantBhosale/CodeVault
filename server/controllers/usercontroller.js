@@ -340,6 +340,30 @@ async function generateImage(req, res) {
     res.status(500).json({ error: "Failed to generate image" });
   }
 }
+
+async function followUser(req, res) {
+  const { email, username, followObj } = req.body;
+  console.log(email, username, followObj);
+  try {
+    await User.follow(email, username, followObj);
+    res.status(200).json({ message: "SUCCESS!" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+
+async function unfollowUser(req, res) {
+  const { email, username, followObj } = req.body;
+  try {
+    await User.unfollow(email, username, followObj);
+    res.status(200).json({ message: "SUCCESS!" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+
 //exporting all the functions
 module.exports = {
   loginWithUsername,
@@ -362,4 +386,6 @@ module.exports = {
   verifyjwt,
   togglePinStatus,
   generateImage,
+  followUser,
+  unfollowUser
 };
