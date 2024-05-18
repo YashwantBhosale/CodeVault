@@ -8,11 +8,28 @@ import {
 import { toast } from "react-toastify";
 import { iconSrcList } from "../utils/icons";
 import { useNavigate } from "react-router-dom";
+import { Autocomplete } from "../components/Autocomplete";
 
 export const Explore = () => {
   const [posts, setPosts] = useState([]);
   const { user } = useAuthContext();
   const navigate = useNavigate();
+  const [allstudents, setAllStudents] = useState([]);
+
+  async function fetchAllUsers() {
+    try {
+      const response = await fetch("http://localhost:4000/api/public/getallusers", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      setAllStudents(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   async function Upvote(e, post) {
     e.preventDefault();
@@ -119,6 +136,7 @@ export const Explore = () => {
   }
 
   useEffect(() => {
+    fetchAllUsers();
     fetchPublicPosts();
   }, []);
 
@@ -131,7 +149,9 @@ export const Explore = () => {
         className="w-[90%] mx-auto border border-gray-300 p-4 my-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
         style={{ zIndex: -99 }}
       >
-        <p className="flex items-center gap-2 text-black text-xl font-bold mb-2 border-b border-gray-200 p-4">
+        <p 
+        onClick={() => navigate(`/viewprofile?username=${post.author.username}`)}
+        className="flex items-center gap-2 text-black text-xl font-bold mb-2 border-b border-gray-200 p-4">
           {(
             <img
               src={iconSrcList[post.author.avtar]}
@@ -155,7 +175,7 @@ export const Explore = () => {
             style={{ width: "95%", margin: "10px auto", marginTop: 0 }}
             className="bg-light-off-white border border-gray-200 p-4"
           >
-            {post.description || "this is a description."}
+            {post.content || "this is a description."}
           </p>
         </h1>
         <div className="flex items-center justify-evenly">
@@ -214,6 +234,7 @@ export const Explore = () => {
   return (
     <div className="mt-[10vh] mb-[10vh]">
       <h1 className="mx-[10vw]">Explore</h1>
+      <Autocomplete data={allstudents}/>
       {posts.map((post, index) => createPostsDiv(post, index))}
     </div>
   );

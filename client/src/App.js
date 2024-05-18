@@ -14,10 +14,11 @@ import { Explore } from './pages/Explore';
 import { ViewPost } from './pages/ViewPost';
 import { useAuthContext } from './hooks/useAuthContext';
 import OAuth from './pages/OAuth';
+import { ViewProfile } from './pages/ViewProfile';
 
 function App() {
   const {user} = useAuthContext();
-  console.log("App user: ", user);
+  // console.log("App user: ", user);
   return (
     <>
       <ToastContainer 
@@ -38,6 +39,7 @@ function App() {
         <Route path='/oauth' element={<OAuth />} />
         <Route path='/explore' element={ user ? <Explore /> : <Navigate to="/login" />} />
         <Route path='/viewpost' element={ user ? <ViewPost /> : <Navigate to="/login" />} />
+        <Route path='/viewprofile' element={ user ? <ViewProfile /> : <Navigate to="/login" />} />
         
       </Routes>
       <Footer />
