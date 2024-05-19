@@ -6,11 +6,12 @@ export const ViewProfile = () => {
   const [searchParams] = useSearchParams();
   const username = searchParams.get("username");
   const [user, setUser] = React.useState({});
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   async function fetchUser() {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/public/viewuser?username=${username}`
+        BASE_URL+`api/public/viewuser?username=${username}`
       );
       const data = await response.json();
       console.log(data);

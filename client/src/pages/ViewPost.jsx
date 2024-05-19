@@ -18,11 +18,11 @@ export const ViewPost = () => {
   const [comments, setComments] = useState([]);
   const user = useAuthContext().user;
   const navigate = useNavigate();
-
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   async function fetchPost() {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/public/post?id=${id}`
+        BASE_URL+`api/public/post?id=${id}`
       );
       const data = await response.json();
       console.log(data);
@@ -57,7 +57,7 @@ export const ViewPost = () => {
         );
       }
       let response = await fetch(
-        "http://localhost:4000/api/public/updateupvotes",
+        BASE_URL+"api/public/updateupvotes",
         {
           method: "POST",
           headers: {
@@ -100,7 +100,7 @@ export const ViewPost = () => {
       }
 
       let response = await fetch(
-        "http://localhost:4000/api/public/updatedownvotes",
+        BASE_URL+"api/public/updatedownvotes",
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export const ViewPost = () => {
     try {
       setComments(null);
       const response = await fetch(
-        `http://localhost:4000/api/comment/getcomments?postId=${id}`
+        BASE_URL+`api/comment/getcomments?postId=${id}`
       );
       const data = await response.json();
       setComments(data);
@@ -146,7 +146,7 @@ export const ViewPost = () => {
     }
     try {
       const response = await fetch(
-        "http://localhost:4000/api/comment/addcomment",
+        BASE_URL+"api/comment/addcomment",
         {
           method: "POST",
           headers: {
@@ -265,7 +265,7 @@ export const ViewPost = () => {
         e.target.nextSibling.lastElementChild.innerHTML = comment.downvotes.length - 1;
         comment.downvotes = comment.downvotes.filter((obj) => obj.username !== user.username);
       }
-      const response = await fetch("http://localhost:4000/api/comment/upvote", {
+      const response = await fetch(BASE_URL+"api/comment/upvote", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -301,7 +301,7 @@ export const ViewPost = () => {
         e.target.previousSibling.lastElementChild.innerHTML = comment.upvotes.length - 1;
         comment.upvotes = comment.upvotes.filter((obj) => obj.username !== user.username);
       }
-      const response = await fetch("http://localhost:4000/api/comment/downvote", {
+      const response = await fetch(BASE_URL+"api/comment/downvote", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

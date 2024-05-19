@@ -16,7 +16,7 @@ function Login() {
     email: "",
     password: "",
   });
-
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   // handle change in form data
   function handleFormData(e) {
     const { name, value } = e.target;
@@ -24,12 +24,12 @@ function Login() {
   }
 
   function handleGoogle(){
-    window.open("http://localhost:4000/api/user/google", "_self");
+    window.open(BASE_URL+"api/user/google", "_self");
 
   }
 
   function handleGithub(){
-    window.open("http://localhost:4000/api/user/github", "_self");
+    window.open(BASE_URL+"api/user/github", "_self");
   }
 
   // handle login main function

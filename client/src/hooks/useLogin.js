@@ -9,10 +9,11 @@ export const useLogin = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { dispatch } = useAuthContext();
     const navigate = useNavigate();
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
     const loginWithEmail = async (email, password) => {
         setIsLoading(true);
         console.log(email, password);
-        const response = await axios.post("http://localhost:4000/api/user/loginwithemail", {
+        const response = await axios.post(BASE_URL+"api/user/loginwithemail", {
             email,
             password
         });
@@ -34,7 +35,7 @@ export const useLogin = () => {
     const loginWithUsername = async (username, password) => {
         setIsLoading(true);
         console.log(username, password);
-        const response = await axios.post("http://localhost:4000/api/user/loginwithusername", {
+        const response = await axios.post(BASE_URL+"api/user/loginwithusername", {
             username,
             password
         });
@@ -53,7 +54,8 @@ export const useLogin = () => {
 
     const loginWithOAuth = async () => {
         setIsLoading(true);
-        const response  = await axios.get("http://localhost:4000/api/user/login/success",{
+        console.log(BASE_URL+"api/user/login/success");
+        const response  = await axios.get(BASE_URL+"api/user/login/success",{
             withCredentials: true
 
         });
