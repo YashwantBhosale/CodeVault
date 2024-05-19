@@ -313,7 +313,7 @@ async function generateImage(req, res) {
     if (!fs.existsSync(outputFilePath)) {
       fs.writeFileSync(outputFilePath, "");
     }
-    const carbonNowCommand = `carbon-now "${tempFilePath}" --save-to "${outputFileImage}" --save-as "snippet" --headless --wait 10`;
+    const carbonNowCommand = `npx carbon-now "${tempFilePath}" --save-to "${outputFileImage}" --save-as "snippet" --headless --wait 10`;
 
     console.log("Executing command:", carbonNowCommand);
     exec(carbonNowCommand, (error, stdout, stderr) => {
