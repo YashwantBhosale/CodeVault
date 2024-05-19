@@ -2,7 +2,7 @@ const User = require("../models/userModel");
 const Snippet = require("../models/snippetModel");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
-const puppeteer = require("puppeteer");
+const { exec } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
@@ -305,35 +305,27 @@ async function generateImage(req, res) {
   }
 
   try {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+    const tempFilePath = path.join(__dirname, "tempCode.js");
+    fs.writeFileSync(tempFilePath, code);
 
-    await page.goto("https://carbon.now.sh");
-    await page.setViewport({
-      width: 1440,
-      height: 1080,
-    });
+    const outputFilePath = path.join(__dirname, "snippet.png");
+    const outputFileImage = path.join(__dirname);
+    if (!fs.existsSync(outputFilePath)) {
+      fs.writeFileSync(outputFilePath, "");
+    }
+    const carbonNowCommand = `carbon-now "${tempFilePath}" --save-to "${outputFileImage}" --save-as "snippet" --headless --wait 10`;
 
-    await page.evaluate((code) => {
-      const editor = document.querySelector(".CodeMirror");
-      editor.CodeMirror.setValue(code);
-    }, code);
-
-    await page.click("#export-menu");
-    await page.click("button.jsx-1176784731");
-    await page.click("div.jsx-3924734343.popout > div:nth-child(4) > button");
-    await delay(3000);
-    const buffer = await page.screenshot({ type: "png" });
-    await browser.close();
-
-    const filePath = path.join(__dirname, "snippet.png");
-    fs.writeFileSync(filePath, buffer);
-
-    res.download(filePath, "snippet.png", (err) => {
-      if (err) {
-        console.error(err);
+    console.log("Executing command:", carbonNowCommand);
+    exec(carbonNowCommand, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return res.status(500).json({ error: "Failed to generate image" });
       }
-      fs.unlinkSync(filePath);
+      res.download(outputFilePath, "snippet.png", (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
     });
   } catch (error) {
     console.error(error);
@@ -387,5 +379,5 @@ module.exports = {
   togglePinStatus,
   generateImage,
   followUser,
-  unfollowUser
+  unfollowUser,
 };
