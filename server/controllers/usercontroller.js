@@ -66,7 +66,7 @@ function loginSuccess(req, res) {
         success: true,
         message: "user has successfully authenticated",
         user: req.user,
-        cookies: req.cookies,
+        token: createToken(req.user._id),
       })
       .status(200);
   }

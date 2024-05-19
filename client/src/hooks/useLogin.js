@@ -64,7 +64,9 @@ export const useLogin = () => {
         }
         else {
             console.log(response.data.user);
-            localStorage.setItem("user", JSON.stringify(response.data.user));
+            const user = response.data.user;
+            user.token = response.data.token;
+            localStorage.setItem("user", JSON.stringify(user));
             dispatch({ type: "LOGIN", payload: response.data.user });
             setIsLoading(false);
             toast.success("Login Successful!");
