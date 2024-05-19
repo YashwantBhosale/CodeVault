@@ -26,11 +26,13 @@ export const Snippet = () => {
     extensions: [githubDark, javascript({ jsx: true })],
   });
 
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
+
   async function confirmDownload() {
     try {
       setLoading(true);
       const response = await fetch(
-        "http://localhost:4000/api/user/generateImage",
+        BASE_URL+"api/user/generateImage",
         {
           method: "POST",
           headers: {
@@ -81,7 +83,7 @@ export const Snippet = () => {
 
   async function fetchSnippet(id) {
     try {
-      const res = await fetch("http://localhost:4000/api/user/getsnippet", {
+      const res = await fetch(BASE_URL+"api/user/getsnippet", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -104,7 +106,7 @@ export const Snippet = () => {
     console.log(code, snippet);
 
     const response = await fetch(
-      "http://localhost:4000/api/user/updatesnippet",
+      BASE_URL+"api/user/updatesnippet",
       {
         method: "POST",
         headers: {

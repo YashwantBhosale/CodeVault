@@ -17,11 +17,11 @@ export const Explore = () => {
   const navigate = useNavigate();
   const [allstudents, setAllStudents] = useState([]);
   const [mostfollowed, setmostfollowed] = useState([]);
-
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   async function fetchAllUsers() {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/public/getallusers",
+        BASE_URL+"api/public/getallusers",
         {
           method: "GET",
           headers: {
@@ -39,7 +39,7 @@ export const Explore = () => {
   async function fetchMostFollowed() {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/public/mostfollowed",
+        BASE_URL+"api/public/mostfollowed",
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ export const Explore = () => {
         );
       }
       let response = await fetch(
-        "http://localhost:4000/api/public/updateupvotes",
+        BASE_URL+"api/public/updateupvotes",
         {
           method: "POST",
           headers: {
@@ -122,7 +122,7 @@ export const Explore = () => {
       }
 
       let response = await fetch(
-        "http://localhost:4000/api/public/updatedownvotes",
+        BASE_URL+"api/public/updatedownvotes",
         {
           method: "POST",
           headers: {
@@ -145,7 +145,7 @@ export const Explore = () => {
   async function fetchPublicPosts() {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/public/getpublicposts",
+        BASE_URL+"api/public/getpublicposts",
         {
           method: "GET",
           headers: {
@@ -196,7 +196,7 @@ export const Explore = () => {
       case "Follow": {
         try {
           const response = await fetch(
-            "http://localhost:4000/api/user/follow",
+            BASE_URL+"api/user/follow",
             {
               method: "POST",
               headers: {
@@ -221,7 +221,7 @@ export const Explore = () => {
       case "Unfollow": {
         try {
           const response = await fetch(
-            "http://localhost:4000/api/user/unfollow",
+            BASE_URL+"api/user/unfollow",
             {
               method: "POST",
               headers: {

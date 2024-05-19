@@ -15,7 +15,7 @@ export const useSignup = () => {
       console.log(randomIndex);
       const avtar = iconsList[randomIndex];
 
-      const response = await axios.post("http://localhost:4000/api/user/signup", {
+      const response = await axios.post(process.env.REACT_APP_BASE_URL+"api/user/signup", {
         username,
         email,
         password,

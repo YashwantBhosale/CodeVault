@@ -38,13 +38,13 @@ function Home() {
   const [fetched, setfetched] = useState(false);
   const [pinnedSnippets, setPinnedSnippets] = useState([]);
   const navigate = useNavigate();
-  
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   // Function to fetch snippets
   async function fetchsnippets(initial=false) {
     if(initial){
       setdataloading(true);
     }
-    const response = await fetch("http://localhost:4000/api/user/getsnippets", {
+    const response = await fetch(BASE_URL+"api/user/getsnippets", {
       method: "POST",
       headers: {
         authorization: `Bearer ${user.token}`,
@@ -72,7 +72,7 @@ function Home() {
   async function togglePinSnippet(snippetId, isPinned) {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/user/togglepinstatus",
+        BASE_URL+"api/user/togglepinstatus",
         {
           method: "POST",
           headers: {
@@ -199,7 +199,7 @@ function Home() {
   async function deleteSnippet(snippetId) {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/user/deletesnippet",
+        BASE_URL+"api/user/deletesnippet",
         {
           method: "POST",
           headers: {
@@ -230,7 +230,7 @@ function Home() {
   const handleSaveButtonClick = async () => {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/user/addsnippet",
+        BASE_URL+"api/user/addsnippet",
         {
           method: "POST",
           headers: {
@@ -283,7 +283,7 @@ function Home() {
     console.log(post);
     try {
       const response = await fetch(
-        "http://localhost:4000/api/user/createPost",
+        BASE_URL+"api/user/createPost",
         {
           method: "POST",
           headers: {
