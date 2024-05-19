@@ -171,6 +171,7 @@ export const Explore = () => {
       case "Follow": {
         user.following.push(userObj);
         console.log(user);
+        localStorage.setItem("user", JSON.stringify(user));
         dispatch({ type: "UPDATE", payload: user });
         return;
       }
@@ -179,6 +180,7 @@ export const Explore = () => {
           (User) => userObj.username != User.username
         );
         console.log(user);
+        localStorage.setItem("user", JSON.stringify(user));
         dispatch({ type: "UPDATE", payload: user });
         return;
       }
