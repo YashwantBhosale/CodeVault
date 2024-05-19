@@ -296,7 +296,7 @@ userSchema.statics.createPost = async function (
   await user.save();
 };
 
-// static getallusers function 
+// static getallusers function
 userSchema.statics.getAllUsers = async function () {
   const users = await this.find();
   const usersData = users.map((user) => {
@@ -304,9 +304,53 @@ userSchema.statics.getAllUsers = async function () {
       username: user.username,
       avtar: user.avtar,
     };
-  
-  })
+  });
   return usersData;
+};
+
+// follow function
+userSchema.statics.follow = async function (email, username, followObj) {
+  const user = await this.findOne({ email, username }); // Current User
+  if (!user) throw Error("User not found!");
+
+  const followingUser = await this.findOne({
+    // User to be followed
+    _id: followObj.id,
+    username: followObj.username,
+  });
+  if (!followingUser) throw Error("Invalid user was followed!");
+
+  user.following.push(followObj);
+  followingUser.followers.push({
+    id: user._id,
+    username: user.username,
+    avtar: user.avtar,
+  });
+
+  await user.save();
+  await followingUser.save();
+};
+
+userSchema.statics.unfollow = async function (email, username, followObj) {
+  const user = await this.findOne({ email, username }); // current user
+  if (!user) throw Error("User not found!");
+
+  const followingUser = await this.findOne({ // followed user to be unfollowed
+    _id: followObj.id,
+    username: followObj.username,
+  });
+  if (!followingUser) throw Error("Invalid user was unfollowed!");
+
+  user.following = user.following.filter(
+    (followingUser) => followingUser.username != followObj.username
+  );
+
+  followingUser.followers = followingUser.followers.filter(
+    (follower) => follower.username != user.username
+  );
+
+  await user.save();
+  await followingUser.save();
 };
 
 module.exports = mongoose.model("User", userSchema);

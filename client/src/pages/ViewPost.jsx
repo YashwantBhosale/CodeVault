@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
 import {
   FaFontAwesome,
@@ -17,6 +17,7 @@ export const ViewPost = () => {
   const [post, setPost] = useState({});
   const [comments, setComments] = useState([]);
   const user = useAuthContext().user;
+  const navigate = useNavigate();
 
   async function fetchPost() {
     try {

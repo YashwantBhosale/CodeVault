@@ -19,7 +19,9 @@ const {
   logout,
   verifyjwt,
   togglePinStatus,
-  generateImage
+  generateImage,
+  followUser,
+  unfollowUser
 } = require("../controllers/usercontroller");
 const router = express.Router();
 
@@ -51,11 +53,16 @@ router.post("/getsnippets", getSnippets);
 router.post("/addsnippet",verifyjwt, addSnippet);
 router.post("/deletesnippet",verifyjwt, deleteSnippet);
 
+router.post("/follow", followUser);
+router.post("/unfollow", unfollowUser);
+
 router.post("/getsnippet",verifyjwt, getSnippet);
 router.post("/updatesnippet",verifyjwt, updateSnippet)
 router.post("/togglepinstatus",verifyjwt, togglePinStatus);
 router.post("/generateImage", generateImage);
 // Routes for creating post
 router.post("/createpost",verifyjwt, createPost);
+
+
 
 module.exports = router;

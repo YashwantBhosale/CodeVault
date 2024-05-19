@@ -26,17 +26,18 @@ export const ViewProfile = () => {
   // http://localhost:3000/viewprofile?username=%22bluepanda69%22
 
   return (
-    <div className="mx-10">
-      <div className="mt-[10vh]">
-        <h1>View Profile</h1>
+    <div className="mx-10 mt-[11vh]">
+      <div className="w-1/2 flex">
         <img
           src={user?.avtar?.length > 15 ? user.avtar : iconSrcList[user?.avtar]}
           alt={user.username}
-          className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
+          className="w-12 rounded-full object-cover mx-3"
         />
         <h2>Username: {user.username}</h2>
-        <h2>Followers: {user ? user?.followers?.length : 0}</h2>
-        <h2>Following: {user ? user?.following?.length : 0}</h2>
+        <div>
+          <h2>Followers: {user ? user?.followers?.length : 0}</h2>
+          <h2>Following: {user ? user?.following?.length : 0}</h2>
+        </div>
       </div>
       <div>
         <h2>Snippets</h2>
