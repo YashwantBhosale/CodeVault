@@ -17,7 +17,7 @@ export const ViewProfile = () => {
   const [searchParams] = useSearchParams();
   const username = searchParams.get("username");
   const [currentuser, setCurrentUser] = React.useState({});
-  const { user } = useAuthContext();
+  const { user, dispatch } = useAuthContext();
   const [snippetsWindow, setSnippetsWindow] = useState(true);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -131,6 +131,91 @@ export const ViewProfile = () => {
       });
     };
   }, []);
+
+  function localFollow(e, userObj) {
+    switch (e.target.innerText) {
+      case "Follow": {
+        user.following.push(userObj);
+        console.log(user);
+        localStorage.setItem("user", JSON.stringify(user));
+        dispatch({ type: "UPDATE", payload: user });
+        return;
+      }
+      case "Unfollow": {
+        user.following = user.following.filter(
+          (User) => userObj.username != User.username
+        );
+        console.log(user);
+        dispatch({ type: "UPDATE", payload: user });
+        return;
+      }
+      default: {
+        toast.warn("Unexpected Behaviour!");
+        return;
+      }
+    }
+  }
+
+  async function handleFollowButton(e, userobj) {
+    console.log(e.target.innerText);
+    localFollow(e, userobj);
+    switch (e.target.innerText) {
+      case "Follow": {
+        try {
+          const response = await fetch(
+            BASE_URL+"api/user/follow",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: user.email,
+                username: user.username,
+                followObj: userobj,
+              }),
+            }
+          );
+          if (response.ok) {
+            toast.success("Follow successful!");
+          }
+        } catch (error) {
+          console.error(error.message);
+          toast.error("Error following user!");
+        }
+        return;
+      }
+      case "Unfollow": {
+        try {
+          const response = await fetch(
+            BASE_URL+"api/user/unfollow",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: user.email,
+                username: user.username,
+                followObj: userobj,
+              }),
+            }
+          );
+          if (response.ok) {
+            toast.success("Follow successful!");
+          }
+        } catch (error) {
+          console.error(error.message);
+          toast.error("Error unfollowing user!");
+        }
+        return;
+      }
+      default: {
+        toast.warn("Unexpected Behaviour!");
+        return;
+      }
+    }
+  }
 
   async function fetchUser() {
     try {
@@ -289,7 +374,11 @@ export const ViewProfile = () => {
               <span>Posts</span>
             </h2>
           </div>
-          <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mx-auto my-4 w-[90%] block">
+          <button onClick={(e) => handleFollowButton(e, {
+            id: currentuser.id,
+            username: currentuser.username,
+            avtar: currentuser.avtar,
+          })} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mx-auto my-4 w-[90%] block">
             {user.following.some(
               (followingUser) => followingUser.username === currentuser.username
             )

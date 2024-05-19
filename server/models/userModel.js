@@ -52,11 +52,31 @@ const userSchema = new mongoose.Schema({
   },
   followers: {
     type: Array,
-    default: [],
+    default: [{
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      },
+      username: String,
+      avtar: String,
+      unique: true,
+    }],
   },
   following: {
     type: Array,
-    default: [],
+    default: [{
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      },
+      username: {
+        type: String
+      },
+      avtar: {
+        type: String
+      },
+      unique: true,
+    }],
   },
 });
 
@@ -86,6 +106,7 @@ userSchema.statics.getPublicInfo = async function (username) {
   });
 
   const publicInfo = {
+    id: user._id,
     username: user.username,
     avtar: user.avtar,
     followers: user.followers,
