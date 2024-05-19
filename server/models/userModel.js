@@ -327,6 +327,16 @@ userSchema.statics.follow = async function (email, username, followObj) {
     avtar: user.avtar,
   });
 
+  let date = new Date();
+
+  followingUser.notifications.push({
+    type: "Follow",
+    content: `"${user.username}" started following you!`,
+    timestamp: date,
+  })
+
+  console.log("following user ; ", followingUser);
+
   await user.save();
   await followingUser.save();
 };

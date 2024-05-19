@@ -356,6 +356,22 @@ async function unfollowUser(req, res) {
   }
 }
 
+async function getnotifications(req, res) {
+  const { username } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) throw Error("User not found!");
+    console.log("user(getnotifications) : ", user);
+    const result = {
+      notifications: user.notifications
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+
 //exporting all the functions
 module.exports = {
   loginWithUsername,
@@ -380,4 +396,5 @@ module.exports = {
   generateImage,
   followUser,
   unfollowUser,
+  getnotifications
 };

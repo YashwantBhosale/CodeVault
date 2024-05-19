@@ -254,7 +254,7 @@ export const Explore = () => {
 
   function createMostFollowedUsersDiv(userobj) {
     return (
-      <div class="w-[18vw] min-w-[250px] my-2 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center">
+      <div class="w-[18vw] min-w-[250px] my-2 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center h-[90%]">
         <div class="mb-8">
           <img
             class="object-center object-cover rounded-full h-36 w-36"
@@ -267,7 +267,7 @@ export const Explore = () => {
           />
         </div>
         <div class="text-center">
-          <p class="text-xl text-white font-bold mb-2">{userobj.username}</p>
+          <p class="text-xl text-black font-bold mb-2">{userobj.username}</p>
           <button
             onClick={(e) => handleFollowButton(e, userobj)}
             className="px-4 py-2 bg-gray-800 text-white rounded-md mt-2 hover:bg-slate-700"
@@ -389,7 +389,7 @@ export const Explore = () => {
       <h1 className="text-center text-xl font-bold">Ready to Explore?</h1>
       <Autocomplete data={allstudents}  />
 
-      <div className="my-6 flex items-center justify-center flex-col md:flex-row overflow-x-auto gap-5 w-[90%] mx-auto">
+      <div className="my-6 flex items-center flex-col md:flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4 h-[42vh]">
         {mostfollowed.map(createMostFollowedUsersDiv)}
       </div>
 
