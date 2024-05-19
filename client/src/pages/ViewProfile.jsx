@@ -1,65 +1,333 @@
-import React from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { iconSrcList } from "../utils/icons";
+import {
+  FaFontAwesome,
+  FaRegArrowAltCircleDown,
+  FaRegArrowAltCircleUp,
+  FaUser,
+  FaRegComment,
+} from "react-icons/fa";
+import { toast } from "react-toastify";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 export const ViewProfile = () => {
+  const navigate = useNavigate();
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [searchParams] = useSearchParams();
   const username = searchParams.get("username");
-  const [user, setUser] = React.useState({});
+  const [currentuser, setCurrentUser] = React.useState({});
+  const { user } = useAuthContext();
+  const [snippetsWindow, setSnippetsWindow] = useState(true);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+
+  const calculateTimeAgo = (createdAt) => {
+    const currentTime = new Date();
+    const postTime = new Date(createdAt);
+    const timeDifference = currentTime - postTime;
+    const minutesDifference = Math.floor(timeDifference / (1000 * 60));
+    const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+    if (daysDifference > 0) {
+      return `${daysDifference} day${daysDifference > 1 ? "s" : ""} ago`;
+    } else if (hoursDifference > 0) {
+      return `${hoursDifference} hour${hoursDifference > 1 ? "s" : ""} ago`;
+    } else {
+      return `${minutesDifference} minute${
+        minutesDifference > 1 ? "s" : ""
+      } ago`;
+    }
+  };
+
+  async function Upvote(e, post) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      let userObj = {
+        username: user.username,
+        avtar: user.avtar,
+      };
+      if (post.upvotes.some((obj) => obj.username == user.username)) {
+        return;
+      }
+      e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
+      post.upvotes.push({
+        username: user.username,
+        avtar: user.avtar,
+      });
+      if (post.downvotes.some((obj) => obj.username == user.username)) {
+        e.target.nextSibling.lastElementChild.innerHTML =
+          post.downvotes.length - 1;
+        post.downvotes = post.downvotes.filter(
+          (obj) => obj.username !== user.username
+        );
+      }
+      let response = await fetch(BASE_URL + "api/public/updateupvotes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: post._id, userObj }),
+      });
+      if (response.ok) {
+        toast.success("added to upvoted posts");
+      } else {
+        toast.error("error upvoting post");
+      }
+    } catch (error) {
+      console.log("error upvoting post : ", error.message);
+    }
+  }
+
+  async function Downvote(e, post) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      let userObj = {
+        username: user.username,
+        avtar: user.avtar,
+      };
+
+      if (post.downvotes.some((obj) => obj.username == user.username)) {
+        return;
+      }
+
+      e.target.lastElementChild.innerHTML = post.downvotes.length + 1;
+      post.downvotes.push(userObj);
+      if (post.upvotes.some((obj) => obj.username == user.username)) {
+        e.target.previousSibling.lastElementChild.innerHTML =
+          post.upvotes.length - 1;
+        post.upvotes = post.upvotes.filter(
+          (obj) => obj.username !== user.username
+        );
+      }
+
+      let response = await fetch(BASE_URL + "api/public/updatedownvotes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: post._id, userObj }),
+      });
+
+      if (response.ok) {
+        toast.success("added to downvoted posts");
+      } else {
+        toast.error("error downvoting post");
+      }
+    } catch (error) {
+      console.log("error downvoting post : ", error.message);
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setWindowWidth(window.innerWidth);
+    });
+    return () => {
+      window.removeEventListener("resize", () => {
+        setWindowWidth(window.innerWidth);
+      });
+    };
+  }, []);
 
   async function fetchUser() {
     try {
       const response = await fetch(
-        BASE_URL+`api/public/viewuser?username=${username}`
+        BASE_URL + `api/public/viewuser?username=${username}`
       );
       const data = await response.json();
       console.log(data);
-      setUser(data);
+      setCurrentUser(data);
     } catch (error) {
       console.log(error.message);
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchUser();
   }, []);
   // http://localhost:3000/viewprofile?username=%22bluepanda69%22
 
+  function truncateDescription(description, maxLength) {
+    if (description.length > maxLength) {
+      return description.slice(0, maxLength) + "...";
+    }
+    return description;
+  }
+
+  function createSnippetCards(snippet) {
+    return (
+      <div
+        className="w-[30%] shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px] p-6 m-6 min-w-[270px]"
+        key={snippet._id}
+      >
+        <h3 className="font-bold uppercase text-gray-900">{snippet.title}</h3>
+        <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700 my-4">
+          <span className="font-bold text-gray-900"></span>{" "}
+          {truncateDescription(snippet.description || "N/A", 40)}
+        </p>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          View Snippet
+        </button>
+      </div>
+    );
+  }
+
+  function createPostCards(post) {
+    return (
+      <div
+        key={post._id}
+        className="w-[90%] md:w-[60%] mx-auto border border-gray-300 p-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] mb-8" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
+        style={{ zIndex: -99 }}
+      >
+        <p
+          onClick={() =>
+            navigate(`/viewprofile?username=${post?.author?.username}`)
+          }
+          className="flex items-center gap-2 text-black text-md font-bold mb-2 border-b border-gray-200 p-2"
+        >
+          {(
+            <img
+              src={
+                post?.author?.avtar?.length > 15
+                  ? post?.author?.avtar
+                  : iconSrcList[post?.author?.avtar]
+              }
+              className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
+            />
+          ) || <FaUser className="border border-black p-1 rounded-full" />}
+          {post?.author?.username}
+          <span className="text-sm ml-2 text-gray-500">
+            {calculateTimeAgo(post?.createdAt)}
+          </span>
+        </p>
+        <h1 className="text-xl mb-2">
+          <p
+            style={{ width: "95%", margin: "0 auto" }}
+            className="font-bold text-md"
+          >
+            {" "}
+            {post?.title || "Awesome Title"}
+          </p>
+        </h1>
+        <h1 className="text-xl">
+          <span className="font-semibold"> </span>
+          <p
+            style={{ width: "95%", margin: "10px auto", marginTop: 0 }}
+            className="bg-light-off-white border border-gray-200 p-4 text-sm"
+          >
+            {post?.content || "this is a description."}
+          </p>
+        </h1>
+        <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
+          <div className="w-[80%] md:w-[50%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
+            <div
+              className="flex items-center gap-1 cursor-pointer z-99"
+              onClick={(e) => Upvote(e, post)}
+            >
+              <FaRegArrowAltCircleUp
+                style={{ zIndex: -1 }}
+                className="text-white text-xl "
+              />{" "}
+              <span style={{ zIndex: -1 }} className="font-bold text-white">
+                {post?.upvotes?.length}
+              </span>
+            </div>
+            <div
+              className="flex items-center z-99 gap-1 cursor-pointer"
+              onClick={(e) => Downvote(e, post)}
+            >
+              <FaRegArrowAltCircleDown
+                style={{ zIndex: -1 }}
+                className="text-white text-xl -z-1"
+              />{" "}
+              <span
+                style={{ zIndex: -1 }}
+                className="font-bold -z-1 text-white"
+              >
+                {post?.downvotes?.length}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className="mx-10 mt-[11vh]">
-      <div className="w-1/2 flex">
-        <img
-          src={user?.avtar?.length > 15 ? user.avtar : iconSrcList[user?.avtar]}
-          alt={user.username}
-          className="w-12 rounded-full object-cover mx-3"
-        />
-        <h2>Username: {user.username}</h2>
-        <div>
-          <h2>Followers: {user ? user?.followers?.length : 0}</h2>
-          <h2>Following: {user ? user?.following?.length : 0}</h2>
+    <div className="mx-5 mt-[11vh] pb-10">
+      <div
+        className={`w-fit flex shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px] mx-auto h-[18vh] items-center justify-center h-fit py-5 ${
+          windowWidth < 500 ? "flex-col" : ""
+        }`}
+      >
+        <div className="w-[30%] flex flex-col items-center justify-center gap-3">
+          <img
+            src={
+              currentuser?.avtar?.length > 15
+                ? currentuser.avtar
+                : iconSrcList[currentuser?.avtar]
+            }
+            alt={currentuser.username}
+            className="w-[50%] rounded-full object-cover mx-3"
+          />
+          <h2>{currentuser.username}</h2>
+        </div>
+        <div className="h-fit">
+          <div className="flex">
+            <h2 className="flex flex-col align-center text-center mx-5 mt-7">
+              {currentuser ? currentuser?.followers?.length : 0}
+              <span>Followers</span>
+            </h2>
+            <h2 className="flex flex-col align-center text-center mx-5 mt-7">
+              {currentuser ? currentuser?.following?.length : 0}
+              <span>Following</span>
+            </h2>
+            <h2 className="flex flex-col align-center text-center mx-5 mt-7">
+              {currentuser ? currentuser?.publicPosts?.length : 0}
+              <span>Posts</span>
+            </h2>
+          </div>
+          <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mx-auto my-4 w-[90%] block">
+            {user.following.some(
+              (followingUser) => followingUser.username === currentuser.username
+            )
+              ? "Unfollow"
+              : "Follow"}
+          </button>
         </div>
       </div>
-      <div>
-        <h2>Snippets</h2>
-        <div>
-          {user.publicSnippets?.map((snippet) => (
-            <div key={snippet._id}>
-              <h3>{snippet.title}</h3>
-              <p>{snippet.description}</p>
-            </div>
-          ))}
-        </div>
-        <div>
-          <h2>Posts</h2>
-          {user.publicPosts?.map((post) => (
-            <div key={post._id}>
-              <h3>{post.title}</h3>
-              <p>{post.content}</p>
-            </div>
-          ))}
-        </div>
+      <div className="w-fit mx-auto my-6">
+        <button
+          type="button"
+          class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:hover:bg-gray-300"
+          onClick={() => setSnippetsWindow(true)}
+        >
+          Snippets
+        </button>
+        <button
+          type="button"
+          class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:border-gray-600 dark:hover:bg-gray-300 dark:hover:border-gray-600"
+          onClick={() => setSnippetsWindow(false)}
+        >
+          Posts
+        </button>
       </div>
+      {snippetsWindow ? (
+        <div className="mb-10">
+          {" "}
+          {/* <h2>Snippets</h2> */}
+          <div className="flex flex-wrap w-[95%] m-auto justify-center">
+            {currentuser.publicSnippets?.map(createSnippetCards)}
+          </div>
+        </div>
+      ) : (
+        <div className="mb-10">
+          {/* <h2>Posts</h2> */}
+          {currentuser.publicPosts?.map(createPostCards)}
+        </div>
+      )}
     </div>
   );
 };
