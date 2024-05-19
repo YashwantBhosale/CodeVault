@@ -254,7 +254,7 @@ export const Explore = () => {
 
   function createMostFollowedUsersDiv(userobj) {
     return (
-      <div class="w-[18vw] min-w-[250px] bg-gray-900 rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center">
+      <div class="w-[18vw] min-w-[250px] my-2 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center">
         <div class="mb-8">
           <img
             class="object-center object-cover rounded-full h-36 w-36"
@@ -305,7 +305,7 @@ export const Explore = () => {
     return (
       <div
         key={id}
-        className="w-[60%] mx-auto border border-gray-300 p-4 my-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
+        className="w-[90%] md:w-[60%] mx-auto border border-gray-300 p-4 my-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
         style={{ zIndex: -99 }}
       >
         <p
@@ -345,8 +345,8 @@ export const Explore = () => {
             {post.content || "this is a description."}
           </p>
         </h1>
-        <div className="w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
-          <div className="w-[70%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
+        <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
+          <div className="w-full md:w-[70%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
             <div
               className="flex items-center gap-1 cursor-pointer z-99"
               onClick={(e) => Upvote(e, post)}
@@ -380,31 +380,6 @@ export const Explore = () => {
               />
               </div>
         </div>
-        <form onSubmit={(e) => handleCommentSubmit(e, id)} className="mt-4">
-          <h1 className="text-lg font-bold">Comments</h1>
-          <div className="flex justify-between">
-            <input
-              placeholder="Add a comment"
-              name="comment"
-              type="text"
-              className="border border-gray-300 rounded-md p-2 w-3/4 mt-2"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-gray-800 text-white rounded-md mt-2 hover:bg-slate-700"
-            >
-              POST
-            </button>
-          </div>
-        </form>
-        <button
-          className="px-2 py-1 bg-blue-500 text-white rounded-md mt-4"
-          onClick={() =>
-            navigate(`/viewpost?id=${post._id}&avtar=${post.author.avtar}`)
-          }
-        >
-          Comments
-        </button>
       </div>
     );
   }
@@ -414,7 +389,7 @@ export const Explore = () => {
       <h1 className="text-center text-xl font-bold">Ready to Explore?</h1>
       <Autocomplete data={allstudents}  />
 
-      <div className="my-6 flex overflow-x-auto gap-5 w-[90%] mx-auto">
+      <div className="my-6 flex items-center justify-center flex-col md:flex-row overflow-x-auto gap-5 w-[90%] mx-auto">
         {mostfollowed.map(createMostFollowedUsersDiv)}
       </div>
 

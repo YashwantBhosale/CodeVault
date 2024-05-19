@@ -209,8 +209,8 @@ export const ViewPost = () => {
             {comment.content || "this is a description."}
           </p>
         </h1>
-        <div className="w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
-          <div className="w-[70%] flex justify-between items-center p-2 rounded-md -z-50 text-black">
+        <div className="w-[50%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
+          <div className="w-full md:w-[70%] flex justify-between items-center p-2 rounded-md -z-50 text-black">
             <div
               className="flex items-center gap-1 cursor-pointer z-99"
               onClick={(e) => upvoteComment(e, comment)}
@@ -351,7 +351,7 @@ export const ViewPost = () => {
     <div className="mt-[15vh] mb-[10vh]">
       <div
         key={id}
-        className="w-[60%] mx-auto border border-gray-300 p-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
+        className="w-[90%] md:w-[60%] mx-auto border border-gray-300 p-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
         style={{ zIndex: -99 }}
       >
         <p
@@ -393,8 +393,8 @@ export const ViewPost = () => {
             {post?.content || "this is a description."}
           </p>
         </h1>
-        <div className="w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
-          <div className="w-[50%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
+        <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
+          <div className="w-[80%] md:w-[50%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
             <div
               className="flex items-center gap-1 cursor-pointer z-99"
               onClick={(e) => Upvote(e, post)}
@@ -445,7 +445,7 @@ export const ViewPost = () => {
           </div>
         </form>
       </div>
-      <div className="w-[60%] mx-auto border border-gray-300 p-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
+      <div className="w-[90%] md:w-[60%] mx-auto border border-gray-300 p-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
         <span className="text-black font-bold font-8xl">{comments?.length}{" "}Comments</span>
         {comments?.map(createCommentsDiv)}
       </div>
