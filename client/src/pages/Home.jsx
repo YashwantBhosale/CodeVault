@@ -668,7 +668,7 @@ function Home() {
               initial={{ y: "-100vh" }}
               animate={{ y: 0 }}
               transition={{ type: "spring", stiffness: 150 }}
-              className="bg-white rounded-xl lg:w-2/5 m-[20px]"
+              className="bg-white rounded-xl w-[90%] lg:w-2/5 m-[20px]"
             >
               <div className="bg-white p-2 rounded-xl w-4/5 m-[20px]">
                 <h2 className="text-xl font-bold mb-4">Create New Post</h2>

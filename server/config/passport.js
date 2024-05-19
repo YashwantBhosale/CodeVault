@@ -23,14 +23,12 @@ passport.use(
       try {
         let user = await User.findOne({ username: profile.username });
         console.log("profile: ", profile);
-        const token = createToken(profile.id);
         if (!user) {
           const newUser = await User.create({
             githubId: profile?.id,
             username: profile?.username,
             email: profile?.profileUrl,
             avtar: profile?.photos?.[0].value,
-            token,
           });
           if(newUser) {
             done(null, newUser);
@@ -57,14 +55,12 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         let user = await User.findOne({ username: profile.displayName });
-        const token = createToken(profile.id);
         if (!user) {
           const newUser = await User.create({
             googleId: profile.id,
             username: profile.displayName,
             email: profile.emails[0].value,
             avtar: profile.photos[0].value,
-            token,
           });
           if(newUser) {
             done(null, newUser);
