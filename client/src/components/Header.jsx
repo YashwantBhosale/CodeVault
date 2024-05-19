@@ -26,50 +26,85 @@ import { useAuthContext } from "../hooks/useAuthContext";
 export default function Header(props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const {logout} = useLogout();
+  const { logout } = useLogout();
   const [notifications, setnotifications] = useState([]);
   // const [user, loading, error] = useAuthState(auth);
-  const {user} = useAuthContext();
+  const { user } = useAuthContext();
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
-
-  async function getNotifications () {
-    try{
-      const response = await fetch("http://localhost:4000/api/user/getnotifications", {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          username: user.username,
-        })
-      });
+  async function getNotifications() {
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/user/getnotifications",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user.username,
+          }),
+        }
+      );
       console.log(response);
       const data = await response.json();
       console.log(data.notifications);
-      setnotifications(data);
-    }catch(error) {
+      setnotifications(data.notifications);
+    } catch (error) {
       console.log(error.message);
-
     }
   }
 
-  function getHoursAndMinutesFromTimestamp(timestamp) {
-    const date = new Date(timestamp.seconds * 1000);
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    return `${hours}:${minutes}`;
+  function getTimeFromTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    const formattedHours = hours < 10 ? "0" + hours : hours;
+    const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+
+    return formattedHours + ":" + formattedMinutes;
   }
 
-  function createNotifications(notification) {
+  function createNotifications(notification, index) {
+    let content = notification.content;
+    let username = "";
+    if (notification.type === "Follow") {
+      username = content.substring(1, content.lastIndexOf(`"`));
+      content = `${content.substring(
+        content.lastIndexOf(`"`) + 1,
+        content.length - 1
+      )}`;
+    }
+
     return (
-      <div className="flex items-center gap-4 px-4 py-4 border-b border-gray-300">
+      <div
+        key={index}
+        className="flex items-center gap-4 px-4 py-4 border-b border-gray-300"
+      >
         <FaRegBell />
-        <p className="w-4/5">{notification.data}</p>
+        <p className="w-4/5">
+          {notification.type == "Follow" ? (
+            <span>
+              <span
+                className="text-sky-500 cursor-pointer"
+                onClick={() => {
+                  setNotificationsOpen(false);
+                  navigate(`/viewprofile?username=${username}`);
+                }}
+              >
+                @{username}
+              </span>{" "}
+              <span>{content}</span>
+            </span>
+          ) : (
+            notification.content
+          )}
+        </p>
         <span className="absolute right-10">
           {notification.timestamp
-            ? getHoursAndMinutesFromTimestamp(notification.timestamp)
+            ? getTimeFromTimestamp(notification.timestamp)
             : "11:11"}
         </span>
       </div>
@@ -93,9 +128,12 @@ export default function Header(props) {
                 <Popover.Button className="flex items-center gap-x-1 text-md font-semibold leading-6 text-gray-900">
                   {(
                     <img
-                      src={user.avtar.length > 15? user.avtar :
-                        iconSrcList[user.avtar]}
-                        className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
+                      src={
+                        user.avtar.length > 15
+                          ? user.avtar
+                          : iconSrcList[user.avtar]
+                      }
+                      className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
                     />
                   ) || <FaUser />}
                   {user.username || "User"}
@@ -127,16 +165,14 @@ export default function Header(props) {
                       </a>
                       <a
                         onClick={async () => {
-                          try{
+                          try {
                             logout();
-                            navigate('/login');
+                            navigate("/login");
                             toast.success("Logout successful!");
-                          }catch(error){
+                          } catch (error) {
                             toast.error("Error logging out!");
                             console.log("error logging out : ", error.message);
                           }
-                          
-                          
                         }}
                         className="block font-semibold text-gray-900 hover:bg-grey"
                       >
@@ -181,7 +217,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/explore");
               }}
-              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer" 
+              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer"
             >
               Explore
             </a>
@@ -293,15 +329,9 @@ export default function Header(props) {
               >
                 <FaWindowClose />
               </button>
-              {/* {userObjloading ? (
-                <FadeLoader />
-              ) : userObj.data() ? (
-                <div className="flex flex-col">
-                  {userObj.data().notifications?.map(createNotifications)}
-                </div>
-              ) : (
-                "No new notifications"
-              )} */}
+              {notifications.length
+                ? notifications.map(createNotifications)
+                : null}
             </motion.div>
           </motion.div>
         )}
