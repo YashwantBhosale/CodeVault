@@ -296,43 +296,6 @@ function delay(time) {
   });
 }
 
-//for generating image
-async function generateImage(req, res) {
-  const { code } = req.body;
-
-  if (!code) {
-    return res.status(400).json({ error: "No code provided" });
-  }
-
-  try {
-    const tempFilePath = path.join(__dirname, "tempCode.js");
-    fs.writeFileSync(tempFilePath, code);
-
-    const outputFilePath = path.join(__dirname, "snippet.png");
-    const outputFileImage = path.join(__dirname);
-    if (!fs.existsSync(outputFilePath)) {
-      fs.writeFileSync(outputFilePath, "");
-    }
-    const carbonNowCommand = `carbon-now "${tempFilePath}" --save-to "${outputFileImage}" --save-as "snippet" --headless --wait 10`;
-
-    console.log("Executing command:", carbonNowCommand);
-    exec(carbonNowCommand, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return res.status(500).json({ error: "Failed to generate image" });
-      }
-      res.download(outputFilePath, "snippet.png", (err) => {
-        if (err) {
-          console.error(err);
-        }
-      });
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to generate image" });
-  }
-}
-
 async function followUser(req, res) {
   const { email, username, followObj } = req.body;
   console.log(email, username, followObj);

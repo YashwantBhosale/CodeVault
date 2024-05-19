@@ -19,7 +19,6 @@ const {
   logout,
   verifyjwt,
   togglePinStatus,
-  generateImage,
   followUser,
   unfollowUser,
   getnotifications
@@ -60,7 +59,6 @@ router.post("/unfollow", unfollowUser);
 router.post("/getsnippet",verifyjwt, getSnippet);
 router.post("/updatesnippet",verifyjwt, updateSnippet)
 router.post("/togglepinstatus",verifyjwt, togglePinStatus);
-router.post("/generateImage", generateImage);
 // Routes for creating post
 router.post("/createpost",verifyjwt, createPost);
 

@@ -27,49 +27,40 @@ export const Snippet = () => {
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-  async function confirmDownload() {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        BASE_URL+"api/user/generateImage",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ code }),
-        }
-      );
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "snippet.png";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        toast.success("Image downloaded successfully!");
-        setLoading(false);
-      } else {
-        toast.error("Failed to download image");
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error downloading image:", error);
-      toast.error("Error downloading image");
-      setLoading(false);
-    }
-  }
 
   async function handleDownload() {
-    confirmDownload();
+    setLoading(true);
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "text/plain");
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: code,
+      redirect: "follow",
+    };
+
+    fetch(
+      "https://code2img.vercel.app/api/to-image?language=javascript&theme=dracula&background-color=rgba(171,184,195,1)",
+      requestOptions
+    )
+      .then((response) => response.blob())
+      .then((result) => URL.createObjectURL(result))
+      .then((url) => {
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "code.png";
+        a.click();
+      })
+      .then(() => setLoading(false))
+      .then(() => toast.success("Image downloaded successfully!"))
+      .then(() => setLoading(false))
+      .catch((error) => console.error("error", error));
   }
 
   async function fetchSnippet(id) {
     try {
-      const res = await fetch(BASE_URL+"api/user/getsnippet", {
+      const res = await fetch(BASE_URL + "api/user/getsnippet", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -91,26 +82,23 @@ export const Snippet = () => {
   async function handleSave(e) {
     console.log(code, snippet);
 
-    const response = await fetch(
-      BASE_URL+"api/user/updatesnippet",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user.email,
-          snippetId: id,
-          title: snippet.title,
-          code: code,
-          language: snippet.language,
-          description: snippet.description,
-          tags: snippet.tags,
-          isPublic: snippet.isPublic,
-        }),
-      }
-    );
+    const response = await fetch(BASE_URL + "api/user/updatesnippet", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: user.email,
+        snippetId: id,
+        title: snippet.title,
+        code: code,
+        language: snippet.language,
+        description: snippet.description,
+        tags: snippet.tags,
+        isPublic: snippet.isPublic,
+      }),
+    });
 
     if (response.ok) {
       toast.success("Snippet saved successfully!");
@@ -143,11 +131,14 @@ export const Snippet = () => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(code).then(() => {
-      toast.success("Code copied to clipboard!");
-    }).catch(err => {
-      toast.error("Failed to copy code to clipboard!");
-    });
+    navigator.clipboard
+      .writeText(code)
+      .then(() => {
+        toast.success("Code copied to clipboard!");
+      })
+      .catch((err) => {
+        toast.error("Failed to copy code to clipboard!");
+      });
   };
 
   return (
