@@ -146,6 +146,7 @@ export const ViewProfile = () => {
           (User) => userObj.username != User.username
         );
         console.log(user);
+        localStorage.setItem("user", JSON.stringify(user));
         dispatch({ type: "UPDATE", payload: user });
         return;
       }
