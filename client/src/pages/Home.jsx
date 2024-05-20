@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { EditorState } from "@codemirror/state";
-import { javascript } from "@codemirror/lang-javascript";
 import { githubDark } from "@uiw/codemirror-themes-all";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
@@ -12,10 +11,17 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbtack } from "@fortawesome/free-solid-svg-icons"; 
+import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
+
+import {
+  languages,
+  languageExtensions,
+  placeholders,
+} from "../utils/languages.js";
+
 const state = EditorState.create({
   doc: "my source code",
-  extensions: [githubDark, javascript({ jsx: true })],
+  extensions: [githubDark],
 });
 
 function Home() {
@@ -23,11 +29,9 @@ function Home() {
   const [postContent, setPostContent] = useState("");
   const [showPopup, setShowPopup] = React.useState(false);
   const [snippetName, setSnippetName] = React.useState("");
-  const [snippetLanguage, setSnippetLanguage] = React.useState("");
+  const [snippetLanguage, setSnippetLanguage] = React.useState("javascript");
   const [description, setDescription] = React.useState("");
-  const [codeValue, setCodeValue] = React.useState(
-    "console.log('hello world!');"
-  );
+  const [codeValue, setCodeValue] = React.useState(placeholders[snippetLanguage]);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteSnippetId, setDeleteSnippetId] = useState(null);
@@ -37,14 +41,22 @@ function Home() {
   const [value, setValue] = useState(null);
   const [fetched, setfetched] = useState(false);
   let [pinnedSnippets, setPinnedSnippets] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+
+  const handleLanguageSelect = (language) => {
+    setSnippetLanguage(language);
+    setCodeValue(placeholders[language]);
+    setDropdownOpen(false);
+  };
+
   // Function to fetch snippets
-  async function fetchsnippets(initial=false) {
-    if(initial){
+  async function fetchsnippets(initial = false) {
+    if (initial) {
       setdataloading(true);
     }
-    const response = await fetch(BASE_URL+"api/user/getsnippets", {
+    const response = await fetch(BASE_URL + "api/user/getsnippets", {
       method: "POST",
       headers: {
         authorization: `Bearer ${user.token}`,
@@ -71,29 +83,26 @@ function Home() {
   // Function to toggle pin status of a snippet
   async function togglePinSnippet(snippet, snippetId, isPinned) {
     try {
-      if(!isPinned){
-        setPinnedSnippets([...pinnedSnippets, snippet])
-        setUserSnippets(usersnippets.filter((s) => s._id !== snippetId))
-      }else{
-        setPinnedSnippets(pinnedSnippets.filter((s) => s._id !== snippetId))
-        setUserSnippets([...usersnippets, snippet])
+      if (!isPinned) {
+        setPinnedSnippets([...pinnedSnippets, snippet]);
+        setUserSnippets(usersnippets.filter((s) => s._id !== snippetId));
+      } else {
+        setPinnedSnippets(pinnedSnippets.filter((s) => s._id !== snippetId));
+        setUserSnippets([...usersnippets, snippet]);
       }
 
-      const response = await fetch(
-        BASE_URL+"api/user/togglepinstatus",
-        {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${user.token}`,
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            email: user.email,
-            snippetId: snippetId,
-            isPinned: !isPinned,
-          }),
-        }
-      );
+      const response = await fetch(BASE_URL + "api/user/togglepinstatus", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${user.token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          snippetId: snippetId,
+          isPinned: !isPinned,
+        }),
+      });
       let json = await response.json();
       if (response.ok) {
         toast.success("Snippet pin status updated!");
@@ -205,20 +214,17 @@ function Home() {
   // Function to delete a snippet
   async function deleteSnippet(snippetId) {
     try {
-      const response = await fetch(
-        BASE_URL+"api/user/deletesnippet",
-        {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${user.token}`,
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            email: user.email,
-            snippetId: snippetId,
-          }),
-        }
-      );
+      const response = await fetch(BASE_URL + "api/user/deletesnippet", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${user.token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          snippetId: snippetId,
+        }),
+      });
       let json = await response.json();
       console.log("response: ", json);
       if (response.ok) {
@@ -236,25 +242,23 @@ function Home() {
   // function to save snippet
   const handleSaveButtonClick = async () => {
     try {
-      const response = await fetch(
-        BASE_URL+"api/user/addsnippet",
-        {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${user.token}`,
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            email: user.email,
-            title: snippetName,
-            code: codeValue,
-            language: snippetLanguage,
-            description: description,
-            tags: ["trending"],
-            isPublic: true,
-          }),
-        }
-      );
+      console.log("snippet", codeValue);
+      const response = await fetch(BASE_URL + "api/user/addsnippet", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${user.token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          title: snippetName,
+          code: codeValue,
+          language: snippetLanguage,
+          description: description,
+          tags: ["trending"],
+          isPublic: true,
+        }),
+      });
       let json = await response.json();
       console.log("response: ", json);
       if (response.ok) {
@@ -289,17 +293,14 @@ function Home() {
     };
     console.log(post);
     try {
-      const response = await fetch(
-        BASE_URL+"api/user/createPost",
-        {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${user.token}`,
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(post),
-        }
-      );
+      const response = await fetch(BASE_URL + "api/user/createPost", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${user.token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(post),
+      });
 
       if (!response.ok) {
         toast.error("Failed to create post! Please try again.");
@@ -322,14 +323,14 @@ function Home() {
     }
     return description;
   }
-  
+
   function displaySnippets(snippet, isPinned = false) {
     const month = getMonthFromIndex(
       Number.parseInt(snippet.dateCreated.split("-")[1]) - 1
     );
     const day = snippet.dateCreated.split("-")[2].split("T")[0];
     const date = `${month} ${day}`;
-  
+
     return (
       <article
         key={snippet._id}
@@ -395,18 +396,18 @@ function Home() {
       </article>
     );
   }
-  
 
   return (
     <div
-      className="flex flex-col items-center mt-[13vh] md:mt-18 mb-[100px]"
+      className="flex flex-col items-center mt-[13vh] md:mt-18"
       style={{
         backgroundColor: "#fff",
         backgroundImage:
           "radial-gradient(#000 1px, transparent 1px), radial-gradient(#000 1px, #fff 1px)",
         backgroundSize: "40px 40px",
         backgroundPosition: "0 0, 20px 20px",
-        height: "100vh",
+        // height: "100vh",
+        marginBottom:"10vh"
       }}
     >
       <div className="flex w-full justify-center items-center md:items-stretch flex-col md:flex-row">
@@ -510,13 +511,35 @@ function Home() {
                       >
                         Snippet Language
                       </label>
-                      <input
-                        type="text"
-                        id="snippetLanguage"
-                        value={snippetLanguage}
-                        onChange={(e) => setSnippetLanguage(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          id="snippetLanguage"
+                          value={
+                            languages.find(
+                              (lang) => lang.id === snippetLanguage
+                            )?.name || ""
+                          }
+                          onFocus={() => setDropdownOpen(true)}
+                          readOnly
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 cursor-pointer"
+                        />
+                        {dropdownOpen && (
+                          <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto">
+                            {languages.map((language) => (
+                              <li
+                                key={language.id}
+                                onClick={() =>
+                                  handleLanguageSelect(language.id)
+                                }
+                                className="px-3 py-2 cursor-pointer hover:bg-gray-200"
+                              >
+                                {language.name}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     </div>
                     <div>
                       <label
@@ -535,13 +558,16 @@ function Home() {
                     </div>
                     <div>
                       <CodeMirror
-                        value={codeValue}
+                        value={
+                          placeholders[snippetLanguage] ||
+                          "Write your code here..."
+                        }
                         height="200px"
                         width="100%"
                         lineNumbers={false}
                         theme={githubDark}
                         basicSetup={{ lineNumbers: false }}
-                        extensions={[javascript({ jsx: true })]}
+                        extensions={languageExtensions[snippetLanguage]}
                         onChange={handleChange}
                       />
                     </div>
@@ -595,13 +621,35 @@ function Home() {
                         >
                           Snippet Language
                         </label>
-                        <input
-                          type="text"
-                          id="snippetLanguage"
-                          value={snippetLanguage}
-                          onChange={(e) => setSnippetLanguage(e.target.value)}
-                          className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-                        />
+                        <div className="relative">
+                          <input
+                            type="text"
+                            id="snippetLanguage"
+                            value={
+                              languages.find(
+                                (lang) => lang.id === snippetLanguage
+                              )?.name || ""
+                            }
+                            onFocus={() => setDropdownOpen(true)}
+                            readOnly
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 cursor-pointer"
+                          />
+                          {dropdownOpen && (
+                            <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto">
+                              {languages.map((language) => (
+                                <li
+                                  key={language.id}
+                                  onClick={() =>
+                                    handleLanguageSelect(language.id)
+                                  }
+                                  className="px-3 py-2 cursor-pointer hover:bg-gray-200"
+                                >
+                                  {language.name}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
                       </div>
                       <div>
                         <label
@@ -627,13 +675,16 @@ function Home() {
                     className="bg-white p-4 rounded-xl lg:w-2/5 m-[20px] w-full"
                   >
                     <CodeMirror
-                      value={codeValue}
+                      value={
+                        placeholders[snippetLanguage] ||
+                        "Write your code here..."
+                      }
                       height="400px"
                       width="100%"
                       lineNumbers={false}
                       theme={githubDark}
                       basicSetup={{ lineNumbers: false }}
-                      extensions={[javascript({ jsx: true })]}
+                      extensions={languageExtensions[snippetLanguage]}
                       onChange={handleChange}
                     />
                     <div className="flex justify-end mt-4">

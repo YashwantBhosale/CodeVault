@@ -3,12 +3,16 @@ import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CodeMirror from "@uiw/react-codemirror";
 import { EditorState } from "@codemirror/state";
-import { javascript } from "@codemirror/lang-javascript";
 import { githubDark } from "@uiw/codemirror-themes-all";
 import { FaCog, FaEdit, FaClipboard } from "react-icons/fa";
 import { useAuthContext } from "../hooks/useAuthContext";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
+import {
+  languages,
+  languageExtensions,
+  placeholders,
+} from "../utils/languages.js";
 
 export const Snippet = () => {
   const [searchParams] = useSearchParams();
@@ -22,11 +26,10 @@ export const Snippet = () => {
   const id = searchParams.get("id");
   const state = EditorState.create({
     doc: "my source code",
-    extensions: [githubDark, javascript({ jsx: true })],
+    extensions: [githubDark],
   });
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
-
 
   async function handleDownload() {
     setLoading(true);
@@ -258,7 +261,7 @@ export const Snippet = () => {
               theme={githubDark}
               onChange={handleChange}
               basicSetup={{ lineNumbers: true }}
-              extensions={[javascript({ jsx: true })]}
+              extensions={languageExtensions[snippet.language]}
               onBeforeChange={(editor, data, value) => {
                 setCode(value);
               }}
