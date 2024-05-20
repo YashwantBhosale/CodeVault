@@ -163,20 +163,17 @@ export const ViewProfile = () => {
     switch (e.target.innerText) {
       case "Follow": {
         try {
-          const response = await fetch(
-            BASE_URL+"api/user/follow",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                email: user.email,
-                username: user.username,
-                followObj: userobj,
-              }),
-            }
-          );
+          const response = await fetch(BASE_URL + "api/user/follow", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: user.email,
+              username: user.username,
+              followObj: userobj,
+            }),
+          });
           if (response.ok) {
             toast.success("Follow successful!");
           }
@@ -188,20 +185,17 @@ export const ViewProfile = () => {
       }
       case "Unfollow": {
         try {
-          const response = await fetch(
-            BASE_URL+"api/user/unfollow",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                email: user.email,
-                username: user.username,
-                followObj: userobj,
-              }),
-            }
-          );
+          const response = await fetch(BASE_URL + "api/user/unfollow", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: user.email,
+              username: user.username,
+              followObj: userobj,
+            }),
+          });
           if (response.ok) {
             toast.success("Follow successful!");
           }
@@ -242,22 +236,86 @@ export const ViewProfile = () => {
     }
     return description;
   }
-
+  function getMonthFromIndex(index) {
+    switch (index) {
+      case 0:
+        return "Jan";
+      case 1:
+        return "Feb";
+      case 2:
+        return "Mar";
+      case 3:
+        return "Apr";
+      case 4:
+        return "May";
+      case 5:
+        return "Jun";
+      case 6:
+        return "Jul";
+      case 7:
+        return "Aug";
+      case 8:
+        return "Sep";
+      case 9:
+        return "Oct";
+      case 10:
+        return "Nov";
+      case 11:
+        return "Dec";
+      default:
+        return "Invalid month index";
+    }
+  }
+  
   function createSnippetCards(snippet) {
+    const month = getMonthFromIndex(
+      Number.parseInt(snippet.dateCreated.split("-")[1]) - 1
+    );
+    const day = snippet.dateCreated.split("-")[2].split("T")[0];
+    const date = `${month} ${day}`;
+
     return (
-      <div
-        className="w-[30%] shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px] p-6 m-6 min-w-[270px]"
+      <article
         key={snippet._id}
+        className="flex bg-white transition hover:shadow-xl w-[29%] border-2 rounded-xl m-[20px] min-w-[340px]"
       >
-        <h3 className="font-bold uppercase text-gray-900">{snippet.title}</h3>
-        <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700 my-4">
-          <span className="font-bold text-gray-900"></span>{" "}
-          {truncateDescription(snippet.description || "N/A", 40)}
-        </p>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          View Snippet
-        </button>
-      </div>
+        <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
+          <time
+            // dateTime={date}
+            className="flex items-center justify-between gap-4 text-xs font-bold uppercase text-gray-900"
+          >
+            <span>{date}</span>
+            <span className="w-px flex-1 bg-gray-900/10"></span>
+            <span>
+              {/* {getMonthAndDayFromSeconds(snippet.dateCreated.seconds)} */}
+            </span>
+          </time>
+        </div>
+        <div className="flex flex-1 flex-col justify-between">
+          <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6 min-h-[150px]">
+            <a href="#">
+              <h3 className="font-bold uppercase text-gray-900">
+                {snippet.title}
+              </h3>
+            </a>
+            <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
+              <span className="font-bold text-gray-900">Description:</span>{" "}
+              {truncateDescription(snippet.description || "N/A", 40)}
+            </p>
+            <p>
+              <span className="font-bold text-gray-900">Language:</span>{" "}
+              {snippet.language}
+            </p>
+          </div>
+          <div className="flex items-end justify-end">
+            <button
+              className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl mt-2 ml-2"
+            >
+              View Snippet
+            </button>
+          </div>
+        </div>
+      </article>
     );
   }
 
@@ -342,13 +400,13 @@ export const ViewProfile = () => {
     );
   }
   return (
-    <div className="mx-5 mt-[11vh] pb-10">
+    <div className="mx-auto mt-[20vh]">
       <div
-        className={`w-fit flex shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px] mx-auto h-[18vh] items-center justify-center h-fit py-5 ${
+        className={`w-[80%]  md:w-[40%] rounded-xl p-4 flex shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px] mx-auto items-center p-4 justify-center ${
           windowWidth < 500 ? "flex-col" : ""
         }`}
       >
-        <div className="w-[30%] flex flex-col items-center justify-center gap-3">
+        <div className="flex flex-col items-center justify-center p-2 gap-3">
           <img
             src={
               currentuser?.avtar?.length > 15
@@ -356,30 +414,35 @@ export const ViewProfile = () => {
                 : iconSrcList[currentuser?.avtar]
             }
             alt={currentuser.username}
-            className="w-[50%] rounded-full object-cover mx-3"
+            className="h-24 w-24 rounded-full object-cover mx-3"
           />
-          <h2>{currentuser.username}</h2>
+          <h2 className="font-bold text-xl">{currentuser.username}</h2>
         </div>
-        <div className="h-fit">
-          <div className="flex">
-            <h2 className="flex flex-col align-center text-center mx-5 mt-7">
+        <div className="mx-2 mt-4">
+          <div className="flex items-center justify-between">
+            <h2 className="flex flex-col text-center mx-4 text-4xl font-thin">
               {currentuser ? currentuser?.followers?.length : 0}
-              <span>Followers</span>
+              <span className="text-sm font-bold">Followers</span>
             </h2>
-            <h2 className="flex flex-col align-center text-center mx-5 mt-7">
+            <h2 className="flex flex-col text-center mx-4 text-4xl font-thin">
               {currentuser ? currentuser?.following?.length : 0}
-              <span>Following</span>
+              <span className="text-sm font-bold">Following</span>
             </h2>
-            <h2 className="flex flex-col align-center text-center mx-5 mt-7">
+            <h2 className="flex flex-col  text-center mx-4 text-4xl font-thin">
               {currentuser ? currentuser?.publicPosts?.length : 0}
-              <span>Posts</span>
+              <span className="text-sm font-bold">Posts</span>
             </h2>
           </div>
-          <button onClick={(e) => handleFollowButton(e, {
-            id: currentuser.id,
-            username: currentuser.username,
-            avtar: currentuser.avtar,
-          })} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mx-auto my-4 w-[90%] block">
+          <button
+            onClick={(e) =>
+              handleFollowButton(e, {
+                id: currentuser.id,
+                username: currentuser.username,
+                avtar: currentuser.avtar,
+              })
+            }
+            className="w-full text-white bg-black hover:bg-slate-700  rounded-lg text-md p-2 mx-auto mt-4 block"
+          >
             {user.following.some(
               (followingUser) => followingUser.username === currentuser.username
             )
@@ -391,14 +454,14 @@ export const ViewProfile = () => {
       <div className="w-fit mx-auto my-6">
         <button
           type="button"
-          class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-gray-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:hover:bg-gray-300"
+          class="p-2.5 m-2 text-md font-md rounded-xl text-white bg-black focus:ring-gray-100 focus:ring-4 focus:bg-slate-700 hover:bg-slate-700"
           onClick={() => setSnippetsWindow(true)}
         >
           Snippets
         </button>
         <button
           type="button"
-          class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:border-gray-600 dark:hover:bg-gray-300 dark:hover:border-gray-600"
+          class="w-[18vw] md:w-[6vw] p-2.5 m-2 text-md font-md rounded-xl text-white bg-black focus:ring-gray-100 focus:ring-4 focus:bg-slate-700 hover:bg-slate-700"
           onClick={() => setSnippetsWindow(false)}
         >
           Posts

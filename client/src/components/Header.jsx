@@ -36,7 +36,7 @@ export default function Header(props) {
   async function getNotifications() {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/user/getnotifications",
+        process.env.REACT_APP_BASE_URL+"api/user/getnotifications",
         {
           method: "POST",
           headers: {
@@ -49,7 +49,7 @@ export default function Header(props) {
       );
       console.log(response);
       const data = await response.json();
-      console.log(data.notifications);
+      console.log(data.notifications.reverse());
       setnotifications(data.notifications);
     } catch (error) {
       console.log(error.message);

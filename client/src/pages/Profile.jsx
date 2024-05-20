@@ -115,7 +115,7 @@ export const Profile = () => {
                 <FaWindowClose />
               </button>
               <h2 className="text-xl font-bold mb-4">Followers</h2>
-              {userobj?.followers.map((follower) => (
+              {user?.followers.map((follower) => (
                 <div key={follower.uid} className="flex items-center mb-2">
                   <FaUser
                     style={{
@@ -164,7 +164,7 @@ export const Profile = () => {
                 <FaWindowClose />
               </button>
               <h2 className="text-xl font-bold mb-4">Following</h2>
-              {userobj?.following.map((followinguser) => (
+              {user?.following.map((followinguser) => (
                 <div key={followinguser.uid} className="flex items-center mb-2">
                   <FaUser
                     style={{

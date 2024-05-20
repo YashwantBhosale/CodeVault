@@ -256,8 +256,11 @@ export const Explore = () => {
 
   function createMostFollowedUsersDiv(userobj) {
     return (
-      <div class="w-[18vw] min-w-[250px] my-2 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center h-[90%]">
-        <div class="mb-8">
+      <div class="w-[18vw] min-w-[250px] my-2 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center h-full" 
+      onClick={() =>
+        navigate(`/viewprofile?username=${userobj?.username}`)}
+      >
+        <div className="h-full">
           <img
             class="object-center object-cover rounded-full h-36 w-36"
             src={
@@ -268,8 +271,8 @@ export const Explore = () => {
             alt="photo"
           />
         </div>
-        <div class="text-center">
-          <p class="text-xl text-black font-bold mb-2">{userobj.username}</p>
+        <div class="text-center mt-4">
+          <p class="text-xl whitespace-nowrap text-black font-bold mb-2">{userobj.username}</p>
           <button
             onClick={(e) => handleFollowButton(e, userobj)}
             className="px-4 py-2 bg-gray-800 text-white rounded-md mt-2 hover:bg-slate-700"
@@ -342,12 +345,12 @@ export const Explore = () => {
           <span className="font-semibold"> </span>
           <p
             style={{ width: "95%", margin: "10px auto", marginTop: 0 }}
-            className="bg-light-off-white border border-gray-200 p-4 text-sm"
+            className="bg-light-off-white border border-gray-200 p-4 text-sm max-h-[30vh] overflow-scroll rounded-lg"
           >
             {post.content || "this is a description."}
           </p>
         </h1>
-        {post?.files?.length ? <img src={`${BASE_URL}api/public/files?filename=${post.files[0]}`} alt="post" className="w-full h-fit object-cover rounded-lg" /> : null}
+        {post?.files?.length ? <img src={`${BASE_URL}api/public/files?filename=${post.files[0]}`} alt="post" className="w-[75%] h-[75%] object-contain mx-auto rounded-lg" /> : null}
         <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
           <div className="w-full md:w-[70%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
             <div
@@ -392,7 +395,7 @@ export const Explore = () => {
       <h1 className="text-center text-xl font-bold">Ready to Explore?</h1>
       <Autocomplete data={allstudents}  />
 
-      <div className="my-6 flex items-center flex-col md:flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4 h-[42vh]">
+      <div className="my-6 flex items-center flex-col md:flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4">
         {mostfollowed.map(createMostFollowedUsersDiv)}
       </div>
 
