@@ -43,8 +43,24 @@ export const Snippet = () => {
       redirect: "follow",
     };
 
+    const supportedLanguagesForDownload = [
+      "c",
+      "css",
+      "cpp",
+      "go",
+      "html",
+      "java",
+      "javascript",
+      "jsx",
+      "php",
+      "python",
+      "rust",
+      "typescript",
+    ];
+
+    let language = supportedLanguagesForDownload.includes(snippet.language) ? `${snippet.language}` : "javascript";
     fetch(
-      "https://code2img.vercel.app/api/to-image?language=javascript&theme=dracula&background-color=rgba(171,184,195,1)",
+      `https://code2img.vercel.app/api/to-image?language=${language}&theme=dracula&background-color=rgba(171,184,195,1)`,
       requestOptions
     )
       .then((response) => response.blob())
