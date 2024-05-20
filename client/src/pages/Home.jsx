@@ -36,7 +36,7 @@ function Home() {
   const [dataloading, setdataloading] = useState(false);
   const [value, setValue] = useState(null);
   const [fetched, setfetched] = useState(false);
-  const [pinnedSnippets, setPinnedSnippets] = useState([]);
+  let [pinnedSnippets, setPinnedSnippets] = useState([]);
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   // Function to fetch snippets
@@ -69,8 +69,16 @@ function Home() {
   }, []);
 
   // Function to toggle pin status of a snippet
-  async function togglePinSnippet(snippetId, isPinned) {
+  async function togglePinSnippet(snippet, snippetId, isPinned) {
     try {
+      if(!isPinned){
+        setPinnedSnippets([...pinnedSnippets, snippet])
+        setUserSnippets(usersnippets.filter((s) => s._id !== snippetId))
+      }else{
+        setPinnedSnippets(pinnedSnippets.filter((s) => s._id !== snippetId))
+        setUserSnippets([...usersnippets, snippet])
+      }
+
       const response = await fetch(
         BASE_URL+"api/user/togglepinstatus",
         {
@@ -89,7 +97,6 @@ function Home() {
       let json = await response.json();
       if (response.ok) {
         toast.success("Snippet pin status updated!");
-        fetchsnippets();
       } else {
         toast.error("Error updating snippet pin status!");
       }
@@ -365,7 +372,7 @@ function Home() {
           <div className="flex items-end justify-end">
             <button
               className="block min-w-[6vw] bg-black px-5 py-3 text-center mr-2 text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-bl-xl"
-              onClick={() => togglePinSnippet(snippet._id, isPinned)}
+              onClick={() => togglePinSnippet(snippet, snippet._id, isPinned)}
             >
               {isPinned ? "Unpin" : "Pin"}
             </button>
