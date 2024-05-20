@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { iconSrcList } from "../utils/icons";
 import { useNavigate } from "react-router-dom";
 import { Autocomplete } from "../components/Autocomplete";
+import ImageViewer from "react-simple-image-viewer";
 
 export const Explore = () => {
   const [posts, setPosts] = useState([]);
@@ -17,18 +18,18 @@ export const Explore = () => {
   const navigate = useNavigate();
   const [allstudents, setAllStudents] = useState([]);
   const [mostfollowed, setmostfollowed] = useState([]);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [currentSrcSet, setCurrentSrcSet] = useState([]);
+  const srcSet = [];
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   async function fetchAllUsers() {
     try {
-      const response = await fetch(
-        BASE_URL+"api/public/getallusers",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(BASE_URL + "api/public/getallusers", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setAllStudents(data);
     } catch (error) {
@@ -38,15 +39,12 @@ export const Explore = () => {
 
   async function fetchMostFollowed() {
     try {
-      const response = await fetch(
-        BASE_URL+"api/public/mostfollowed",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(BASE_URL + "api/public/mostfollowed", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       const data = await response.json();
       setmostfollowed(data);
@@ -78,16 +76,13 @@ export const Explore = () => {
           (obj) => obj.username !== user.username
         );
       }
-      let response = await fetch(
-        BASE_URL+"api/public/updateupvotes",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: post._id, userObj }),
-        }
-      );
+      let response = await fetch(BASE_URL + "api/public/updateupvotes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: post._id, userObj }),
+      });
       if (response.ok) {
         toast.success("added to upvoted posts");
       } else {
@@ -121,16 +116,13 @@ export const Explore = () => {
         );
       }
 
-      let response = await fetch(
-        BASE_URL+"api/public/updatedownvotes",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: post._id, userObj }),
-        }
-      );
+      let response = await fetch(BASE_URL + "api/public/updatedownvotes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: post._id, userObj }),
+      });
 
       if (response.ok) {
         toast.success("added to downvoted posts");
@@ -144,15 +136,12 @@ export const Explore = () => {
 
   async function fetchPublicPosts() {
     try {
-      const response = await fetch(
-        BASE_URL+"api/public/getpublicposts",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(BASE_URL + "api/public/getpublicposts", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setPosts(data);
     } catch (error) {
@@ -197,20 +186,17 @@ export const Explore = () => {
     switch (e.target.innerText) {
       case "Follow": {
         try {
-          const response = await fetch(
-            BASE_URL+"api/user/follow",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                email: user.email,
-                username: user.username,
-                followObj: userobj,
-              }),
-            }
-          );
+          const response = await fetch(BASE_URL + "api/user/follow", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: user.email,
+              username: user.username,
+              followObj: userobj,
+            }),
+          });
           if (response.ok) {
             toast.success("Follow successful!");
           }
@@ -222,20 +208,17 @@ export const Explore = () => {
       }
       case "Unfollow": {
         try {
-          const response = await fetch(
-            BASE_URL+"api/user/unfollow",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                email: user.email,
-                username: user.username,
-                followObj: userobj,
-              }),
-            }
-          );
+          const response = await fetch(BASE_URL + "api/user/unfollow", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: user.email,
+              username: user.username,
+              followObj: userobj,
+            }),
+          });
           if (response.ok) {
             toast.success("Follow successful!");
           }
@@ -285,8 +268,6 @@ export const Explore = () => {
     );
   }
 
-  
-
   const calculateTimeAgo = (createdAt) => {
     const currentTime = new Date();
     const postTime = new Date(createdAt);
@@ -294,22 +275,39 @@ export const Explore = () => {
     const minutesDifference = Math.floor(timeDifference / (1000 * 60));
     const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
     const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-    
+
     if (daysDifference > 0) {
-      return `${daysDifference} day${daysDifference > 1 ? 's' : ''} ago`;
+      return `${daysDifference} day${daysDifference > 1 ? "s" : ""} ago`;
     } else if (hoursDifference > 0) {
-      return `${hoursDifference} hour${hoursDifference > 1 ? 's' : ''} ago`;
+      return `${hoursDifference} hour${hoursDifference > 1 ? "s" : ""} ago`;
     } else {
-      return `${minutesDifference} minute${minutesDifference > 1 ? 's' : ''} ago`;
+      return `${minutesDifference} minute${
+        minutesDifference > 1 ? "s" : ""
+      } ago`;
     }
   };
   function createPostsDiv(post, id) {
+    if (post.files) {
+      let filesrc = post.files.map(
+        (file) =>
+          `${BASE_URL}api/public/files?filename=${encodeURIComponent(file)}`
+      );
+      srcSet.push(filesrc);
+      console.log(srcSet[id]);
+    }
     return (
       <div
         key={id}
         className="w-[90%] md:w-[60%] mx-auto border border-gray-300 p-4 my-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
         style={{ zIndex: -99 }}
       >
+        {isViewerOpen && (
+          <ImageViewer
+            src={currentSrcSet}
+            currentIndex={0}
+            onClose={() => setIsViewerOpen(false)}
+          />
+        )}
         <p
           onClick={() =>
             navigate(`/viewprofile?username=${post.author.username}`)
@@ -327,7 +325,9 @@ export const Explore = () => {
             />
           ) || <FaUser className="border border-black p-1 rounded-full" />}
           {post.author.username}
-          <span className="text-sm ml-2 text-gray-500">{calculateTimeAgo(post.createdAt)}</span>
+          <span className="text-sm ml-2 text-gray-500">
+            {calculateTimeAgo(post.createdAt)}
+          </span>
         </p>
         <h1 className="text-xl mb-2">
           <p
@@ -347,7 +347,18 @@ export const Explore = () => {
             {post.content || "this is a description."}
           </p>
         </h1>
-        {post?.files?.length ? <img src={`${BASE_URL}api/public/files?filename=${post.files[0]}`} alt="post" className="w-full h-fit object-cover rounded-lg" /> : null}
+        {post?.files?.length ? (
+          <img
+            onClick={() => {
+              setCurrentSrcSet(srcSet[id]);
+              setIsViewerOpen(true);
+            }}
+            src={`${BASE_URL}api/public/files?filename=${post.files[0]}`}
+            alt="post"
+            className="w-full h-fit object-cover rounded-lg"
+          />
+        ) : null}
+
         <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
           <div className="w-full md:w-[70%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
             <div
@@ -370,7 +381,10 @@ export const Explore = () => {
                 style={{ zIndex: -1 }}
                 className="text-white text-xl -z-1"
               />{" "}
-              <span style={{ zIndex: -1 }} className="font-bold -z-1 text-white">
+              <span
+                style={{ zIndex: -1 }}
+                className="font-bold -z-1 text-white"
+              >
                 {post.downvotes.length}
               </span>
             </div>
@@ -380,8 +394,8 @@ export const Explore = () => {
               onClick={() =>
                 navigate(`/viewpost?id=${post._id}&avtar=${post.author.avtar}`)
               }
-              />
-              </div>
+            />
+          </div>
         </div>
       </div>
     );
@@ -390,7 +404,7 @@ export const Explore = () => {
   return (
     <div className="mt-[15vh] mb-[10vh]">
       <h1 className="text-center text-xl font-bold">Ready to Explore?</h1>
-      <Autocomplete data={allstudents}  />
+      <Autocomplete data={allstudents} />
 
       <div className="my-6 flex items-center flex-col md:flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4 h-[42vh]">
         {mostfollowed.map(createMostFollowedUsersDiv)}
