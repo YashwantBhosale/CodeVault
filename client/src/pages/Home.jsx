@@ -137,7 +137,9 @@ function Home() {
   };
 
   const handleChange = (value, viewUpdate) => {
+    console.log("value: ", value)
     setCodeValue(value);
+    console.log("codeValue: ", codeValue);  
   };
 
   const handleCreatePost = () => {

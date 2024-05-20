@@ -17,6 +17,7 @@ import { csharp } from "@replit/codemirror-lang-csharp";
 
 // Language extensions map
 export const languageExtensions = {
+  c: cpp(),
   cpp: cpp(),
   html: html(),
   java: java(),
@@ -33,10 +34,12 @@ export const languageExtensions = {
   sass: sass(),
   clojure: clojure(),
   csharp: csharp(),
+  other: javascript()
 };
 
 // Placeholders for each language
 export const placeholders = {
+  c: '#include <stdio.h>\n\nint main() {\n  printf("Hello World!");\n  return 0;\n}',
   cpp: '#include <iostream>\n\nint main() {\n  std::cout << "Hello World!";\n  return 0;\n}',
   html: '<h1>Hello World!</h1>',
   java: 'public class Main {\n  public static void main(String[] args) {\n    System.out.println("Hello World!");\n  }\n}',
@@ -52,11 +55,13 @@ export const placeholders = {
   less: '@color: #4D926F;\n#header {\n  color: @color;\n}',
   sass: '$font-stack: Helvetica, sans-serif;\n$primary-color: #333;\n\nbody {\n  font: 100% $font-stack;\n  color: $primary-color;\n}',
   clojure: '(println "Hello World!")',
-  csharp: 'using System;\n\nclass Program {\n  static void Main() {\n    Console.WriteLine("Hello World!");\n  }\n}'
+  csharp: 'using System;\n\nclass Program {\n  static void Main() {\n    Console.WriteLine("Hello World!");\n  }\n}',
+  other: '// Write your code here...'
 };
 
 // Languages list
 export const languages = [
+  { id: 'c', name: 'C' },
   { id: 'cpp', name: 'C++' },
   { id: 'html', name: 'HTML' },
   { id: 'java', name: 'Java' },
@@ -72,5 +77,6 @@ export const languages = [
   { id: 'less', name: 'LESS' },
   { id: 'sass', name: 'SASS' },
   { id: 'clojure', name: 'Clojure' },
-  { id: 'csharp', name: 'C#' }
+  { id: 'csharp', name: 'C#' },
+  { id: 'other', name: 'Other'}
 ];
