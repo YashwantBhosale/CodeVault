@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 import {
   languages,
@@ -42,6 +43,7 @@ function Home() {
   const [fetched, setfetched] = useState(false);
   let [pinnedSnippets, setPinnedSnippets] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [file, setFile] = useState(null);
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -274,6 +276,49 @@ function Home() {
     }
   };
 
+  function getExtensionFromFileType(fileType) {
+    const fileTypes = {
+      "image/png": "png",
+      "image/jpeg": "jpeg",
+      "image/jpg": "jpg",
+      "image/webp": "webp",
+    };
+    return fileTypes[fileType];
+  }
+
+  async function handleFileUpload(file, author, post) {
+    const extension = getExtensionFromFileType(file.type);
+    if (!extension) {
+      toast.error("Invalid file type! You can only upload images!");
+      return;
+    }
+    const filename = `${user.username}-${post.title}.${extension}`;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("filename", filename);
+    formData.append("author", author.username);
+    formData.append("post", post.title);
+    console.log("formdata : ", formData);
+
+    const response = await fetch(BASE_URL + "api/user/uploadfile", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${user.token}`,
+        // "content-type": "multipart/form-data",
+      },
+      body: formData,
+    });
+
+    if(response.ok){
+      toast.success("File uploaded successfully!");
+      return filename;
+    }else{
+      toast.error("Error uploading file!");
+      return null;
+    }
+
+  }
+
   // Submit function for post
   async function handlePostSubmit(e) {
     e.preventDefault();
@@ -290,8 +335,26 @@ function Home() {
       },
       isPublic: true,
       tags: ["trending"],
+      files: [],
     };
     console.log(post);
+
+    if(file){
+      const userObj = {
+        username: user.username,
+        email: user.email,
+        avtar: user.avtar,
+      }
+      const postObj = {
+        title: postTitle,
+        author: user.username
+      }
+      const filename = await handleFileUpload(file, userObj, postObj);
+      if(filename){
+        post.files.push(filename);
+      }
+    }
+
     try {
       const response = await fetch(BASE_URL + "api/user/createPost", {
         method: "POST",
@@ -758,6 +821,15 @@ function Home() {
                       value={postContent}
                       onChange={(e) => setPostContent(e.target.value)}
                     ></textarea>
+
+                  </div>
+
+                  <div>
+                    <label>Images:</label>
+                    <input
+                      type="file"
+                      onChange={(e) => setFile(e.target.files[0])}
+                      />
                   </div>
                   <button
                     type="button"

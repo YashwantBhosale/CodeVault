@@ -347,6 +347,7 @@ export const Explore = () => {
             {post.content || "this is a description."}
           </p>
         </h1>
+        {post?.files?.length ? <img src={`${BASE_URL}api/public/files?filename=${post.files[0]}`} alt="post" className="w-full h-fit object-cover rounded-lg" /> : null}
         <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
           <div className="w-full md:w-[70%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
             <div
