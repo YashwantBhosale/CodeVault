@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const Snippet = require("./snippetModel");
 const Post = require("./postModel");
 const mongodb = require("mongodb");
-const { signupUser } = require("../controllers/usercontroller");
 
 const mongoClient = mongodb.MongoClient;
 
@@ -52,32 +51,37 @@ const userSchema = new mongoose.Schema({
   },
   followers: {
     type: Array,
-    default: [{
-      id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+    default: [
+      {
+        id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        username: String,
+        avtar: String,
+        unique: true,
       },
-      username: String,
-      avtar: String,
-      unique: true,
-    }],
+    ],
   },
   following: {
     type: Array,
-    default: [{
-      id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+    default: [
+      {
+        id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        username: {
+          type: String,
+        },
+        avtar: {
+          type: String,
+        },
+        unique: true,
       },
-      username: {
-        type: String
-      },
-      avtar: {
-        type: String
-      },
-      unique: true,
-    }],
+    ],
   },
+
 });
 
 // find user by usrname
@@ -303,14 +307,24 @@ userSchema.statics.createPost = async function (
   content,
   author,
   tags,
-  isPublic
+  isPublic,
+  files
 ) {
   const user = await this.findOne({ email });
   if (!user) {
     throw Error("User not found");
   }
   author = { ...author, id: user._id };
-  const post = new Post({ title, content, author, tags, isPublic });
+  const post = new Post({
+    title,
+    content,
+    author,
+    tags,
+    isPublic,
+    files,
+  });
+
+  // post.files = files;
   await post.save();
 
   user.posts.push(post._id);
@@ -354,7 +368,7 @@ userSchema.statics.follow = async function (email, username, followObj) {
     type: "Follow",
     content: `"${user.username}" started following you!`,
     timestamp: date,
-  })
+  });
 
   console.log("following user ; ", followingUser);
 
@@ -366,7 +380,8 @@ userSchema.statics.unfollow = async function (email, username, followObj) {
   const user = await this.findOne({ email, username }); // current user
   if (!user) throw Error("User not found!");
 
-  const followingUser = await this.findOne({ // followed user to be unfollowed
+  const followingUser = await this.findOne({
+    // followed user to be unfollowed
     _id: followObj.id,
     username: followObj.username,
   });

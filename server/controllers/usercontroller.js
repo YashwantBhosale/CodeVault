@@ -5,6 +5,8 @@ const passport = require("passport");
 const { exec } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const mongodb = require("mongodb");
+const mongoClient = mongodb.MongoClient;
 
 // for creating token
 function createToken(id) {
@@ -263,9 +265,9 @@ async function updateSnippet(req, res) {
 
 //for creating post
 async function createPost(req, res) {
-  const { email, title, content, author, tags, isPublic } = req.body;
+  const { email, title, content, author, tags, isPublic, files } = req.body;
   try {
-    await User.createPost(email, title, content, author, tags, isPublic);
+    await User.createPost(email, title, content, author, tags, isPublic, files);
     res.status(200).json({ message: "Success!" });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -326,9 +328,41 @@ async function getnotifications(req, res) {
     if (!user) throw Error("User not found!");
     console.log("user(getnotifications) : ", user);
     const result = {
-      notifications: user.notifications
-    }
+      notifications: user.notifications,
+    };
     res.status(200).json(result);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+
+async function uploadFile(req, res) {
+  try {
+    console.log("uploadFile: ", req.body)
+    const client = await mongoClient.connect(process.env.MONGO_URI);
+    const db = client.db(process.env.DB_NAME);
+    const bucket = new mongodb.GridFSBucket(db,{
+      bucketName: 'uploads'
+    });
+
+    const fileDetails = req.body;
+    console.log("fileDetails : ",  fileDetails);
+    const filename = fileDetails.filename;
+    const uploadStream = bucket.openUploadStream(filename, {
+      metadata: {
+        author: fileDetails.author,
+        post: fileDetails.post,
+        filename: filename,
+      }
+    });
+    uploadStream.end(req.file.buffer);
+
+    uploadStream.on('finish', () => {
+      client.close();
+      res.status(200).json({ message: "File uploaded successfully!" });
+    })
+
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
@@ -358,5 +392,6 @@ module.exports = {
   togglePinStatus,
   followUser,
   unfollowUser,
-  getnotifications
+  getnotifications,
+  uploadFile
 };

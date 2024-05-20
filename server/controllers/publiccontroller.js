@@ -1,5 +1,7 @@
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
+const mongodb = require("mongodb");
+const mongoClient = mongodb.MongoClient;
 
 async function getPublicPosts(req, res) {
   try {
@@ -98,6 +100,29 @@ async function getMostFollowedUsers(req, res) {
     }
 }
 
+async function handleFiles(req, res) {
+  try {
+    const filename = req.query.filename;
+    const client = await mongoClient.connect(process.env.MONGO_URI);
+    const db = client.db(process.env.DB_NAME);
+    const bucket = new mongodb.GridFSBucket(db, {
+      bucketName: "uploads",
+    });
+
+    const file = await bucket.find({ filename: filename }).toArray();
+
+    if(file.length === 0 || !file) {
+      throw Error("File not found");
+    }
+
+    const downloadStream = bucket.openDownloadStreamByName(filename);
+    downloadStream.pipe(res);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ error: error.message });
+  }
+}
+
 module.exports = {
   getPublicPosts,
   updateUpvotes,
@@ -107,4 +132,5 @@ module.exports = {
   getPublicInfo,
   getAllUsers,
   getMostFollowedUsers,
+  handleFiles,
 };

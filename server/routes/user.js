@@ -21,8 +21,11 @@ const {
   togglePinStatus,
   followUser,
   unfollowUser,
-  getnotifications
+  getnotifications,
+  uploadFile,
 } = require("../controllers/usercontroller");
+const multer = require("multer");
+const upload = multer();
 const router = express.Router();
 
 // Routes for google authentication
@@ -50,17 +53,18 @@ router.post("/getpublicsnippets", getPublicSnippets);
 router.post("/getsnippets", getSnippets);
 
 // Routes for adding, deleting, updating snippets
-router.post("/addsnippet",verifyjwt, addSnippet);
-router.post("/deletesnippet",verifyjwt, deleteSnippet);
+router.post("/addsnippet", verifyjwt, addSnippet);
+router.post("/deletesnippet", verifyjwt, deleteSnippet);
 
 router.post("/follow", followUser);
 router.post("/unfollow", unfollowUser);
 
-router.post("/getsnippet",verifyjwt, getSnippet);
-router.post("/updatesnippet",verifyjwt, updateSnippet)
-router.post("/togglepinstatus",verifyjwt, togglePinStatus);
+router.post("/getsnippet", verifyjwt, getSnippet);
+router.post("/updatesnippet", verifyjwt, updateSnippet);
+router.post("/togglepinstatus", verifyjwt, togglePinStatus);
 // Routes for creating post
-router.post("/createpost",verifyjwt, createPost);
+router.post("/uploadfile", upload.single("file"), uploadFile);
+router.post("/createpost", verifyjwt, createPost);
 
 router.post("/getnotifications", getnotifications);
 

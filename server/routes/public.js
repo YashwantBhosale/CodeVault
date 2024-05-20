@@ -8,7 +8,8 @@ const {
   getPostById,
   getPublicInfo,
   getAllUsers,
-  getMostFollowedUsers
+  getMostFollowedUsers,
+  handleFiles,
 } = require("../controllers/publiccontroller");
 
 router.get("/getpublicposts", getPublicPosts);
@@ -21,5 +22,7 @@ router.get("/viewuser", getPublicInfo);
 
 router.get("/getallusers", getAllUsers);
 router.get("/mostfollowed", getMostFollowedUsers);
+
+router.get("/files", handleFiles);
 
 module.exports = router;
