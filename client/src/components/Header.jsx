@@ -56,17 +56,25 @@ export default function Header(props) {
     }
   }
 
-  function getTimeFromTimestamp(timestamp) {
-    const date = new Date(timestamp);
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
+  const calculateTimeAgo = (createdAt) => {
+    const currentTime = new Date();
+    const postTime = new Date(createdAt);
+    const timeDifference = currentTime - postTime;
+    const minutesDifference = Math.floor(timeDifference / (1000 * 60));
+    const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
-    const formattedHours = hours < 10 ? "0" + hours : hours;
-    const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
-
-    return formattedHours + ":" + formattedMinutes;
-  }
-
+    if (daysDifference > 0) {
+      return `${daysDifference} day${daysDifference > 1 ? "s" : ""} ago`;
+    } else if (hoursDifference > 0) {
+      return `${hoursDifference} hour${hoursDifference > 1 ? "s" : ""} ago`;
+    } else {
+      return `${minutesDifference} minute${
+        minutesDifference > 1 ? "s" : ""
+      } ago`;
+    }
+  };
+  
   function createNotifications(notification, index) {
     let content = notification.content;
     let username = "";
@@ -81,10 +89,12 @@ export default function Header(props) {
     return (
       <div
         key={index}
-        className="flex items-center gap-4 px-4 py-4 border-b border-gray-300"
+        className="flex items-center gap-4 px-4 py-4 border-b border-gray-300 text-sm"
       >
-        <FaRegBell />
-        <p className="w-4/5">
+        <FaRegBell 
+        className="text-xl"
+        />
+        <p className="w-full ">
           {notification.type == "Follow" ? (
             <span>
               <span
@@ -102,9 +112,9 @@ export default function Header(props) {
             notification.content
           )}
         </p>
-        <span className="absolute right-10">
+        <span className="whitespace-nowrap">
           {notification.timestamp
-            ? getTimeFromTimestamp(notification.timestamp)
+            ? calculateTimeAgo(notification.timestamp)
             : "11:11"}
         </span>
       </div>
@@ -185,7 +195,13 @@ export default function Header(props) {
               </Popover>
             ) : null}
           </div>
-          <div className="flex lg:hidden">
+          <div className="flex items-center lg:hidden">
+            <a
+              className="text-md leading text-gray-900 cursor-pointer mr-8"
+              onClick={() => setNotificationsOpen(true)}
+            >
+              <FaBell />
+            </a>
             <button
               type="button"
               className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
@@ -319,7 +335,7 @@ export default function Header(props) {
               initial={{ y: "-100vh" }}
               animate={{ y: 0 }}
               transition={{ type: "spring", stiffness: 150 }}
-              className="bg-white p-8 rounded-xl lg:w-2/5 m-[20px]"
+              className="bg-white p-8 rounded-xl w-full lg:w-2/5 m-[20px]"
             >
               <button
                 onClick={(e) => {

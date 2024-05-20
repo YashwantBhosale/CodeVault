@@ -3,12 +3,16 @@ import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CodeMirror from "@uiw/react-codemirror";
 import { EditorState } from "@codemirror/state";
-import { javascript } from "@codemirror/lang-javascript";
 import { githubDark } from "@uiw/codemirror-themes-all";
 import { FaCog, FaEdit, FaClipboard } from "react-icons/fa";
 import { useAuthContext } from "../hooks/useAuthContext";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
+import {
+  languages,
+  languageExtensions,
+  placeholders,
+} from "../utils/languages.js";
 
 export const Snippet = () => {
   const [searchParams] = useSearchParams();
@@ -22,11 +26,10 @@ export const Snippet = () => {
   const id = searchParams.get("id");
   const state = EditorState.create({
     doc: "my source code",
-    extensions: [githubDark, javascript({ jsx: true })],
+    extensions: [githubDark],
   });
 
   const BASE_URL = process.env.REACT_APP_BASE_URL;
-
 
   async function handleDownload() {
     setLoading(true);
@@ -40,8 +43,24 @@ export const Snippet = () => {
       redirect: "follow",
     };
 
+    const supportedLanguagesForDownload = [
+      "c",
+      "css",
+      "cpp",
+      "go",
+      "html",
+      "java",
+      "javascript",
+      "jsx",
+      "php",
+      "python",
+      "rust",
+      "typescript",
+    ];
+
+    let language = supportedLanguagesForDownload.includes(snippet.language) ? `${snippet.language}` : "javascript";
     fetch(
-      "https://code2img.vercel.app/api/to-image?language=javascript&theme=dracula&background-color=rgba(171,184,195,1)",
+      `https://code2img.vercel.app/api/to-image?language=${language}&theme=dracula&background-color=rgba(171,184,195,1)`,
       requestOptions
     )
       .then((response) => response.blob())
@@ -258,7 +277,7 @@ export const Snippet = () => {
               theme={githubDark}
               onChange={handleChange}
               basicSetup={{ lineNumbers: true }}
-              extensions={[javascript({ jsx: true })]}
+              extensions={languageExtensions[snippet.language]}
               onBeforeChange={(editor, data, value) => {
                 setCode(value);
               }}
