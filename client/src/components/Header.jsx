@@ -56,17 +56,25 @@ export default function Header(props) {
     }
   }
 
-  function getTimeFromTimestamp(timestamp) {
-    const date = new Date(timestamp);
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
+  const calculateTimeAgo = (createdAt) => {
+    const currentTime = new Date();
+    const postTime = new Date(createdAt);
+    const timeDifference = currentTime - postTime;
+    const minutesDifference = Math.floor(timeDifference / (1000 * 60));
+    const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
 
-    const formattedHours = hours < 10 ? "0" + hours : hours;
-    const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
-
-    return formattedHours + ":" + formattedMinutes;
-  }
-
+    if (daysDifference > 0) {
+      return `${daysDifference} day${daysDifference > 1 ? "s" : ""} ago`;
+    } else if (hoursDifference > 0) {
+      return `${hoursDifference} hour${hoursDifference > 1 ? "s" : ""} ago`;
+    } else {
+      return `${minutesDifference} minute${
+        minutesDifference > 1 ? "s" : ""
+      } ago`;
+    }
+  };
+  
   function createNotifications(notification, index) {
     let content = notification.content;
     let username = "";
@@ -104,7 +112,7 @@ export default function Header(props) {
         </p>
         <span className="absolute right-10">
           {notification.timestamp
-            ? getTimeFromTimestamp(notification.timestamp)
+            ? calculateTimeAgo(notification.timestamp)
             : "11:11"}
         </span>
       </div>

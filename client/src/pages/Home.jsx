@@ -399,7 +399,7 @@ function Home() {
 
   return (
     <div
-      className="flex flex-col items-center mt-[15vh] md:mt-18 mb-[100px]"
+      className="flex flex-col items-center mt-[13vh] md:mt-18 mb-[100px]"
       style={{
         backgroundColor: "#fff",
         backgroundImage:
@@ -428,7 +428,7 @@ function Home() {
               <a
                 onClick={handleAddButtonClick}
                 href="#"
-                className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
+                className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-b-xl md:rounded-br-xl md:rounded-bl-none"
               >
                 Add
               </a>
