@@ -453,7 +453,7 @@ function Home() {
               <a
                 onClick={handleCreatePost}
                 href="#"
-                className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
+                className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-b-xl md:rounded-br-xl md:rounded-bl-none"
               >
                 Create
               </a>

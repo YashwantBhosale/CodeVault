@@ -89,10 +89,12 @@ export default function Header(props) {
     return (
       <div
         key={index}
-        className="flex items-center gap-4 px-4 py-4 border-b border-gray-300"
+        className="flex items-center gap-4 px-4 py-4 border-b border-gray-300 text-sm"
       >
-        <FaRegBell />
-        <p className="w-4/5">
+        <FaRegBell 
+        className="text-xl"
+        />
+        <p className="w-full ">
           {notification.type == "Follow" ? (
             <span>
               <span
@@ -110,7 +112,7 @@ export default function Header(props) {
             notification.content
           )}
         </p>
-        <span className="absolute right-10">
+        <span className="whitespace-nowrap">
           {notification.timestamp
             ? calculateTimeAgo(notification.timestamp)
             : "11:11"}
@@ -333,7 +335,7 @@ export default function Header(props) {
               initial={{ y: "-100vh" }}
               animate={{ y: 0 }}
               transition={{ type: "spring", stiffness: 150 }}
-              className="bg-white p-8 rounded-xl lg:w-2/5 m-[20px]"
+              className="bg-white p-8 rounded-xl w-full lg:w-2/5 m-[20px]"
             >
               <button
                 onClick={(e) => {
