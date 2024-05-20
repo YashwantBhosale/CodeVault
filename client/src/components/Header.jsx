@@ -185,7 +185,13 @@ export default function Header(props) {
               </Popover>
             ) : null}
           </div>
-          <div className="flex lg:hidden">
+          <div className="flex items-center lg:hidden">
+            <a
+              className="text-md leading text-gray-900 cursor-pointer mr-8"
+              onClick={() => setNotificationsOpen(true)}
+            >
+              <FaBell />
+            </a>
             <button
               type="button"
               className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"

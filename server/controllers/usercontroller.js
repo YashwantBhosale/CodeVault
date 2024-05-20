@@ -356,7 +356,6 @@ module.exports = {
   logout,
   verifyjwt,
   togglePinStatus,
-  generateImage,
   followUser,
   unfollowUser,
   getnotifications
