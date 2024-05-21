@@ -5,6 +5,7 @@ import {
   FaRegArrowAltCircleUp,
   FaRegArrowAltCircleDown,
   FaComment,
+  FaArrowDown,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { iconSrcList } from "../utils/icons";
@@ -433,6 +434,12 @@ export const Explore = () => {
       <div className="my-6 flex items-center flex-col md:flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4">
         {mostfollowed.map(createMostFollowedUsersDiv)}
       </div>
+      <button onClick={() => {
+        dispatch({ type: "UPDATE_FETCH_STATE", payload: false });
+        sessionStorage.removeItem("posts");
+        fetchPublicPosts();
+        setPage(2);
+      }} className="font-bold text-center flex gap-4 items-center text-xl m-auto"><FaArrowDown /> Fetch Latest Posts.... </button>
       <InfiniteScroll
         dataLength={posts.length}
         next={() => {
@@ -447,7 +454,7 @@ export const Explore = () => {
           </p>
         }
       >
-        {posts?.map((post, index) => createPostsDiv(post, index))}
+        {postsLoading ? <h1 className="text-center font-bold text-xl">LOADING...</h1> : posts?.map((post, index) => createPostsDiv(post, index))}
       </InfiniteScroll>
     </div>
   );
