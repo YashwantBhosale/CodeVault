@@ -326,7 +326,6 @@ async function getnotifications(req, res) {
   try {
     const user = await User.findOne({ username });
     if (!user) throw Error("User not found!");
-    console.log("user(getnotifications) : ", user);
     const result = {
       notifications: user.notifications,
     };
@@ -336,7 +335,7 @@ async function getnotifications(req, res) {
     res.status(400).json({ message: error.message });
   }
 }
-
+/*
 async function uploadFile(req, res) {
   try {
     console.log("uploadFile: ", req.body)
@@ -348,6 +347,7 @@ async function uploadFile(req, res) {
 
     const fileDetails = req.body;
     console.log("fileDetails : ",  fileDetails);
+
     const filename = fileDetails.filename;
     const uploadStream = bucket.openUploadStream(filename, {
       metadata: {
@@ -363,6 +363,55 @@ async function uploadFile(req, res) {
       res.status(200).json({ message: "File uploaded successfully!" });
     })
 
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+*/
+
+async function uploadFiles(req, res) {
+  try {
+    console.log("uploadFiles: ", req.body);
+    const client = await mongoClient.connect(process.env.MONGO_URI);
+    const db = client.db(process.env.DB_NAME);
+    const bucket = new mongodb.GridFSBucket(db, {
+      bucketName: "uploads",
+    });
+
+    const fileDetails = req.body;
+    console.log("fileDetails : ", fileDetails);
+    console.log("files : ", req.files);
+
+    const promises = req.files.map((file, index) => {
+      const filename = `${fileDetails.author}-${
+        fileDetails.post
+      }-${index}.${fileDetails.extension[index]}`;
+      const uploadStream = bucket.openUploadStream(filename, {
+        metadata: {
+          author: fileDetails.author,
+          post: fileDetails.post,
+          filename: filename,
+        },
+      });
+
+      return new Promise((resolve, reject) => {
+        uploadStream.on("finish", () => {
+          resolve(filename);
+        });
+        uploadStream.on("error", (e) => {
+          console.log("error uploading file: ", e);
+          reject(e);
+        });
+        uploadStream.end(file.buffer);
+      });
+    });
+
+    const results = await Promise.all(promises);
+    console.log(results);
+
+    client.close();
+    res.status(200).json({ message: "Files uploaded successfully!" });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
@@ -393,5 +442,5 @@ module.exports = {
   followUser,
   unfollowUser,
   getnotifications,
-  uploadFile
+  uploadFiles,
 };

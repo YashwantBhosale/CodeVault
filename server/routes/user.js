@@ -22,7 +22,7 @@ const {
   followUser,
   unfollowUser,
   getnotifications,
-  uploadFile,
+  uploadFiles,
 } = require("../controllers/usercontroller");
 const multer = require("multer");
 const upload = multer();
@@ -63,7 +63,7 @@ router.post("/getsnippet", verifyjwt, getSnippet);
 router.post("/updatesnippet", verifyjwt, updateSnippet);
 router.post("/togglepinstatus", verifyjwt, togglePinStatus);
 // Routes for creating post
-router.post("/uploadfile", upload.single("file"), uploadFile);
+router.post("/uploadfile", upload.array("files", 5), uploadFiles);
 router.post("/createpost", verifyjwt, createPost);
 
 router.post("/getnotifications", getnotifications);

@@ -32,7 +32,9 @@ function Home() {
   const [snippetName, setSnippetName] = React.useState("");
   const [snippetLanguage, setSnippetLanguage] = React.useState("javascript");
   const [description, setDescription] = React.useState("");
-  const [codeValue, setCodeValue] = React.useState(placeholders[snippetLanguage]);
+  const [codeValue, setCodeValue] = React.useState(
+    placeholders[snippetLanguage]
+  );
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteSnippetId, setDeleteSnippetId] = useState(null);
@@ -43,7 +45,7 @@ function Home() {
   const [fetched, setfetched] = useState(false);
   let [pinnedSnippets, setPinnedSnippets] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -137,9 +139,9 @@ function Home() {
   };
 
   const handleChange = (value, viewUpdate) => {
-    console.log("value: ", value)
+    console.log("value: ", value);
     setCodeValue(value);
-    console.log("codeValue: ", codeValue);  
+    console.log("codeValue: ", codeValue);
   };
 
   const handleCreatePost = () => {
@@ -288,16 +290,20 @@ function Home() {
     return fileTypes[fileType];
   }
 
-  async function handleFileUpload(file, author, post) {
-    const extension = getExtensionFromFileType(file.type);
-    if (!extension) {
-      toast.error("Invalid file type! You can only upload images!");
-      return;
-    }
-    const filename = `${user.username}-${post.title}.${extension}`;
+  async function handleFileUpload(files, author, post, extensions) {
+    // const extension = getExtensionFromFileType(file.type);
+    // if (!extension) {
+    //   toast.error("Invalid file type! You can only upload images!");
+    //   return;
+    // }
+    // const filename = `${user.username}-${post.title}.${extension}`;
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("filename", filename);
+    // formData.append("files", files);
+    for(let i=0; i<files.length; i++) {
+      formData.append("files", files[i]);
+    }
+    formData.append("extensions", extensions);
+    // formData.append("filename", filename);
     formData.append("author", author.username);
     formData.append("post", post.title);
     console.log("formdata : ", formData);
@@ -306,19 +312,17 @@ function Home() {
       method: "POST",
       headers: {
         authorization: `Bearer ${user.token}`,
-        // "content-type": "multipart/form-data",
       },
       body: formData,
     });
-
-    if(response.ok){
+    console.log(response);
+    if (response.ok) {
       toast.success("File uploaded successfully!");
-      return filename;
-    }else{
+      return true;
+    } else {
       toast.error("Error uploading file!");
-      return null;
+      return false;
     }
-
   }
 
   // Submit function for post
@@ -341,19 +345,26 @@ function Home() {
     };
     console.log(post);
 
-    if(file){
+    if (files.length) {
       const userObj = {
         username: user.username,
         email: user.email,
         avtar: user.avtar,
-      }
+      };
       const postObj = {
         title: postTitle,
-        author: user.username
+        author: user.username,
+      };
+      let extensions = [];
+      for (let i = 0; i < files.length; i++) {
+        extensions.push(getExtensionFromFileType(files[i].type));
       }
-      const filename = await handleFileUpload(file, userObj, postObj);
-      if(filename){
-        post.files.push(filename);
+      let res = await handleFileUpload(files, userObj, postObj, extensions);
+      if (res) {
+        for (let i = 0; i < files.length; i++) {
+          let extension = getExtensionFromFileType(files[i].type);
+          post.files.push(`${user.username}-${postTitle}-${i}.${extension}`);
+        }
       }
     }
 
@@ -472,7 +483,7 @@ function Home() {
         backgroundSize: "40px 40px",
         backgroundPosition: "0 0, 20px 20px",
         // height: "100vh",
-        marginBottom:"10vh"
+        marginBottom: "10vh",
       }}
     >
       <div className="flex w-full justify-center items-center md:items-stretch flex-col md:flex-row">
@@ -823,15 +834,17 @@ function Home() {
                       value={postContent}
                       onChange={(e) => setPostContent(e.target.value)}
                     ></textarea>
-
                   </div>
 
                   <div>
                     <label>Images:</label>
                     <input
+                      multiple
                       type="file"
-                      onChange={(e) => setFile(e.target.files[0])}
-                      />
+                      onChange={(e) => {
+                        setFiles(e.target.files);
+                      }}
+                    />
                   </div>
                   <button
                     type="button"
