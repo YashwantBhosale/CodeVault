@@ -302,7 +302,7 @@ function Home() {
     for(let i=0; i<files.length; i++) {
       formData.append("files", files[i]);
     }
-    formData.append("extensions", extensions);
+    formData.append("extensions", JSON.stringify(extensions));
     // formData.append("filename", filename);
     formData.append("author", author.username);
     formData.append("post", post.title);

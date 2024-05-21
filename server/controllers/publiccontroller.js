@@ -109,16 +109,21 @@ async function handleFiles(req, res) {
       bucketName: "uploads",
     });
 
+    const files = await bucket.find({}).toArray();
+
+
     const file = await bucket.find({ filename: filename }).toArray();
 
     if(file.length === 0 || !file) {
-      throw Error("File not found");
+      throw Error(filename+" not found");
     }
 
+
+    console.log(file);
     const downloadStream = bucket.openDownloadStreamByName(filename);
     downloadStream.pipe(res);
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     res.status(400).json({ error: error.message });
   }
 }

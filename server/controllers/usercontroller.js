@@ -380,13 +380,14 @@ async function uploadFiles(req, res) {
     });
 
     const fileDetails = req.body;
+    const extensions = JSON.parse(fileDetails.extensions);
     console.log("fileDetails : ", fileDetails);
     console.log("files : ", req.files);
 
     const promises = req.files.map((file, index) => {
       const filename = `${fileDetails.author}-${
         fileDetails.post
-      }-${index}.${fileDetails.extension[index]}`;
+      }-${index}.${extensions[index]}`;
       const uploadStream = bucket.openUploadStream(filename, {
         metadata: {
           author: fileDetails.author,
