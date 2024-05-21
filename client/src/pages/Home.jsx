@@ -299,7 +299,7 @@ function Home() {
     // const filename = `${user.username}-${post.title}.${extension}`;
     const formData = new FormData();
     // formData.append("files", files);
-    for(let i=0; i<files.length; i++) {
+    for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
     }
     formData.append("extensions", JSON.stringify(extensions));
@@ -329,12 +329,13 @@ function Home() {
   async function handlePostSubmit(e) {
     e.preventDefault();
     console.log("postTitle: ", postTitle);
-    console.log("postContent: ", postContent);
+    const result = postContent.replace(/(\r\n|\r|\n)/g, '<br>');
+    console.log("postContent: ", result);
 
     const post = {
       email: user.email,
       title: postTitle,
-      content: postContent,
+      content: result,
       author: {
         username: user.username,
         avtar: user.avtar,
@@ -828,11 +829,16 @@ function Home() {
                     </label>
                     <textarea
                       id="description"
+                      style={{ whiteSpace: "pre-wrap" }}
                       rows="4"
                       class="block p-2.5 w-full text-sm bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Write your thoughts here..."
                       value={postContent}
-                      onChange={(e) => setPostContent(e.target.value)}
+                      onChange={(e) => {
+                        
+                        setPostContent(e.target.value);
+                        console.log(postContent);
+                      }}
                     ></textarea>
                   </div>
 

@@ -17,14 +17,14 @@ function createToken(id) {
 function verifyjwt(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    res.status(401).json({ message: "unauthorised" });
+    return res.status(401).json({ message: "unauthorised" });
   }
 
   const token = authHeader.split(" ")[1];
 
   jwt.verify(token, process.env.SECRET, (err, decoded) => {
     if (err) {
-      res.status(400).json({ message: "Invalid token" });
+      return res.status(400).json({ message: "Invalid token" });
     }
     req.user = decoded;
     console.log("successfully verified token!", next);
@@ -270,6 +270,7 @@ async function createPost(req, res) {
     await User.createPost(email, title, content, author, tags, isPublic, files);
     res.status(200).json({ message: "Success!" });
   } catch (error) {
+    console.log(error.message);
     res.status(400).json({ message: error.message });
   }
 }

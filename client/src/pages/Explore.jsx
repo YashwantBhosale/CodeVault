@@ -349,8 +349,9 @@ export const Explore = () => {
           <p
             style={{ width: "95%", margin: "10px auto", marginTop: 0 }}
             className="bg-light-off-white border border-gray-200 p-4 text-sm max-h-[30vh] overflow-scroll rounded-lg"
+            dangerouslySetInnerHTML={{ __html: post.content }}
           >
-            {post.content || "this is a description."}
+            {/* {post.content ? "this is a description." :} */}
           </p>
         </h1>
         <div className="w-[90%] flex flex-wrap">
