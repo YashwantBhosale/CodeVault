@@ -31,8 +31,8 @@ const postSchema = new mongoose.Schema({
         type: String,
       },
       avtar: {
-        type: String
-      }
+        type: String,
+      },
     },
   ],
   comments: [
@@ -79,54 +79,59 @@ const postSchema = new mongoose.Schema({
   },
 });
 
-
-postSchema.statics.getPublicPosts = async function () {
-  const posts = await this.find({ isPublic: true }).sort({ createdAt: -1 });
+postSchema.statics.getPublicPosts = async function (page) {
+  const skip = (page - 1) * 10;
+  const posts = await this.find({ isPublic: true })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(10);
   return posts;
 };
 
 postSchema.statics.updateUpvotes = async function (id, userObj) {
   const post = await this.findById(id);
-  if(!post)
-    throw new Error("Post not found!");
+  if (!post) throw new Error("Post not found!");
 
-  if(post.upvotes.some(obj => obj.username === userObj.username))
+  if (post.upvotes.some((obj) => obj.username === userObj.username))
     throw new Error("Already upvoted post!");
 
-  if(post.downvotes.some(obj => obj.username === userObj.username)){
-    post.downvotes = post.downvotes.filter((obj) => obj.username !== userObj.username);
+  if (post.downvotes.some((obj) => obj.username === userObj.username)) {
+    post.downvotes = post.downvotes.filter(
+      (obj) => obj.username !== userObj.username
+    );
   }
 
   post.upvotes.push(userObj);
   await post.save();
-}
+};
 
 postSchema.statics.updateDownvotes = async function (id, userObj) {
   const post = await this.findById(id);
-  if(!post)
-    throw new Error("Post not found!");
+  if (!post) throw new Error("Post not found!");
 
-  if(post.downvotes.some(obj => obj.username == userObj.username))
+  if (post.downvotes.some((obj) => obj.username == userObj.username))
     throw new Error("Already downvoted post!");
 
-  if(post.upvotes.some(obj => obj.username == userObj.username)){
-    post.upvotes = post.upvotes.filter((obj) => obj.username !== userObj.username);
+  if (post.upvotes.some((obj) => obj.username == userObj.username)) {
+    post.upvotes = post.upvotes.filter(
+      (obj) => obj.username !== userObj.username
+    );
   }
-  
+
   post.downvotes.push(userObj);
   await post.save();
-}
+};
 
-postSchema.statics.addComment = async function (id, author, content, ) {
+postSchema.statics.addComment = async function (id, author, content) {
   const post = await this.findById(id);
-  if(!post)
-    throw new Error("Post not found!");
+  if (!post) throw new Error("Post not found!");
 
-  const comment = await mongoose.model("Comment").create({ author, content, post: id });
+  const comment = await mongoose
+    .model("Comment")
+    .create({ author, content, post: id });
   post.comments.push(comment);
   await post.save();
   return comment;
-
-}
+};
 
 module.exports = mongoose.model("Post", postSchema);

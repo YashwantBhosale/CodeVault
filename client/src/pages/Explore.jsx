@@ -11,13 +11,19 @@ import { iconSrcList } from "../utils/icons";
 import { useNavigate } from "react-router-dom";
 import { Autocomplete } from "../components/Autocomplete";
 import ImageViewer from "react-simple-image-viewer";
+import { useFetchPosts } from "../hooks/useFetchPosts";
+import { useFetchUsers } from "../hooks/useFetchUsers";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export const Explore = () => {
-  const [posts, setPosts] = useState([]);
-  const { user, dispatch } = useAuthContext();
+  const [page, setPage] = useState(2);
+  const { postsLoading, fetchPublicPosts, fetchPublicPostsBatch } =
+    useFetchPosts();
+  const { fetchPublicUsers, publicUsersLoading, mostfollowed } =
+    useFetchUsers();
+  const { user, dispatch, posts, fetched } = useAuthContext();
   const navigate = useNavigate();
   const [allstudents, setAllStudents] = useState([]);
-  const [mostfollowed, setmostfollowed] = useState([]);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [currentSrcSet, setCurrentSrcSet] = useState([]);
   const srcSet = [];
@@ -38,21 +44,21 @@ export const Explore = () => {
     }
   }
 
-  async function fetchMostFollowed() {
-    try {
-      const response = await fetch(BASE_URL + "api/public/mostfollowed", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+  // async function fetchMostFollowed() {
+  //   try {
+  //     const response = await fetch(BASE_URL + "api/public/mostfollowed", {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
 
-      const data = await response.json();
-      setmostfollowed(data);
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
+  //     const data = await response.json();
+  //     setmostfollowed(data);
+  //   } catch (error) {
+  //     console.error(error.message);
+  //   }
+  // }
 
   async function Upvote(e, post) {
     e.preventDefault();
@@ -135,25 +141,28 @@ export const Explore = () => {
     }
   }
 
-  async function fetchPublicPosts() {
-    try {
-      const response = await fetch(BASE_URL + "api/public/getpublicposts", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      setPosts(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  // async function fetchPublicPosts() {
+  //   try {
+  //     const response = await fetch(BASE_URL + "api/public/getpublicposts", {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     const data = await response.json();
+  //     setPosts(data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
 
   useEffect(() => {
     fetchAllUsers();
-    fetchMostFollowed();
-    fetchPublicPosts();
+    // fetchMostFollowed();
+    fetchPublicUsers();
+    if (!fetched) {
+      fetchPublicPosts();
+    }
   }, []);
 
   function localFollow(e, userObj) {
@@ -299,7 +308,6 @@ export const Explore = () => {
           `${BASE_URL}api/public/files?filename=${encodeURIComponent(file)}`
       );
       srcSet.push(filesrc);
-      console.log(srcSet[id]);
     }
     return (
       <div
@@ -355,23 +363,24 @@ export const Explore = () => {
           </p>
         </h1>
         <div className="w-[90%] flex flex-wrap">
-
-        {post?.files?.length
-          ? post.files.map((file, index) => {
-              return (
-                <img
-                  onClick={() => {
-                    setCurrentIndex(index);
-                    setCurrentSrcSet(srcSet[id]);
-                    setIsViewerOpen(true);
-                  }}
-                  src={`${BASE_URL}api/public/files?filename=${encodeURIComponent(file)}`}
-                  alt="post"
-                  className="w-[40%] my-2 mx-2 h-fit object-cover rounded-lg h-[200px] cursor-pointer"
-                />
-              );
-            })
-          : null}
+          {post?.files?.length
+            ? post.files.map((file, index) => {
+                return (
+                  <img
+                    onClick={() => {
+                      setCurrentIndex(index);
+                      setCurrentSrcSet(srcSet[id]);
+                      setIsViewerOpen(true);
+                    }}
+                    src={`${BASE_URL}api/public/files?filename=${encodeURIComponent(
+                      file
+                    )}`}
+                    alt="post"
+                    className="w-[40%] my-2 mx-2 h-fit object-cover rounded-lg h-[200px] cursor-pointer"
+                  />
+                );
+              })
+            : null}
         </div>
 
         <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
@@ -424,8 +433,22 @@ export const Explore = () => {
       <div className="my-6 flex items-center flex-col md:flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4">
         {mostfollowed.map(createMostFollowedUsersDiv)}
       </div>
-
-      {posts.map((post, index) => createPostsDiv(post, index))}
+      <InfiniteScroll
+        dataLength={posts.length}
+        next={() => {
+          fetchPublicPostsBatch(page);
+          setPage(page + 1);
+        }}
+        hasMore={!fetched}
+        loader={<h4>Loading...</h4>}
+        endMessage={
+          <p style={{ textAlign: "center" }}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        }
+      >
+        {posts?.map((post, index) => createPostsDiv(post, index))}
+      </InfiniteScroll>
     </div>
   );
 };

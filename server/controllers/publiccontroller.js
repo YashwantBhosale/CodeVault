@@ -5,7 +5,9 @@ const mongoClient = mongodb.MongoClient;
 
 async function getPublicPosts(req, res) {
   try {
-    const posts = await Post.getPublicPosts();
+    const page = req.query.page;
+    console.log(page);
+    const posts = await Post.getPublicPosts(page);
     res.status(200).json(posts);
   } catch (error) {
     console.log(error.message);

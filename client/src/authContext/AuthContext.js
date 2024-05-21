@@ -5,32 +5,48 @@ export const AuthContext = createContext();
 const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      return { user: action.payload };
+      return {...state,  user: action.payload };
     case "LOGOUT":
-      return { user: null };
+      return { user: null, fetched: false, posts: []};
     case "UPDATE":
-      return {user: action.payload}
+      return { ...state, user: action.payload };
+    case "FETCH_POSTS":
+      return { ...state, posts: action.payload };
+    case "UPDATE_POSTS":
+      return { ...state, posts: action.payload };
+    case "FETCH_USERS":
+      return { ...state, public_users: action.payload };
+    case "UPDATE_FETCH_STATE":
+      return { ...state, fetched: action.payload}
     default:
       return state;
   }
 };
 
-export const AuthContextProvider = ({ children }) => { 
-    const [state, dispatch] = useReducer(authReducer, { user: null });
-    console.log("AuthContext state: ", state);
+export const AuthContextProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, { user: null, fetched:false, posts: [] });
+  console.log("AuthContext state: ", state);
 
-    useEffect(() => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (user) {
-        dispatch({ type: "LOGIN", payload: user });
-      
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    try {
+      if (sessionStorage.getItem("posts")) {
+        sessionStorage.removeItem("posts");
       }
-    }, [])
+      if (sessionStorage.getItem("public_users")) {
+        sessionStorage.removeItem("public_users");
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+    if (user) {
+      dispatch({ type: "LOGIN", payload: user });
+    }
+  }, []);
 
-    return (
-        <AuthContext.Provider value={{ ...state, dispatch }}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
-
+  return (
+    <AuthContext.Provider value={{ ...state, dispatch }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};

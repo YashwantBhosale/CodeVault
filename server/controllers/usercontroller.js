@@ -268,7 +268,7 @@ async function createPost(req, res) {
   const { email, title, content, author, tags, isPublic, files } = req.body;
   try {
     await User.createPost(email, title, content, author, tags, isPublic, files);
-    res.status(200).json({ message: "Success!" });
+    return res.status(200).json({ message: "Success!" });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
