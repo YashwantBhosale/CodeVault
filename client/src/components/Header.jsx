@@ -16,6 +16,8 @@ import {
   FaUser,
   FaWindowClose,
 } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 
 import { FadeLoader } from "react-spinners";
 import { useLogout } from "../hooks/useLogout";
@@ -28,6 +30,7 @@ export default function Header(props) {
   const navigate = useNavigate();
   const { logout } = useLogout();
   const [notifications, setnotifications] = useState([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
   // const [user, loading, error] = useAuthState(auth);
   const { user } = useAuthContext();
 
@@ -35,8 +38,9 @@ export default function Header(props) {
 
   async function getNotifications() {
     try {
+      setNotificationsLoading(true);
       const response = await fetch(
-        process.env.REACT_APP_BASE_URL+"api/user/getnotifications",
+        process.env.REACT_APP_BASE_URL + "api/user/getnotifications",
         {
           method: "POST",
           headers: {
@@ -54,6 +58,7 @@ export default function Header(props) {
     } catch (error) {
       console.log(error.message);
     }
+    setNotificationsLoading(false);
   }
 
   const calculateTimeAgo = (createdAt) => {
@@ -74,7 +79,7 @@ export default function Header(props) {
       } ago`;
     }
   };
-  
+
   function createNotifications(notification, index) {
     let content = notification.content;
     let username = "";
@@ -91,9 +96,7 @@ export default function Header(props) {
         key={index}
         className="flex items-center gap-4 px-4 py-4 border-b border-gray-300 text-sm"
       >
-        <FaRegBell 
-        className="text-xl"
-        />
+        <FaRegBell className="text-xl" />
         <p className="w-full ">
           {notification.type == "Follow" ? (
             <span>
@@ -345,9 +348,23 @@ export default function Header(props) {
               >
                 <FaWindowClose />
               </button>
-              {notifications.length
-                ? notifications.map(createNotifications)
-                : null}
+              <button
+                className="mx-5"
+                onClick={() => {
+                  getNotifications();
+                }}
+              >
+                <FontAwesomeIcon icon={faArrowsRotate} />
+              </button>
+              {notificationsLoading ? (
+                <FadeLoader cssOverride={{
+                  display: "block",
+                  margin: "0 auto",
+                  width: "fit-content"
+                }} />
+              ) : notifications.length ? (
+                notifications.map(createNotifications)
+              ) : null}
             </motion.div>
           </motion.div>
         )}
