@@ -329,7 +329,7 @@ function Home() {
   async function handlePostSubmit(e) {
     e.preventDefault();
     console.log("postTitle: ", postTitle);
-    const result = postContent.replace(/(\r\n|\r|\n)/g, '<br>');
+    const result = postContent.replace(/(\r\n|\r|\n)/g, "<br>");
     console.log("postContent: ", result);
 
     const post = {
@@ -385,9 +385,14 @@ function Home() {
       }
 
       let json = await response.json();
-      let stored_posts = JSON.parse(sessionStorage.getItem('public_posts'));
+      let stored_posts = JSON.parse(sessionStorage.getItem("public_posts"));
       console.log("stored_posts: ", stored_posts);
-      sessionStorage.setItem('posts', JSON.stringify([json, ...stored_posts]));
+      if (stored_posts != null) {
+        sessionStorage.setItem(
+          "posts",
+          JSON.stringify([json, ...stored_posts])
+        );
+      }
       dispatch({ type: "ADD_POSTS", payload: json });
       toast.success("Post created successfully!");
       setShowCreatePost(false);
@@ -840,7 +845,6 @@ function Home() {
                       placeholder="Write your thoughts here..."
                       value={postContent}
                       onChange={(e) => {
-                        
                         setPostContent(e.target.value);
                         console.log(postContent);
                       }}
