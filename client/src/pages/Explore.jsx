@@ -283,6 +283,14 @@ export const Explore = () => {
       toast.error("Error deleting post!");
     }
   }
+  function scrollLeft(container) {
+    container.scrollBy({ left: -250, behavior: 'smooth' });
+  }
+  
+  function scrollRight(container) {
+    container.scrollBy({ left: 250, behavior: 'smooth' });
+  }
+
 
   function createMostFollowedUsersDiv(userobj) { 
     return (
@@ -481,9 +489,24 @@ export const Explore = () => {
       <h1 className="text-center text-xl font-bold">Ready to Explore?</h1>
       <Autocomplete data={allstudents} />
 
-      <div className="my-6 flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4">
-        {mostfollowed.map(createMostFollowedUsersDiv)}
-      </div>
+      <h1 className="text-center text-xl font-bold">Popular Users</h1>
+      <div className="relative my-4 flex items-center">
+    <button 
+      onClick={() => scrollLeft(document.getElementById('mostFollowedContainer'))}
+      className="absolute left-4 md:left-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
+    >
+      &#10094;
+    </button>
+    <div id="mostFollowedContainer" className="flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4">
+      {mostfollowed.map(createMostFollowedUsersDiv)}
+    </div>
+    <button 
+      onClick={() => scrollRight(document.getElementById('mostFollowedContainer'))}
+      className="absolute right-4 md:right-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
+    >
+      &#10095;
+    </button>
+  </div>
       <button
         onClick={() => {
           dispatch({ type: "UPDATE_FETCH_STATE", payload: false });

@@ -15,7 +15,7 @@ import { ViewPost } from './pages/ViewPost';
 import { useAuthContext } from './hooks/useAuthContext';
 import OAuth from './pages/OAuth';
 import { ViewProfile } from './pages/ViewProfile';
-
+import { ViewPublicSnippet } from './pages/ViewPublicSnippet';
 function App() {
   const {user} = useAuthContext();
   // console.log("App user: ", user);
@@ -40,7 +40,7 @@ function App() {
         <Route path='/explore' element={ user ? <Explore /> : <Navigate to="/login" />} />
         <Route path='/viewpost' element={ user ? <ViewPost /> : <Navigate to="/login" />} />
         <Route path='/viewprofile' element={ user ? <ViewProfile /> : <Navigate to="/login" />} />
-        
+        <Route path='/viewpublicsnippet' element={ user ? <ViewPublicSnippet /> : <Navigate to="/login" />} />
       </Routes>
       <Footer />
     </>

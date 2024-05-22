@@ -308,7 +308,9 @@ export const ViewProfile = () => {
             </p>
           </div>
           <div className="flex items-end justify-end">
-            <button className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl mt-2 ml-2">
+            <button 
+            onClick={() => navigate(`/viewpublicsnippet?snippetId=${snippet._id}`)}
+            className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl mt-2 ml-2">
               View Snippet
             </button>
           </div>
