@@ -29,7 +29,7 @@ export const Autocomplete = ({ data }) => {
     );
   }
   return (
-    <div className="mx-auto my-10 w-[50%]">
+    <div className="mx-auto my-10 w-[80%] md:w-[50%]">
       <ReactSearchAutocomplete
         items={data}
         onClear={() => setSearchString("")}

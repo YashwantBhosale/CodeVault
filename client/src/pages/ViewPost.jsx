@@ -389,8 +389,9 @@ export const ViewPost = () => {
           <p
             style={{ width: "95%", margin: "10px auto", marginTop: 0 }}
             className="bg-light-off-white border border-gray-200 p-4 text-sm"
+            dangerouslySetInnerHTML={{ __html: post.content }}
           >
-            {post?.content || "this is a description."}
+            {/* {post?.content || "this is a description."} */}
           </p>
         </h1>
         <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">

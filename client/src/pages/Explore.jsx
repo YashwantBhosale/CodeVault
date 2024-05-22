@@ -15,6 +15,7 @@ import ImageViewer from "react-simple-image-viewer";
 import { useFetchPosts } from "../hooks/useFetchPosts";
 import { useFetchUsers } from "../hooks/useFetchUsers";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { SyncLoader } from "react-spinners";
 
 export const Explore = () => {
   const [page, setPage] = useState(2);
@@ -317,11 +318,13 @@ export const Explore = () => {
         style={{ zIndex: -99 }}
       >
         {isViewerOpen && (
+          <div style={{position:"absolute" , zIndex: 999999}}>
           <ImageViewer
             src={currentSrcSet}
             currentIndex={currentIndex}
             onClose={() => setIsViewerOpen(false)}
           />
+          </div>
         )}
         <p
           onClick={() =>
@@ -431,7 +434,7 @@ export const Explore = () => {
       <h1 className="text-center text-xl font-bold">Ready to Explore?</h1>
       <Autocomplete data={allstudents} />
 
-      <div className="my-6 flex items-center flex-col md:flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4">
+      <div className="my-6 flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4">
         {mostfollowed.map(createMostFollowedUsersDiv)}
       </div>
       <button onClick={() => {
@@ -447,14 +450,13 @@ export const Explore = () => {
           setPage(page + 1);
         }}
         hasMore={!fetched}
-        loader={<h4>Loading...</h4>}
         endMessage={
           <p style={{ textAlign: "center" }}>
             <b>Yay! You have seen it all</b>
           </p>
         }
       >
-        {postsLoading ? <h1 className="text-center font-bold text-xl">LOADING...</h1> : posts?.map((post, index) => createPostsDiv(post, index))}
+        {postsLoading ? <SyncLoader className="w-fit mx-auto my-4"/>: posts?.map((post, index) => createPostsDiv(post, index))}
       </InfiniteScroll>
     </div>
   );

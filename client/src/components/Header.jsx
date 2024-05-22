@@ -19,7 +19,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 
-import { FadeLoader } from "react-spinners";
+import { SyncLoader } from "react-spinners";
 import { useLogout } from "../hooks/useLogout";
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -130,7 +130,7 @@ export default function Header(props) {
   // console.log("userobj : ", userObj);
   return (
     <>
-      <header className="bg-white fixed top-0 left-0 w-full bg-white z-1">
+      <header className="bg-white fixed top-0 left-0 w-full bg-white z-50">
         <nav
           className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
           aria-label="Global"
@@ -338,7 +338,7 @@ export default function Header(props) {
               initial={{ y: "-100vh" }}
               animate={{ y: 0 }}
               transition={{ type: "spring", stiffness: 150 }}
-              className="bg-white p-8 rounded-xl w-full lg:w-2/5 m-[20px]"
+              className="bg-white p-8 rounded-xl w-full lg:w-2/5 m-[20px] max-h-[60vh] overflow-y-scroll"
             >
               <button
                 onClick={(e) => {
@@ -357,11 +357,7 @@ export default function Header(props) {
                 <FontAwesomeIcon icon={faArrowsRotate} />
               </button>
               {notificationsLoading ? (
-                <FadeLoader cssOverride={{
-                  display: "block",
-                  margin: "0 auto",
-                  width: "fit-content"
-                }} />
+                < SyncLoader className="w-fit mx-auto mt-4"/>
               ) : notifications.length ? (
                 notifications.map(createNotifications)
               ) : null}

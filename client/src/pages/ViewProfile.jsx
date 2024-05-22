@@ -266,7 +266,7 @@ export const ViewProfile = () => {
         return "Invalid month index";
     }
   }
-  
+
   function createSnippetCards(snippet) {
     const month = getMonthFromIndex(
       Number.parseInt(snippet.dateCreated.split("-")[1]) - 1
@@ -308,9 +308,7 @@ export const ViewProfile = () => {
             </p>
           </div>
           <div className="flex items-end justify-end">
-            <button
-              className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl mt-2 ml-2"
-            >
+            <button className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl mt-2 ml-2">
               View Snippet
             </button>
           </div>
@@ -361,8 +359,9 @@ export const ViewProfile = () => {
           <p
             style={{ width: "95%", margin: "10px auto", marginTop: 0 }}
             className="bg-light-off-white border border-gray-200 p-4 text-sm"
+            dangerouslySetInnerHTML={{ __html: post.content }}
           >
-            {post?.content || "this is a description."}
+            {/* {post?.content || "this is a description."} */}
           </p>
         </h1>
         <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
@@ -402,11 +401,11 @@ export const ViewProfile = () => {
   return (
     <div className="mx-auto mt-[20vh]">
       <div
-        className={`w-[80%]  md:w-[40%] rounded-xl p-4 flex shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px] mx-auto items-center p-4 justify-center ${
+        className={`w-[80%] h-[30vh] md:w-[40%] rounded-xl p-4 flex shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px] mx-auto items-center  justify-between ${
           windowWidth < 500 ? "flex-col" : ""
         }`}
       >
-        <div className="flex flex-col items-center justify-center p-2 gap-3">
+        <div className="h-full w-[80%] mx-auto flex flex-col items-center justify-between">
           <img
             src={
               currentuser?.avtar?.length > 15
@@ -414,24 +413,31 @@ export const ViewProfile = () => {
                 : iconSrcList[currentuser?.avtar]
             }
             alt={currentuser.username}
-            className="h-24 w-24 rounded-full object-cover mx-3"
+            className="h-24 w-24 rounded-full object-cover "
           />
           <h2 className="font-bold text-xl">{currentuser.username}</h2>
         </div>
-        <div className="mx-2 mt-4">
-          <div className="flex items-center justify-between">
-            <h2 className="flex flex-col text-center mx-4 text-4xl font-thin">
-              {currentuser ? currentuser?.followers?.length : 0}
-              <span className="text-sm font-bold">Followers</span>
-            </h2>
-            <h2 className="flex flex-col text-center mx-4 text-4xl font-thin">
-              {currentuser ? currentuser?.following?.length : 0}
-              <span className="text-sm font-bold">Following</span>
-            </h2>
-            <h2 className="flex flex-col  text-center mx-4 text-4xl font-thin">
-              {currentuser ? currentuser?.publicPosts?.length : 0}
-              <span className="text-sm font-bold">Posts</span>
-            </h2>
+
+        <div className="h-full flex flex-col w-full">
+          <div className="flex justify-between md:mt-4">
+            <div className="flex flex-col items-center justify-between">
+              <p className="text-4xl font-light">
+                {currentuser.followers?.length}
+              </p>
+              <p className="font-bold text-md">Followers</p>
+            </div>
+            <div className="flex flex-col items-center justify-between">
+              <p className="text-4xl font-light">
+                {currentuser.following?.length}
+              </p>
+              <p className="font-bold text-md">Following</p>
+            </div>
+            <div className="flex flex-col items-center justify-between ml-4">
+              <p className="text-4xl font-light">
+                {currentuser.publicPosts?.length}
+              </p>
+              <p className="font-bold text-md">Posts</p>
+            </div>
           </div>
           <button
             onClick={(e) =>
