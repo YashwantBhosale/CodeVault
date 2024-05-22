@@ -401,7 +401,7 @@ export const ViewProfile = () => {
   return (
     <div className="mx-auto mt-[20vh]">
       <div
-        className={`w-[80%] h-[30vh] md:w-[40%] rounded-xl p-4 flex shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px] mx-auto items-center  justify-between ${
+        className={`w-[80%] h-fit min-h-[30vh] md:w-[40%] overflow-y-scroll rounded-xl p-4 flex shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px] mx-auto items-center  justify-between ${
           windowWidth < 500 ? "flex-col" : ""
         }`}
       >
@@ -418,7 +418,7 @@ export const ViewProfile = () => {
           <h2 className="font-bold text-xl">{currentuser.username}</h2>
         </div>
 
-        <div className="h-full flex flex-col w-full">
+        <div className="h-full flex flex-col w-full md:mr-4">
           <div className="flex justify-between md:mt-4">
             <div className="flex flex-col items-center justify-between">
               <p className="text-4xl font-light">

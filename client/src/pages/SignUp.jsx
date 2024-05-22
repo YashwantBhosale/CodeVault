@@ -4,14 +4,18 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useSignup } from "../hooks/useSignup";
 import { useLogout } from "../hooks/useLogout";
+import { AnimatePresence, motion } from "framer-motion";
 
 import iconsList from "../utils/icons";
 
 function Signup() {
   // hooks
   const navigate = useNavigate();
-  const {logout} = useLogout();
+  const { logout } = useLogout();
   const { signup, isLoading } = useSignup();
+  const [provider, setProvider] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -21,6 +25,19 @@ function Signup() {
   async function handleFormData(e) {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  }
+
+  function handleOAuth(provider) {
+    setProvider(provider);
+    setIsOpen(true);
+  }
+
+  function handleGoogle() {
+    window.open(BASE_URL + "api/user/google", "_self");
+  }
+
+  function handleGithub() {
+    window.open(BASE_URL + "api/user/github", "_self");
   }
 
   async function handleSignUp(e) {
@@ -48,6 +65,49 @@ function Signup() {
   return (
     <>
       <div class="flex h-screen ">
+        {isOpen && (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50"
+            >
+              <motion.div
+                initial={{ y: "-100vh" }}
+                animate={{ y: 0 }}
+                transition={{ type: "spring", stiffness: 150 }}
+                className="bg-white p-8 rounded-xl lg:w-2/5 m-[20px]"
+              >
+                <h2 className="text-xl font-bold mb-4">
+                  Make Sure Cookies Are enabled!
+                </h2>
+                <p className="mb-4">
+                  Using OAuth 2.0 for Google and Github Login required cookies
+                  to be enabled. Please make sure cookies are allowed in your
+                  browser settings.
+                </p>
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      if (provider === "Google") {
+                        handleGoogle();
+                      }
+                      if (provider === "Github") {
+                        handleGithub();
+                      }
+                    }}
+                    className="bg-gray-300 px-4 py-2 rounded-md mr-4 hover:bg-gray-400"
+                  >
+                    okay
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        )}
         <div class="hidden lg:flex items-center justify-center flex-1 bg-white text-black">
           <div class="max-w-md text-center">
             <h1 className="text-7xl font-bold">CodeVault</h1>
@@ -320,6 +380,9 @@ function Signup() {
               <div class="w-full lg:w-1/2 mb-2 lg:mb-0">
                 <button
                   type="button"
+                  onClick={()=>{
+                    handleOAuth("Google")
+                  }}
                   class="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300"
                 >
                   <svg
@@ -352,6 +415,9 @@ function Signup() {
                 <button
                   type="button"
                   class="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300"
+                  onClick={() => {
+                    handleOAuth("Github");
+                  }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -429,7 +495,6 @@ function Signup() {
                   Sign Up
                 </button>
               </div>
-          
             </form>
             <div class="mt-4 text-sm text-gray-600 text-center">
               <p>
