@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const Snippet = require("./snippetModel");
 const Post = require("./postModel");
 const mongodb = require("mongodb");
-
+const sendMail = require("../config/mailer");
 const mongoClient = mongodb.MongoClient;
 
 // User Schema
@@ -81,7 +81,6 @@ const userSchema = new mongoose.Schema({
       },
     ],
   },
-
 });
 
 // find user by usrname
@@ -329,7 +328,7 @@ userSchema.statics.createPost = async function (
   user.posts.push(post._id);
   await user.save();
 
-  return post;  
+  return post;
 };
 
 // static getallusers function
@@ -348,7 +347,7 @@ userSchema.statics.getAllUsers = async function () {
 userSchema.statics.follow = async function (email, username, followObj) {
   const user = await this.findOne({ email, username }); // Current User
   if (!user) throw Error("User not found!");
-
+  console.log(followObj);
   const followingUser = await this.findOne({
     // User to be followed
     _id: followObj.id,
@@ -370,6 +369,67 @@ userSchema.statics.follow = async function (email, username, followObj) {
     content: `"${user.username}" started following you!`,
     timestamp: date,
   });
+  const html = `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Follower Notification</title>
+      <style>
+          body {
+              font-family: Arial, sans-serif;
+              background-color: #f4f4f4;
+              margin: 0;
+              padding: 0;
+          }
+          .container {
+              max-width: 600px;
+              margin: 50px auto;
+              background-color: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              padding: 20px;
+          }
+          h1 {
+              font-size: 24px;
+              color: #333333;
+              text-align: center;
+          }
+          p {
+              font-size: 16px;
+              color: #666666;
+              line-height: 1.5;
+          }
+          .button {
+              display: block;
+              width: 200px;
+              margin: 20px auto;
+              padding: 10px 20px;
+              text-align: center;
+              background-color: #007BFF;
+              color: #ffffff;
+              text-decoration: none;
+              border-radius: 5px;
+          }
+          .button:hover {
+              background-color: #0056b3;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="container">
+          <h1><b>${user.username}</b> started following you!</h1>
+          <p>Hi <b>${followingUser.username}</b>,</p>
+          <p>We are excited to let you know that <b>${user.username}</b> has started following you. Log in Now and Check out their profile and stay connected!</p>
+          <a href="https://code-vault-new-frontend.vercel.app/" class="button">View Profile</a>
+      </div>
+  </body>
+  </html>`;
+  sendMail(
+    followingUser.email,
+    "New Follower",
+    html
+  );
 
   console.log("following user ; ", followingUser);
 

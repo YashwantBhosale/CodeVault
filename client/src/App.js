@@ -39,7 +39,7 @@ function App() {
         <Route path='/oauth' element={<OAuth />} />
         <Route path='/explore' element={ user ? <Explore /> : <Navigate to="/login" />} />
         <Route path='/viewpost' element={ user ? <ViewPost /> : <Navigate to="/login" />} />
-        <Route path='/viewprofile' element={ user ? <ViewProfile /> : <Navigate to="/login" />} />
+        <Route path='/viewprofile' element={<ViewProfile />} />
         <Route path='/viewpublicsnippet' element={ user ? <ViewPublicSnippet /> : <Navigate to="/login" />} />
       </Routes>
       <Footer />
