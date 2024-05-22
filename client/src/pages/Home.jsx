@@ -385,7 +385,9 @@ function Home() {
       }
 
       let json = await response.json();
-      console.log("response: ", json);
+      let stored_posts = JSON.parse(sessionStorage.getItem('public_posts'));
+      console.log("stored_posts: ", stored_posts);
+      sessionStorage.setItem('posts', JSON.stringify([json, ...stored_posts]));
       dispatch({ type: "ADD_POSTS", payload: json });
       toast.success("Post created successfully!");
       setShowCreatePost(false);
@@ -787,6 +789,7 @@ function Home() {
           )}
         </AnimatePresence>
         <DeleteConfirmation
+          type="snippet"
           isOpen={showDeleteConfirmation}
           onClose={() => setShowDeleteConfirmation(false)}
           onDelete={handleDeleteConfirmation}

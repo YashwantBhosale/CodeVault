@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const DeleteConfirmation = ({ isOpen, onClose, onDelete }) => {
+const DeleteConfirmation = ({ type, isOpen, onClose, onDelete }) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -19,7 +19,7 @@ const DeleteConfirmation = ({ isOpen, onClose, onDelete }) => {
             className="bg-white p-8 rounded-xl lg:w-2/5 m-[20px]"
           >
             <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
-            <p className="mb-4">Are you sure you want to delete this snippet?</p>
+            <p className="mb-4">Are you sure you want to delete this {type}?</p>
             <div className="flex justify-end">
               <button
                 onClick={onClose}

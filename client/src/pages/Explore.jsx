@@ -16,7 +16,7 @@ import { useFetchPosts } from "../hooks/useFetchPosts";
 import { useFetchUsers } from "../hooks/useFetchUsers";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { SyncLoader } from "react-spinners";
-
+import DeleteConfirmation from "../components/DeleteConfirmation";
 export const Explore = () => {
   const [page, setPage] = useState(2);
   const { postsLoading, fetchPublicPosts, fetchPublicPostsBatch } =
@@ -31,6 +31,8 @@ export const Explore = () => {
   const srcSet = [];
   const [currentIndex, setCurrentIndex] = useState(0);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deletePostId, setDeletePostId] = useState("");
   async function fetchAllUsers() {
     try {
       const response = await fetch(BASE_URL + "api/public/getallusers", {
@@ -248,9 +250,14 @@ export const Explore = () => {
   }
 
   function handleCommentSubmit(e, id) {}
+  async function handleDelete(id) {
+    setDeletePostId(id);
+    setShowDeleteConfirmation(true);
+  }
 
-  async function handleDeletePost(id) {
+  async function handleDeletePost() {
     try {
+      const id = deletePostId;
       const response = await fetch(BASE_URL + "api/public/delete", {
         method: "POST",
         headers: {
@@ -260,18 +267,24 @@ export const Explore = () => {
       });
       if (response.ok) {
         toast.success("Post deleted successfully!");
+        sessionStorage.setItem(
+          "posts",
+          JSON.stringify(posts.filter((post) => post._id !== id))
+        );
         dispatch({ type: "DELETE_POST", payload: id });
       } else {
         toast.error("Error deleting post!");
       }
+
+
+      setShowDeleteConfirmation(false);
     } catch (error) {
       console.error(error.message);
       toast.error("Error deleting post!");
     }
   }
 
-
-  function createMostFollowedUsersDiv(userobj) {
+  function createMostFollowedUsersDiv(userobj) { 
     return (
       <div
         class="w-[18vw] min-w-[250px] my-2 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center h-full"
@@ -446,9 +459,13 @@ export const Explore = () => {
               }
             />
           </div>
-          <div className={`${user.username == post.author.username ? "block" : "hidden"}`} >
+          <div
+            className={`${
+              user.username == post.author.username ? "block" : "hidden"
+            }`}
+          >
             <button
-              onClick={() => handleDeletePost(post._id)}
+              onClick={() => handleDelete(post._id)}
               className="block bg-red-500 px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-red-600 rounded-xl mt-2 ml-2"
             >
               Delete
@@ -497,6 +514,12 @@ export const Explore = () => {
           posts?.map((post, index) => createPostsDiv(post, index))
         )}
       </InfiniteScroll>
+      <DeleteConfirmation
+        type="post"
+        isOpen={showDeleteConfirmation}
+        onClose={() => setShowDeleteConfirmation(false)}
+        onDelete={handleDeletePost}
+      />
     </div>
   );
 };
