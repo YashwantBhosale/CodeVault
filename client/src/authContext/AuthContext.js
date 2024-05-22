@@ -16,8 +16,12 @@ const authReducer = (state, action) => {
       return { ...state, posts: action.payload };
     case "FETCH_USERS":
       return { ...state, public_users: action.payload };
+    case "DELETE_POST":
+      return { ...state, posts: state.posts.filter((post) => post._id !== action.payload) };
     case "UPDATE_FETCH_STATE":
       return { ...state, fetched: action.payload}
+    case "ADD_POST":
+      return { ...state, posts: [action.payload, ...state.posts] };
     default:
       return state;
   }

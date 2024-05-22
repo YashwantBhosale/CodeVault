@@ -249,6 +249,28 @@ export const Explore = () => {
 
   function handleCommentSubmit(e, id) {}
 
+  async function handleDeletePost(id) {
+    try {
+      const response = await fetch(BASE_URL + "api/public/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (response.ok) {
+        toast.success("Post deleted successfully!");
+        dispatch({ type: "DELETE_POST", payload: id });
+      } else {
+        toast.error("Error deleting post!");
+      }
+    } catch (error) {
+      console.error(error.message);
+      toast.error("Error deleting post!");
+    }
+  }
+
+
   function createMostFollowedUsersDiv(userobj) {
     return (
       <div
@@ -318,12 +340,12 @@ export const Explore = () => {
         style={{ zIndex: -99 }}
       >
         {isViewerOpen && (
-          <div style={{position:"absolute" , zIndex: 999999}}>
-          <ImageViewer
-            src={currentSrcSet}
-            currentIndex={currentIndex}
-            onClose={() => setIsViewerOpen(false)}
-          />
+          <div style={{ position: "absolute", zIndex: 999999 }}>
+            <ImageViewer
+              src={currentSrcSet}
+              currentIndex={currentIndex}
+              onClose={() => setIsViewerOpen(false)}
+            />
           </div>
         )}
         <p
@@ -387,8 +409,8 @@ export const Explore = () => {
             : null}
         </div>
 
-        <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
-          <div className="w-full md:w-[70%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
+        <div className="w-full md:w-[95%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
+          <div className="w-[40%] md:w-[20%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
             <div
               className="flex items-center gap-1 cursor-pointer z-99"
               onClick={(e) => Upvote(e, post)}
@@ -424,6 +446,14 @@ export const Explore = () => {
               }
             />
           </div>
+          <div className={`${user.username == post.author.username ? "block" : "hidden"}`} >
+            <button
+              onClick={() => handleDeletePost(post._id)}
+              className="block bg-red-500 px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-red-600 rounded-xl mt-2 ml-2"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -437,12 +467,17 @@ export const Explore = () => {
       <div className="my-6 flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4">
         {mostfollowed.map(createMostFollowedUsersDiv)}
       </div>
-      <button onClick={() => {
-        dispatch({ type: "UPDATE_FETCH_STATE", payload: false });
-        sessionStorage.removeItem("posts");
-        fetchPublicPosts();
-        setPage(2);
-      }} className="font-bold text-center flex gap-4 items-center text-xl m-auto"><FaArrowDown /> Fetch Latest Posts.... </button>
+      <button
+        onClick={() => {
+          dispatch({ type: "UPDATE_FETCH_STATE", payload: false });
+          sessionStorage.removeItem("posts");
+          fetchPublicPosts();
+          setPage(2);
+        }}
+        className="font-bold text-center flex gap-4 items-center text-xl m-auto"
+      >
+        <FaArrowDown /> Fetch Latest Posts....{" "}
+      </button>
       <InfiniteScroll
         dataLength={posts.length}
         next={() => {
@@ -456,7 +491,11 @@ export const Explore = () => {
           </p>
         }
       >
-        {postsLoading ? <SyncLoader className="w-fit mx-auto my-4"/>: posts?.map((post, index) => createPostsDiv(post, index))}
+        {postsLoading ? (
+          <SyncLoader className="w-fit mx-auto my-4" />
+        ) : (
+          posts?.map((post, index) => createPostsDiv(post, index))
+        )}
       </InfiniteScroll>
     </div>
   );

@@ -10,6 +10,7 @@ const {
   getAllUsers,
   getMostFollowedUsers,
   handleFiles,
+  deletePostById,
 } = require("../controllers/publiccontroller");
 
 router.get("/getpublicposts", getPublicPosts);
@@ -18,6 +19,7 @@ router.post("/updatedownvotes", updateDownvotes);
 
 router.post("/addcomment", addComment);
 router.get("/post", getPostById);
+router.post("/delete", deletePostById);
 router.get("/viewuser", getPublicInfo);
 
 router.get("/getallusers", getAllUsers);

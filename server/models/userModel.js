@@ -326,9 +326,10 @@ userSchema.statics.createPost = async function (
 
   // post.files = files;
   await post.save();
-
   user.posts.push(post._id);
   await user.save();
+
+  return post;  
 };
 
 // static getallusers function

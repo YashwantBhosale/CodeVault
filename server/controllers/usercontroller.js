@@ -267,8 +267,8 @@ async function updateSnippet(req, res) {
 async function createPost(req, res) {
   const { email, title, content, author, tags, isPublic, files } = req.body;
   try {
-    await User.createPost(email, title, content, author, tags, isPublic, files);
-    return res.status(200).json({ message: "Success!" });
+    const post  = await User.createPost(email, title, content, author, tags, isPublic, files);
+    return res.status(200).json(post);
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });

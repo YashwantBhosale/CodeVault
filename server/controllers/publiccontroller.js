@@ -62,6 +62,20 @@ async function getPostById(req, res) {
   }
 }
 
+async function deletePostById(req, res) {
+  try {
+    console.log(req.body.id);
+    const post  = await Post.findOne({_id: req.body.id});
+    await Post.deleteOne({ _id: req.body.id });
+    console.log(post);
+    res.status(200).json(post);
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(400).json({ error: error.message });
+  }
+}
+
 async function getPublicInfo(req, res) {
   const username = req.query.username;
   try {
@@ -140,4 +154,5 @@ module.exports = {
   getAllUsers,
   getMostFollowedUsers,
   handleFiles,
+  deletePostById,
 };

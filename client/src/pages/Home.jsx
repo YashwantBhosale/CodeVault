@@ -39,7 +39,7 @@ function Home() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteSnippetId, setDeleteSnippetId] = useState(null);
   const [usersnippets, setUserSnippets] = React.useState([]);
-  const { user } = useAuthContext();
+  const { user, dispatch } = useAuthContext();
   const [dataloading, setdataloading] = useState(false);
   const [value, setValue] = useState(null);
   const [fetched, setfetched] = useState(false);
@@ -386,7 +386,9 @@ function Home() {
 
       let json = await response.json();
       console.log("response: ", json);
+      dispatch({ type: "ADD_POSTS", payload: json });
       toast.success("Post created successfully!");
+      setShowCreatePost(false);
     } catch (err) {
       console.log("error adding post: ", err.message);
       toast.error("Error creating post!");
