@@ -11,7 +11,12 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   FaBell,
+  FaBroom,
+  FaBrush,
+  FaCheck,
   FaDumbbell,
+  FaEraser,
+  FaPaintBrush,
   FaRegBell,
   FaUser,
   FaWindowClose,
@@ -30,6 +35,7 @@ export default function Header(props) {
   const navigate = useNavigate();
   const { logout } = useLogout();
   const [notifications, setnotifications] = useState([]);
+  const [unreadNotifications, setUnreadNotifications] = useState([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   // const [user, loading, error] = useAuthState(auth);
   const { user } = useAuthContext();
@@ -55,6 +61,10 @@ export default function Header(props) {
       const data = await response.json();
       console.log(data.notifications.reverse());
       setnotifications(data.notifications);
+      let unread = data.notifications.filter(
+        (notification) => !notification.isSeen
+      );
+      setUnreadNotifications(unread);
     } catch (error) {
       console.log(error.message);
     }
@@ -81,14 +91,50 @@ export default function Header(props) {
   };
 
   function createNotifications(notification, index) {
-    let content = notification.content;
+    let content = notification?.content;
     let username = "";
-    if (notification.type === "Follow") {
+    if (notification?.type === "Follow") {
       username = content.substring(1, content.lastIndexOf(`"`));
       content = `${content.substring(
         content.lastIndexOf(`"`) + 1,
         content.length - 1
       )}`;
+    }
+
+    async function handleNotificationClear(ids) {
+      console.log(ids);
+      setnotifications((prev) =>
+        prev.filter((item) => !ids.includes(item._id))
+      );
+      setUnreadNotifications((prev) =>
+        prev.filter((item) => !ids.includes(item._id))
+      );
+
+      try {
+        const response = await fetch(
+          process.env.REACT_APP_BASE_URL + "api/user/clearnotifications",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: user?.username,
+              ids,
+            }),
+          }
+        );
+        const data = await response.json();
+        console.log(data);
+        if (response.ok) {
+          toast.success("Notifications cleared successfully!");
+        } else {
+          toast.error("Error clearing notifications!");
+        }
+      } catch (error) {
+        console.log(error.message);
+        toast.error("Error clearing notifications!");
+      }
     }
 
     return (
@@ -98,7 +144,7 @@ export default function Header(props) {
       >
         <FaRegBell className="text-xl" />
         <p className="w-full ">
-          {notification.type == "Follow" ? (
+          {notification?.type == "Follow" ? (
             <span>
               <span
                 className="text-sky-500 cursor-pointer"
@@ -112,14 +158,34 @@ export default function Header(props) {
               <span>{content}</span>
             </span>
           ) : (
-            notification.content
+            notification?.content
           )}
         </p>
         <span className="whitespace-nowrap">
-          {notification.timestamp
-            ? calculateTimeAgo(notification.timestamp)
+          {notification?.timestamp
+            ? calculateTimeAgo(notification?.timestamp)
             : "11:11"}
         </span>
+        {!notification?.isSeen && (
+          <span
+            title="Mark as read"
+            className="cursor-pointer border border-gray-200 hover:bg-gray-100 bg-white p-2 rounded inline-flex items-center justify-center"
+            onClick={(e) => {
+              e.stopPropagation();
+              let temp = [notification._id];
+              updateReadStatus(temp);
+            }}
+          >
+            <FaCheck />
+          </span>
+        )}
+        <button
+          onClick={() => {
+            handleNotificationClear([notification._id]);
+          }}
+        >
+          <FaEraser />
+        </button>
       </div>
     );
   }
@@ -130,6 +196,52 @@ export default function Header(props) {
     }
   }, [user]);
   // console.log("userobj : ", userObj);
+
+  // local read status update
+  async function updateReadStatusLocal(id) {
+    let updated = notifications.map((notification) => {
+      if (notification._id === id) {
+        return { ...notification, isSeen: true };
+      }
+      return notification;
+    });
+    setnotifications(updated);
+  }
+
+  async function updateReadStatus(unreads) {
+    console.log("unreads : ", unreads);
+    try {
+      setUnreadNotifications((prev) =>
+        prev.filter((item) => !unreads.includes(item._id))
+      );
+      unreads.forEach((id) => {
+        updateReadStatusLocal(id);
+      });
+      const response = await fetch(
+        process.env.REACT_APP_BASE_URL + "api/user/readnotifications",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user?.username,
+            notificationIds: unreads,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        toast.success("Read status updated successfully!");
+      } else {
+        toast.error("Error updating read status!");
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Error updating read status!");
+    }
+  }
   return (
     <>
       <header className="bg-white fixed top-0 left-0 w-full bg-white z-50">
@@ -202,9 +314,14 @@ export default function Header(props) {
           </div>
           <div className="flex items-center lg:hidden">
             <a
-              className="text-md leading text-gray-900 cursor-pointer mr-8"
+              className="relative text-md leading text-gray-900 cursor-pointer mr-8"
               onClick={() => setNotificationsOpen(true)}
             >
+              {unreadNotifications.length > 0 ? (
+                <p className="absolute bottom-2 left-2 bg-red-700 text-white p-[1px] px-[5px] rounded-full text-xs">
+                  {unreadNotifications.length}
+                </p>
+              ) : null}
               <FaBell />
             </a>
             <button
@@ -218,9 +335,14 @@ export default function Header(props) {
           </div>
           <div className="hidden lg:flex lg:gap-x-12 items-center">
             <a
-              className="text-md leading-6 text-gray-900 cursor-pointer"
+              className="relative text-md leading-6 text-gray-900 cursor-pointer"
               onClick={() => setNotificationsOpen(true)}
             >
+              {unreadNotifications.length > 0 ? (
+                <p className="absolute bottom-2 left-2 bg-red-700 text-white p-[1px] px-[5px] rounded-full text-xs">
+                  {unreadNotifications.length}
+                </p>
+              ) : null}
               <FaBell />
             </a>
             <a
@@ -358,10 +480,15 @@ export default function Header(props) {
               >
                 <FontAwesomeIcon icon={faArrowsRotate} />
               </button>
+              <button>
+                <FaEraser />{" "}
+              </button>
               {notificationsLoading ? (
                 <SyncLoader className="w-fit mx-auto mt-4" />
               ) : notifications.length ? (
-                notifications.map(createNotifications)
+                notifications.map((notification) =>
+                  notification ? createNotifications(notification) : null
+                )
               ) : null}
             </motion.div>
           </motion.div>

@@ -23,6 +23,8 @@ const {
   unfollowUser,
   getnotifications,
   uploadFiles,
+  updateReadStatus,
+  clearNotifications,
 } = require("../controllers/usercontroller");
 const multer = require("multer");
 const upload = multer();
@@ -67,5 +69,7 @@ router.post("/uploadfile", upload.array("files", 5), uploadFiles);
 router.post("/createpost", verifyjwt, createPost);
 
 router.post("/getnotifications", getnotifications);
+router.post("/readnotifications", updateReadStatus);
+router.post("/clearnotifications", clearNotifications);
 
 module.exports = router;

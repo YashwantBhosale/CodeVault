@@ -12,6 +12,7 @@ export const Profile = () => {
   const [userobj, setuserobj] = useState(null);
   const [followerspopup, setfollowerspopup] = useState(false);
   const [followingpopup, setfollowingpopup] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
 
   const navigate = useNavigate();
   const { user } = useAuthContext();
@@ -187,6 +188,70 @@ export const Profile = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      {editProfileOpen && (
+        <div className="fixed top-0 left-0 w-[100vw] h-[100vh] flex justify-center items-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white p-2 rounded-xl w-4/5 m-[20px] p-5">
+            <h2 className="text-xl font-bold mb-4">Edit Your Profile</h2>
+            <form className="space-y-4">
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-900">
+                  Username
+                </label>
+                <input
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                  type="text"
+                  disabled
+                  value={user?.username}
+                />
+              </div>
+              <div>
+                <label>Email</label>
+                <input
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                  type="email"
+                  disabled
+                  value={user?.email}
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-900">
+                  About
+                </label>
+                <textarea
+                  value={user?.about}
+                  className="block p-2.5 w-full text-sm bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  onChange={(e) => {
+                    setuserobj({ ...userobj, about: e.target.value });
+                  }}
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-medium text-gray-900">
+                  Avatar
+                </label>
+                <input
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                  type="text"
+                  disabled
+                  value={user?.avtar}
+                />
+              </div>
+              <button
+                type="button"
+                className="bg-gray-300 px-4 py-2 rounded-md mr-4"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="bg-black text-white px-4 py-2 rounded-md hover:bg-slate-700"
+              >
+                Save
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };

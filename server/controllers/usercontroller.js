@@ -6,6 +6,7 @@ const { exec } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const mongodb = require("mongodb");
+const Notification = require("../models/notificationModel");
 const mongoClient = mongodb.MongoClient;
 
 // for creating token
@@ -267,7 +268,15 @@ async function updateSnippet(req, res) {
 async function createPost(req, res) {
   const { email, title, content, author, tags, isPublic, files } = req.body;
   try {
-    const post  = await User.createPost(email, title, content, author, tags, isPublic, files);
+    const post = await User.createPost(
+      email,
+      title,
+      content,
+      author,
+      tags,
+      isPublic,
+      files
+    );
     return res.status(200).json(post);
   } catch (error) {
     console.log(error.message);
@@ -325,8 +334,9 @@ async function unfollowUser(req, res) {
 async function getnotifications(req, res) {
   const { username } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }).populate("notifications");
     if (!user) throw Error("User not found!");
+    console.log("user: ", user);
     const result = {
       notifications: user.notifications,
     };
@@ -336,6 +346,47 @@ async function getnotifications(req, res) {
     res.status(400).json({ message: error.message });
   }
 }
+
+async function updateReadStatus(req, res) {
+  const { username, notificationIds } = req.body;
+  console.log("notificationIds: ", notificationIds);
+  try {
+    const user = await User.findOne({ username });
+    if (!user) throw Error("User not found!");
+
+    notificationIds.forEach(async (notificationId) => {
+      const notification = await Notification.findOne({ _id: notificationId });
+      if (!notification) throw Error("Notification not found!");
+      notification.isSeen = true;
+      await notification.save();
+    });
+
+    res.status(200).json({ message: "SUCCESS!" });
+  } catch (e) {
+    console.log("error in updateReadStatus: ", e.message);
+    res.status(400).json({ message: e.message });
+  }
+}
+
+async function clearNotifications(req, res) {
+  const { username, ids } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) throw Error("User not found!");
+
+    ids.forEach(async (id) => {
+      const notification = await Notification.deleteOne({ _id: id});
+      console.log("notification: ", notification);
+      if (!notification.acknowledged) throw Error("Notification not found!");
+    })
+    user.notifications = user.notifications.filter((notification) => !ids.includes(notification._id));
+    await user.save();
+  } catch (e) {
+    console.log("error in clearNotifications: ", e.message);
+    res.status(400).json({ message: e.message });
+  }
+}
+
 /*
 async function uploadFile(req, res) {
   try {
@@ -386,9 +437,7 @@ async function uploadFiles(req, res) {
     console.log("files : ", req.files);
 
     const promises = req.files.map((file, index) => {
-      const filename = `${fileDetails.author}-${
-        fileDetails.post
-      }-${index}.${extensions[index]}`;
+      const filename = `${fileDetails.author}-${fileDetails.post}-${index}.${extensions[index]}`;
       const uploadStream = bucket.openUploadStream(filename, {
         metadata: {
           author: fileDetails.author,
@@ -445,4 +494,6 @@ module.exports = {
   unfollowUser,
   getnotifications,
   uploadFiles,
+  updateReadStatus,
+  clearNotifications,
 };

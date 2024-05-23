@@ -4,6 +4,7 @@ const Snippet = require("./snippetModel");
 const Post = require("./postModel");
 const mongodb = require("mongodb");
 const sendMail = require("../config/mailer");
+const Notification = require("../models/notificationModel")
 const mongoClient = mongodb.MongoClient;
 
 // User Schema
@@ -25,10 +26,10 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  notifications: {
-    type: Array,
-    default: [],
-  },
+  notifications: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Notification",
+  }],
   snipeets: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -364,11 +365,22 @@ userSchema.statics.follow = async function (email, username, followObj) {
 
   let date = new Date();
 
-  followingUser.notifications.push({
+  // followingUser.notifications.push({
+  //   type: "Follow",
+    
+  //   content: `"${user.username}" started following you!`,
+  //   timestamp: date,
+  // });
+
+  let notification = new Notification({
     type: "Follow",
     content: `"${user.username}" started following you!`,
-    timestamp: date,
+    user: followingUser._id,
   });
+  await notification.save();
+
+  followingUser.notifications.push(notification._id);
+
   const html = `<!DOCTYPE html>
   <html lang="en">
   <head>
@@ -430,8 +442,6 @@ userSchema.statics.follow = async function (email, username, followObj) {
     "New Follower",
     html
   );
-
-  console.log("following user ; ", followingUser);
 
   await user.save();
   await followingUser.save();
