@@ -420,8 +420,8 @@ userSchema.statics.follow = async function (email, username, followObj) {
       <div class="container">
           <h1><b>${user.username}</b> started following you!</h1>
           <p>Hi <b>${followingUser.username}</b>,</p>
-          <p>We are excited to let you know that <b>${user.username}</b> has started following you. Log in Now and Check out their profile and stay connected!</p>
-          <a href="https://code-vault-new-frontend.vercel.app/" class="button">View Profile</a>
+          <p>We are excited to let you know that <b>${user.username}</b> has started following you.Check out their profile and stay connected!</p>
+          <a href="https://code-vault-new-frontend.vercel.app/viewprofile?username=${user.username}" class="button">View Profile</a>
       </div>
   </body>
   </html>`;
