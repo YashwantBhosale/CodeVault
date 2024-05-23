@@ -40,7 +40,7 @@ const News = () => {
           </p>
           <h1 className="text-xl mb-2">
             <p
-              style={{ width: "95%", margin: "0 auto" }}
+              style={{ margin: "0 auto" }}
               className="font-bold text-md"
             >
               {article.title}
@@ -57,7 +57,7 @@ const News = () => {
             />
           )}
           <p
-            style={{ width: "95%", margin: "10px auto", marginTop: 0 }}
+            style={{margin: "10px auto", marginTop: 0 }}
             className="bg-light-off-white border border-gray-200 p-4 text-sm"
           >
             {article.description}
@@ -84,8 +84,8 @@ const News = () => {
             }}
           >
             <motion.div
-              className="bg-white p-8 rounded-lg w-[80%] z-[100] max-h-[80vh] overflow-auto"
-              initial={{ y: 50, opacity: 0 }}
+              className="bg-white p-8 rounded-lg w-[90%] md:w-[80%] z-[100] h-[84vh] overflow-auto"
+              initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 50, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
@@ -100,7 +100,7 @@ const News = () => {
               )}
                 <iframe
                   src={selectedArticle.url}
-                  className="w-full h-64"
+                  className="w-full h-[75%] md:h-[78%]"
                   title="Article Content"
                 ></iframe>
               <button
