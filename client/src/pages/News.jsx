@@ -5,23 +5,20 @@ import { motion, AnimatePresence } from "framer-motion";
 const News = () => {
   const [news, setNews] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
-  const apiKey = process.env.REACT_APP_NEWS_API_KEY;
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get(
-          `https://newsapi.org/v2/everything?domains=wired.com&q=q=technology OR AI OR machinelearning&apiKey=${apiKey}`
-        );
-        console.log(response.data.articles.filter((article) => article.source.name !== "[Removed]"));
-        setNews(response.data.articles.filter((article) => article.source.name !== "[Removed]"));
+        const response = await axios.get("/news.json");
+        console.log(response.data);
+        setNews(response.data);
       } catch (error) {
-        console.error("Error fetching news:", error);
+        console.error("Error fetching news from JSON:", error);
       }
     };
 
     fetchNews();
-  }, [apiKey]);
+  }, []);
 
   return (
     <div className="w-[90%] md:w-[60%] mt-[10vh] md:mt-[20vh] mx-auto">
