@@ -47,7 +47,7 @@ export default function Header(props) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: user.username,
+            username: user?.username,
           }),
         }
       );
@@ -125,7 +125,9 @@ export default function Header(props) {
   }
 
   useEffect(() => {
-    getNotifications();
+    if (user) {
+      getNotifications();
+    }
   }, [user]);
   // console.log("userobj : ", userObj);
   return (
@@ -142,7 +144,7 @@ export default function Header(props) {
                   {(
                     <img
                       src={
-                        user.avtar.length > 15
+                        user?.avtar?.length > 15
                           ? user.avtar
                           : iconSrcList[user.avtar]
                       }
@@ -357,7 +359,7 @@ export default function Header(props) {
                 <FontAwesomeIcon icon={faArrowsRotate} />
               </button>
               {notificationsLoading ? (
-                < SyncLoader className="w-fit mx-auto mt-4"/>
+                <SyncLoader className="w-fit mx-auto mt-4" />
               ) : notifications.length ? (
                 notifications.map(createNotifications)
               ) : null}
