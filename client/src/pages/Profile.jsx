@@ -30,68 +30,64 @@ export const Profile = () => {
           backgroundPosition: "0 0, 20px 20px",
         }}
       >
-        {user ? (
-          <div className="profile-box-container">
-            <aside class="profile-card">
-              <header>
-                <a href="">
-                  <img
-                    src={
-                      (user.avtar.length > 15
-                        ? user.avtar
-                        : iconSrcList[user?.avtar]) ||
-                      "https://avataaars.io/?accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&facialHairColor=Platinum&clotheType=ShirtScoopNeck&clotheColor=White&eyeType=Happy&eyebrowType=RaisedExcited&mouthType=Smile&skinColor=Light"
-                    }
-                    class="hoverZoomLink"
-                  />
-                </a>
-                <h1 className="font-bold">{user?.username}</h1>
-                <h2>{user?.email}</h2>
-              </header>
-              <div class="profile-bio">
-                <div>
-                  <h1 className="font-bold">about me:</h1>
-                  <p>{user?.about || "I like guys"}</p>
-                </div>
-                <div className="flex w-full justify-between">
-                  <div
-                    className="flex flex-col items-center justify-between cursor-pointer"
-                    onClick={() => setfollowerspopup(true)}
-                  >
-                    <p className="text-2xl">{user?.followers?.length}</p>
-                    <h3 className="font-bold">Followers</h3>
-                  </div>
-                  <div
-                    className="flex flex-col items-center justify-between cursor-pointer"
-                    onClick={() => setfollowingpopup(true)}
-                  >
-                    <p className="text-2xl">{user?.following?.length}</p>
-                    <h3 className="font-bold ">Following</h3>
-                  </div>
-                </div>
-                <button
-                  className="logout-btn hover:bg-slate-600"
-                  onClick={async () => {
-                    try {
-                      logout();
-                      navigate("/login");
-                      toast.success("Successfully logged out!");
-                    } catch (e) {
-                      console.error(e.message);
-                      toast.error(
-                        "we are having trouble logging you out! Please try again!"
-                      );
-                    }
-                  }}
-                >
-                  Logout
-                </button>
+        <div className="profile-box-container">
+          <aside class="profile-card">
+            <header>
+              <a href="">
+                <img
+                  src={
+                    (user?.avtar.length > 15
+                      ? user.avtar
+                      : iconSrcList[user?.avtar]) ||
+                    "https://avataaars.io/?accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&facialHairColor=Platinum&clotheType=ShirtScoopNeck&clotheColor=White&eyeType=Happy&eyebrowType=RaisedExcited&mouthType=Smile&skinColor=Light"
+                  }
+                  class="hoverZoomLink"
+                />
+              </a>
+              <h1 className="font-bold">{user?.username}</h1>
+              <h2>{user?.email}</h2>
+            </header>
+            <div class="profile-bio">
+              <div>
+                <h1 className="font-bold">about me:</h1>
+                <p>{user?.about || "I like guys"}</p>
               </div>
-            </aside>
-          </div>
-        ) : (
-          <Navigate to="/login" />
-        )}
+              <div className="flex w-full justify-between">
+                <div
+                  className="flex flex-col items-center justify-between cursor-pointer"
+                  onClick={() => setfollowerspopup(true)}
+                >
+                  <p className="text-2xl">{user?.followers?.length}</p>
+                  <h3 className="font-bold">Followers</h3>
+                </div>
+                <div
+                  className="flex flex-col items-center justify-between cursor-pointer"
+                  onClick={() => setfollowingpopup(true)}
+                >
+                  <p className="text-2xl">{user?.following?.length}</p>
+                  <h3 className="font-bold ">Following</h3>
+                </div>
+              </div>
+              <button
+                className="logout-btn hover:bg-slate-600"
+                onClick={async () => {
+                  try {
+                    logout();
+                    navigate("/login");
+                    toast.success("Successfully logged out!");
+                  } catch (e) {
+                    console.error(e.message);
+                    toast.error(
+                      "we are having trouble logging you out! Please try again!"
+                    );
+                  }
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          </aside>
+        </div>
       </div>
       <AnimatePresence>
         {followerspopup && (

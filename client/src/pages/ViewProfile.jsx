@@ -451,7 +451,7 @@ export const ViewProfile = () => {
             }
             className="w-full text-white bg-black hover:bg-slate-700  rounded-lg text-md p-2 mx-auto mt-4 block"
           >
-            {user.following.some(
+            {user?.following.some(
               (followingUser) => followingUser.username === currentuser.username
             )
               ? "Unfollow"

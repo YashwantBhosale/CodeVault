@@ -131,7 +131,7 @@ export const Snippet = () => {
       fetchSnippet(id);
     } else {
       console.log("Error fetching snippet! NO such id!");
-      toast.error("No such snippet!!");
+      // toast.error("No such snippet!!");
     }
   }, [user, id]);
 
