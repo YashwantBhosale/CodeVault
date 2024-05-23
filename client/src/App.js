@@ -17,6 +17,7 @@ import OAuth from "./pages/OAuth";
 import { ViewProfile } from "./pages/ViewProfile";
 import { ViewPublicSnippet } from "./pages/ViewPublicSnippet";
 import { useEffect } from "react";
+import News from "./pages/News";
 function App() {
   const { user } = useAuthContext();
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ function App() {
         <Route path="/viewpost" element={<ViewPost />} />
         <Route path="/viewprofile" element={<ViewProfile />} />
         <Route path="/viewpublicsnippet" element={<ViewPublicSnippet />} />
+        <Route path="/news" element={<News />} />
       </Routes>
       <Footer />
     </>

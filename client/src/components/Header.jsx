@@ -243,6 +243,15 @@ export default function Header(props) {
               Explore
             </a>
             <a
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/news");
+              }}
+              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer"
+            >
+              News
+            </a>
+            <a
               href=""
               className="text-md font-semibold leading-6 text-gray-900"
             >
@@ -310,6 +319,16 @@ export default function Header(props) {
                     className="-mx-3 block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Explore
+                  </a>
+                  <a
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate("/news");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="-mx-3 block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                  >
+                    News
                   </a>
                   <a
                     onClick={(e) => {
