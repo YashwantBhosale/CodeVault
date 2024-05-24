@@ -27,6 +27,7 @@ function Login() {
       navigate("/home");
     }
   }, []);
+  
   // handle change in form data
   function handleFormData(e) {
     const { name, value } = e.target;

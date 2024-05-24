@@ -56,7 +56,7 @@ const About = () => {
         <h2 className="text-3xl font-bold mb-4">Getting Started</h2>
         <ol className="list-decimal pl-5 space-y-2 text-lg">
           <li><strong>Clone the repository:</strong></li>
-          <pre className="bg-gray-100 w-fit p-2 rounded text-wrap">git clone https://github.com/YashwantBhosale/code-vault-new.git</pre>
+          <pre className="bg-gray-100 w-fit p-2 rounded text-wrap">git clone https://github.com/ YashwantBhosale/code-vault-new.git</pre>
           <li><strong>Navigate to the project directory:</strong></li>
           <pre className="bg-gray-100 p-2 rounded">cd code-vault-new</pre>
           <li><strong>Set up the server:</strong></li>

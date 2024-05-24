@@ -322,7 +322,7 @@ export default function Header(props) {
                   {unreadNotifications.length}
                 </p>
               ) : null}
-              <FaBell />
+              {user? <FaBell /> : null}
             </a>
             <button
               type="button"
@@ -343,7 +343,7 @@ export default function Header(props) {
                   {unreadNotifications.length}
                 </p>
               ) : null}
-              <FaBell />
+              {user ? <FaBell /> : null}
             </a>
             <a
               className="text-md font-semibold leading-6 text-gray-900 cursor-pointer"
