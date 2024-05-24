@@ -6,7 +6,7 @@ require('dotenv').config();
 const fetchNews = async () => {
   try {
     const response = await axios.get(
-      `https://newsapi.org/v2/everything?domains=wired.com&q=technology OR AI OR machinelearning&apiKey=1d5e1f75fdf149e0ac46e1a7cfc57c29`
+      `https://newsapi.org/v2/everything?domains=wired.com&q=technology OR AI OR machinelearning&sortBy=publishedAt&apiKey=1d5e1f75fdf149e0ac46e1a7cfc57c29`
     );
     const filteredArticles = response.data.articles.filter(article => article.source.name !== "[Removed]");
     

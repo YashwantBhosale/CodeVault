@@ -18,6 +18,7 @@ import { ViewProfile } from "./pages/ViewProfile";
 import { ViewPublicSnippet } from "./pages/ViewPublicSnippet";
 import { useEffect } from "react";
 import News from "./pages/News";
+import About from "./pages/About";
 function App() {
   const { user } = useAuthContext();
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
-
+        <Route path="/about" element={<About />} />
         <Route path="/home" element={<Home />} />
         <Route path="/snippets" element={<Snippet />} />
         <Route path="/profile" element={<Profile />} />

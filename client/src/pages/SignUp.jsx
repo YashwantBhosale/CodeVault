@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -21,6 +21,12 @@ function Signup() {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      navigate("/home");
+    }
+  }, []);
 
   async function handleFormData(e) {
     const { name, value } = e.target;
@@ -380,8 +386,8 @@ function Signup() {
               <div class="w-full lg:w-1/2 mb-2 lg:mb-0">
                 <button
                   type="button"
-                  onClick={()=>{
-                    handleOAuth("Google")
+                  onClick={() => {
+                    handleOAuth("Google");
                   }}
                   class="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300"
                 >

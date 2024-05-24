@@ -21,6 +21,12 @@ function Login() {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [provider, setProvider] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if(localStorage.getItem("user")) {
+      navigate("/home");
+    }
+  }, []);
   // handle change in form data
   function handleFormData(e) {
     const { name, value } = e.target;
