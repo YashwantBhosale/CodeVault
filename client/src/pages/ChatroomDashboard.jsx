@@ -31,8 +31,8 @@ const ChatroomDashboard = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="p-6 bg-white rounded-lg shadow-lg text-black">
+    <div className="flex flex-col items-center justify-center h-screen ">
+      <div className="p-6 bg-white w-[90%] md:w-fit rounded-lg shadow-lg text-black">
         <div className="flex items-center mb-4">
           <img
             src={avatar?.length > 15 ? avatar : iconSrcList[avatar]}

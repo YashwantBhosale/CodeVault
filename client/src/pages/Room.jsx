@@ -89,9 +89,9 @@ const Room = ({ allStudents }) => {
   };
 
   return (
-    <div className="flex h-[calc(95vh-40px)] bg-gray-900 text-gray-100 mt-[11vh]">
+    <div className="flex flex-col md:flex-row h-[calc(95vh-40px)] bg-gray-900 text-gray-100 mt-[11vh]">
       <div className="flex flex-col flex-grow">
-        <div className="flex-grow p-4 overflow-y-auto">
+        <div className="flex-grow p-4 h-[30vh] overflow-y-auto">
           <div className="flex flex-col space-y-4">
             {messages.map((msg, index) => (
               <div
@@ -146,7 +146,7 @@ const Room = ({ allStudents }) => {
           </button>
         </div>
       </div>
-      <div className="w-1/4 p-4 bg-gray-800 overflow-y-scroll">
+      <div className=" w-full md:w-1/4 p-4 bg-gray-800 overflow-y-scroll">
         <h2 className="mb-4 text-xl font-bold">Users in Room</h2>
         <ul className="space-y-2">
           {users
