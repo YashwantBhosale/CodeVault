@@ -339,6 +339,7 @@ userSchema.statics.getAllUsers = async function () {
     return {
       username: user.username,
       avtar: user.avtar,
+      email: user.email,
     };
   });
   return usersData;

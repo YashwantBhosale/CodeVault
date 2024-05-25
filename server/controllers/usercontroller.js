@@ -8,7 +8,7 @@ const fs = require("fs");
 const mongodb = require("mongodb");
 const Notification = require("../models/notificationModel");
 const mongoClient = mongodb.MongoClient;
-
+const sendMail = require("../config/mailer");
 // for creating token
 function createToken(id) {
   return jwt.sign({ id }, process.env.SECRET, { expiresIn: "1d" });
@@ -469,6 +469,94 @@ async function uploadFiles(req, res) {
   }
 }
 
+async function inviteUser(req, res) {
+  const { email, roomId, username } = req.body;
+  console.log(req.body)
+  try {
+    const user = await User.findOne({ email });
+    if (!user) throw Error("User not found!");
+
+    let notification = new Notification({
+      type: "Invite",
+      content: `"${username}" invited you to chatroom ${roomId}!`,
+      user: user._id,
+    });
+
+    await notification.save();
+  
+    user.notifications.push(notification._id);
+
+    const html = `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chatroom Invitation</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                max-width: 600px;
+                margin: 50px auto;
+                background-color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+                color: #333333;
+                text-align: center;
+            }
+            p {
+                font-size: 16px;
+                color: #666666;
+                line-height: 1.5;
+            }
+            .button {
+                display: block;
+                width: 200px;
+                margin: 20px auto;
+                padding: 10px 20px;
+                text-align: center;
+                background-color: #007BFF;
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 5px;
+            }
+            .button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1><b>${username}</b> has invited you to join a chatroom!</h1>
+            <p>Hi there,</p>
+            <p>You have been invited to join a chatroom by <b>${username}</b>. Click the button below to join the chatroom and start chatting!</p>
+            <a href="https://code-vault-new-frontend/room/${roomId}" class="button">Join Chatroom</a>
+        </div>
+    </body>
+    </html>`;
+  
+    // Use your existing sendMail function
+    sendMail(email, "Chatroom Invitation", html);
+
+    await user.save();
+
+    res.status(200).json({ message: "SUCCESS!" });
+  }
+  catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+
+
 //exporting all the functions
 module.exports = {
   loginWithUsername,
@@ -496,4 +584,5 @@ module.exports = {
   uploadFiles,
   updateReadStatus,
   clearNotifications,
+  inviteUser
 };

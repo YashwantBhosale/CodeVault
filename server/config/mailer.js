@@ -31,6 +31,8 @@ const smtpTransport = nodemailer.createTransport({
 });
 
 const sendMail = (to, subject, text) => {
+  console.log(to);
+  console.log(subject);
   const mailOptions = {
     from: process.env.GMAIL,
     to: to,
