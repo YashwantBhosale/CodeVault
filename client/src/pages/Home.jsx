@@ -46,6 +46,9 @@ function Home() {
   let [pinnedSnippets, setPinnedSnippets] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [files, setFiles] = useState([]);
+  const [visibility, setVisibility] = useState("public");
+  const [postVisibility, setPostVisibility] = useState("public");
+
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -262,7 +265,7 @@ function Home() {
           language: snippetLanguage,
           description: description,
           tags: ["trending"],
-          isPublic: true,
+          isPublic: visibility === "public" ? true : false,
         }),
       });
       let json = await response.json();
@@ -340,7 +343,7 @@ function Home() {
         username: user.username,
         avtar: user.avtar,
       },
-      isPublic: true,
+      isPublic: postVisibility === "public" ? true : false,
       tags: ["trending"],
       files: [],
     };
@@ -643,6 +646,26 @@ function Home() {
                       ></textarea>
                     </div>
                     <div>
+                      <label htmlFor="visibility">Visibility: </label>
+                      <input
+                        type="radio"
+                        name="visibility"
+                        value="public"
+                        checked
+                        className="mx-2"
+                        onChange={(e) => setVisibility(e.target.value)}
+                      />{" "}
+                      Public
+                      <input
+                        type="radio"
+                        name="visibility"
+                        value="private"
+                        className="mx-2"
+                        onChange={(e) => setVisibility(e.target.value)}
+                      />{" "}
+                      Private
+                    </div>
+                    <div>
                       <CodeMirror
                         value={
                           placeholders[snippetLanguage] ||
@@ -752,6 +775,26 @@ function Home() {
                           rows="3"
                         ></textarea>
                       </div>
+                      <div>
+                        <label htmlFor="visibility">Visibility: </label>
+                        <input
+                          type="radio"
+                          name="visibility"
+                          value="public"
+                          checked
+                          className="mx-2"
+                          onChange={(e) => setVisibility(e.target.value)}
+                        />{" "}
+                        Public
+                        <input
+                          type="radio"
+                          name="visibility"
+                          value="private"
+                          className="mx-2"
+                          onChange={(e) => setVisibility(e.target.value)}
+                        />{" "}
+                        Private
+                      </div>
                     </form>
                   </motion.div>
                   <motion.div
@@ -841,7 +884,7 @@ function Home() {
                       id="description"
                       style={{ whiteSpace: "pre-wrap" }}
                       rows="4"
-                      class="block p-2.5 w-full text-sm bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className="block p-2.5 w-full text-sm bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 text-gray-900 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Write your thoughts here..."
                       value={postContent}
                       onChange={(e) => {
@@ -860,6 +903,26 @@ function Home() {
                         setFiles(e.target.files);
                       }}
                     />
+                  </div>
+                  <div>
+                    <label htmlFor="postvisibility">Visibility: </label>
+                    <input
+                      type="radio"
+                      name="postvisibility"
+                      value="public"
+                      checked
+                      className="mx-2"
+                      onChange={(e) => setPostVisibility(e.target.value)}
+                    />{" "}
+                    Public
+                    <input
+                      type="radio"
+                      name="postvisibility"
+                      value="private"
+                      className="mx-2"
+                      onChange={(e) => setPostVisibility(e.target.value)}
+                    />{" "}
+                    Private
                   </div>
                   <button
                     type="button"
