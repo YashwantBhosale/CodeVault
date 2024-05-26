@@ -336,7 +336,6 @@ async function getnotifications(req, res) {
   try {
     const user = await User.findOne({ username }).populate("notifications");
     if (!user) throw Error("User not found!");
-    console.log("user: ", user);
     const result = {
       notifications: user.notifications,
     };

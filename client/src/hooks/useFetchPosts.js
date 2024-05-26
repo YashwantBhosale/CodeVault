@@ -18,13 +18,14 @@ export const useFetchPosts = () => {
         setPostsLoading(false);
         return;
       } else {
-        const response = await fetch(BASE_URL + "api/public/getpublicposts?page=1", {
+        const response = await fetch(BASE_URL + `api/public/getpublicposts?page=1&username=${user.username}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
         });
         const data = await response.json();
+        console.log("posts : ", data);
         setPosts(data);
         sessionStorage.setItem("posts", JSON.stringify(data));
         dispatch({ type: "FETCH_POSTS", payload: data });
@@ -42,7 +43,7 @@ export const useFetchPosts = () => {
       console.log(page);
       const currentPage = page || 1;
       const response = await fetch(
-        BASE_URL + `api/public/getpublicposts?page=${page}`,
+        BASE_URL + `api/public/getpublicposts?page=${page}&username=${user.username}`,
         {
           method: "GET",
           headers: {

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 export const useFetchUsers = () => {
   const [mostfollowed, setmostfollowed] = useState([]);
   const [publicUsersLoading, setPublicUsersLoading] = useState(false);
-  const { dispatch } = useAuthContext();
+  const { dispatch, user } = useAuthContext();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const fetchPublicUsers = async () => {
     try {
@@ -25,8 +25,9 @@ export const useFetchUsers = () => {
       });
       const data = await response.json();
       sessionStorage.setItem("public_users", JSON.stringify(data));
-      dispatch({ type: "FETCH_USERS", payload: data });
-      setmostfollowed(data);
+      let mostfollowedusers = data.filter((followedUser) => followedUser.username != user.username)
+      dispatch({ type: "FETCH_USERS", payload: mostfollowedusers });
+      setmostfollowed(mostfollowedusers);
     } catch (error) {
       console.error(error.message);
       toast.error(

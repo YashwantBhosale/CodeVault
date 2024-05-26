@@ -6,8 +6,41 @@ const mongoClient = mongodb.MongoClient;
 async function getPublicPosts(req, res) {
   try {
     const page = req.query.page;
+    const username = req.query.username;
     console.log(page);
     const posts = await Post.getPublicPosts(page);
+
+    if (username) {
+      const privatePosts = await Post.aggregate([
+        {
+          $lookup: {
+            from: "users", // the name of the User collection
+            localField: "author.id",
+            foreignField: "_id",
+            as: "authorObj",
+          },
+        },
+        {
+          $unwind: "$authorObj",
+        },
+        {
+          $match: {
+            isPublic: false,
+            "authorObj.followers.username": username,
+          },
+        },
+        {
+          $project: {
+            authorObj: 0,
+          },
+        },
+      ]);
+      console.log(privatePosts);
+      posts.push(...privatePosts);
+    }
+    posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // console.log("Posts with private posts : ", posts);
+    // console.log(posts);
     res.status(200).json(posts);
   } catch (error) {
     console.log(error.message);
@@ -65,12 +98,11 @@ async function getPostById(req, res) {
 async function deletePostById(req, res) {
   try {
     console.log(req.body.id);
-    const post  = await Post.findOne({_id: req.body.id});
+    const post = await Post.findOne({ _id: req.body.id });
     await Post.deleteOne({ _id: req.body.id });
     console.log(post);
     res.status(200).json(post);
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(400).json({ error: error.message });
   }
@@ -98,22 +130,23 @@ async function getAllUsers(req, res) {
 }
 
 async function getMostFollowedUsers(req, res) {
-    try {
-        const mostFollowedUsers = await User.find().sort({followers: -1}).limit(10);
-        // console.log(mostFollowedUsers);
-        const response = mostFollowedUsers.map((user) => {
-            return {
-                id: user._id,
-                username: user.username,
-                avtar: user.avtar,
-            }
-        })
-        res.status(200).json(response);
-    }catch(error) {
-        console.log(error.message);
-        res.status(400).json({ error: error.message });
-    
-    }
+  try {
+    const mostFollowedUsers = await User.find()
+      .sort({ followers: -1 })
+      .limit(10);
+    // console.log(mostFollowedUsers);
+    const response = mostFollowedUsers.map((user) => {
+      return {
+        id: user._id,
+        username: user.username,
+        avtar: user.avtar,
+      };
+    });
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ error: error.message });
+  }
 }
 
 async function handleFiles(req, res) {
@@ -127,13 +160,11 @@ async function handleFiles(req, res) {
 
     const files = await bucket.find({}).toArray();
 
-
     const file = await bucket.find({ filename: filename }).toArray();
 
-    if(file.length === 0 || !file) {
-      throw Error(filename+" not found");
+    if (file.length === 0 || !file) {
+      throw Error(filename + " not found");
     }
-
 
     console.log(file);
     const downloadStream = bucket.openDownloadStreamByName(filename);

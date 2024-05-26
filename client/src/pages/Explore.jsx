@@ -6,6 +6,7 @@ import {
   FaRegArrowAltCircleDown,
   FaComment,
   FaArrowDown,
+  FaStar,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { iconSrcList } from "../utils/icons";
@@ -33,6 +34,25 @@ export const Explore = () => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletePostId, setDeletePostId] = useState("");
+  const [followingFeed, setFollowingFeed] = useState([]);
+  const [followingFeedOpen, setFollowingFeedOpen] = useState(false);
+  const [activeFeed, setActiveFeed] = useState("trending");
+  const [feedPosts, setFeedPosts] = useState([]);
+
+  useEffect(() => {
+    if(activeFeed == "following") {
+      setFollowingFeedOpen(true);
+    }else{
+      setFollowingFeedOpen(false);
+    }
+
+    if (posts) {
+      let feedposts = posts.filter((post) => post.tags.includes(activeFeed));
+      setFeedPosts(feedposts);
+    }
+  }, [posts, activeFeed]);
+
+  const tags = ["trending", "new", "popular", "top", "non-tech", "following"];
   async function fetchAllUsers() {
     try {
       const response = await fetch(BASE_URL + "api/public/getallusers", {
@@ -47,22 +67,6 @@ export const Explore = () => {
       console.error(error);
     }
   }
-
-  // async function fetchMostFollowed() {
-  //   try {
-  //     const response = await fetch(BASE_URL + "api/public/mostfollowed", {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-
-  //     const data = await response.json();
-  //     setmostfollowed(data);
-  //   } catch (error) {
-  //     console.error(error.message);
-  //   }
-  // }
 
   async function Upvote(e, post) {
     e.preventDefault();
@@ -145,21 +149,6 @@ export const Explore = () => {
     }
   }
 
-  // async function fetchPublicPosts() {
-  //   try {
-  //     const response = await fetch(BASE_URL + "api/public/getpublicposts", {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     const data = await response.json();
-  //     setPosts(data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
-
   useEffect(() => {
     fetchAllUsers();
     // fetchMostFollowed();
@@ -167,9 +156,24 @@ export const Explore = () => {
     if (!fetched) {
       fetchPublicPosts();
     }
+
+    if (posts) {
+      setFollowingFeed(
+        posts.filter((post) =>
+          user.following.some(
+            (followingUser) => followingUser.username === post.author.username
+          )
+        )
+      );
+      console.log(followingFeed);
+    }
   }, []);
 
   function localFollow(e, userObj) {
+    if (userObj.username == user.uername) {
+      toast.info("You cannot follow Yourself!");
+      return;
+    }
     switch (e.target.innerText) {
       case "Follow": {
         user.following.push(userObj);
@@ -196,6 +200,10 @@ export const Explore = () => {
 
   async function handleFollowButton(e, userobj) {
     console.log(e.target.innerText);
+    if (userobj.username == user.uername) {
+      toast.info("You cannot follow Yourself!");
+      return;
+    }
     localFollow(e, userobj);
     switch (e.target.innerText) {
       case "Follow": {
@@ -276,7 +284,6 @@ export const Explore = () => {
         toast.error("Error deleting post!");
       }
 
-
       setShowDeleteConfirmation(false);
     } catch (error) {
       console.error(error.message);
@@ -284,19 +291,25 @@ export const Explore = () => {
     }
   }
   function scrollLeft(container) {
-    container.scrollBy({ left: -250, behavior: 'smooth' });
+    container.scrollBy({ left: -250, behavior: "smooth" });
   }
-  
+
   function scrollRight(container) {
-    container.scrollBy({ left: 250, behavior: 'smooth' });
+    container.scrollBy({ left: 250, behavior: "smooth" });
   }
 
-
-  function createMostFollowedUsersDiv(userobj) { 
+  function createMostFollowedUsersDiv(userobj) {
+    if(userobj.username === user.username){
+      return;
+    }
     return (
       <div
         class="w-[18vw] min-w-[250px] my-2 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center h-full"
-        onClick={() => navigate(`/viewprofile?username=${userobj?.username}`)}
+        onClick={() => {
+          userobj.username === user.username
+            ? navigate("/profile")
+            : navigate(`/viewprofile?username=${userobj?.username}`);
+        }}
       >
         <div className="h-full">
           <img
@@ -370,9 +383,11 @@ export const Explore = () => {
           </div>
         )}
         <p
-          onClick={() =>
-            navigate(`/viewprofile?username=${post.author.username}`)
-          }
+          onClick={() => {
+            post.author.username === user.username
+              ? navigate("/profile")
+              : navigate(`/viewprofile?username=${post.author.username}`);
+          }}
           className="flex items-center gap-2 text-black text-md font-bold mb-2 border-b border-gray-200 p-2"
         >
           {(
@@ -386,6 +401,7 @@ export const Explore = () => {
             />
           ) || <FaUser className="border border-black p-1 rounded-full" />}
           {post.author.username}
+          {!post?.isPublic && <FaStar title="This is a private post." />}
           <span className="text-sm ml-2 text-gray-500">
             {calculateTimeAgo(post.createdAt)}
           </span>
@@ -491,22 +507,29 @@ export const Explore = () => {
 
       <h1 className="text-center text-xl font-bold">Popular Users</h1>
       <div className="relative my-4 flex items-center">
-    <button 
-      onClick={() => scrollLeft(document.getElementById('mostFollowedContainer'))}
-      className="absolute left-4 md:left-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
-    >
-      &#10094;
-    </button>
-    <div id="mostFollowedContainer" className="flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4">
-      {mostfollowed.map(createMostFollowedUsersDiv)}
-    </div>
-    <button 
-      onClick={() => scrollRight(document.getElementById('mostFollowedContainer'))}
-      className="absolute right-4 md:right-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
-    >
-      &#10095;
-    </button>
-  </div>
+        <button
+          onClick={() =>
+            scrollLeft(document.getElementById("mostFollowedContainer"))
+          }
+          className="absolute left-4 md:left-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
+        >
+          &#10094;
+        </button>
+        <div
+          id="mostFollowedContainer"
+          className="flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4"
+        >
+          {mostfollowed.map(createMostFollowedUsersDiv)}
+        </div>
+        <button
+          onClick={() =>
+            scrollRight(document.getElementById("mostFollowedContainer"))
+          }
+          className="absolute right-4 md:right-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
+        >
+          &#10095;
+        </button>
+      </div>
       <button
         onClick={() => {
           dispatch({ type: "UPDATE_FETCH_STATE", payload: false });
@@ -518,6 +541,23 @@ export const Explore = () => {
       >
         <FaArrowDown /> Fetch Latest Posts....{" "}
       </button>
+      <div className="flex mx-auto my-5 w-[60%] flex-wrao">
+        {tags.map((tag) => {
+          return (
+            <button
+              className={`block mx-[5px] ${
+                activeFeed === tag
+                  ? "bg-blue-700 text-white"
+                  : "bg-transparent text-blue-700"
+              } hover:bg-blue-500 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded`}
+              onClick={() => setActiveFeed(tag)}
+            >
+              {tag}
+            </button>
+          );
+        })}
+      </div>
+
       <InfiniteScroll
         dataLength={posts.length}
         next={() => {
@@ -527,16 +567,36 @@ export const Explore = () => {
         hasMore={!fetched}
         endMessage={
           <p style={{ textAlign: "center" }}>
-            <b>Yay! You have seen it all</b>
+            {!followingFeedOpen && <b>Yay! You have seen it all</b>}
           </p>
         }
       >
         {postsLoading ? (
           <SyncLoader className="w-fit mx-auto my-4" />
-        ) : (
-          posts?.map((post, index) => createPostsDiv(post, index))
+        ) : followingFeedOpen ? null : (
+          feedPosts?.map((post, index) => {
+            return createPostsDiv(post, index);
+          })
         )}
       </InfiniteScroll>
+      <InfiniteScroll
+        dataLength={followingFeed.length}
+        next={() => {
+          fetchPublicPostsBatch(page);
+          setPage(page + 1);
+        }}
+        hasMore={!fetched}
+        endMessage={
+          <p style={{ textAlign: "center" }}>
+            {followingFeedOpen && <b>Yay! You have seen it all</b>}
+          </p>
+        }
+      >
+        {followingFeedOpen
+          ? followingFeed.map((post, index) => createPostsDiv(post, index))
+          : null}
+      </InfiniteScroll>
+
       <DeleteConfirmation
         type="post"
         isOpen={showDeleteConfirmation}

@@ -12,6 +12,8 @@ import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
+import { MultiSelect } from "react-multi-select-component";
+
 import axios from "axios";
 
 import {
@@ -48,9 +50,17 @@ function Home() {
   const [files, setFiles] = useState([]);
   const [visibility, setVisibility] = useState("public");
   const [postVisibility, setPostVisibility] = useState("public");
-
+  const [selectedPostTags, setSelectedPostTags] = useState([]);
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+
+  const options = [
+    { label: "trending", value: "trending" },
+    { label: "new", value: "new" },
+    { label: "popular", value: "popular" },
+    { label: "top", value: "top" },
+    { label: "non-tech", value: "non-tech" },
+  ];
 
   const handleLanguageSelect = (language) => {
     setSnippetLanguage(language);
@@ -335,6 +345,8 @@ function Home() {
     const result = postContent.replace(/(\r\n|\r|\n)/g, "<br>");
     console.log("postContent: ", result);
 
+    let tags = selectedPostTags.map((tag) => tag.value);
+    console.log("tags: ", tags)
     const post = {
       email: user.email,
       title: postTitle,
@@ -344,7 +356,7 @@ function Home() {
         avtar: user.avtar,
       },
       isPublic: postVisibility === "public" ? true : false,
-      tags: ["trending"],
+      tags: tags,
       files: [],
     };
     console.log(post);
@@ -923,6 +935,17 @@ function Home() {
                       onChange={(e) => setPostVisibility(e.target.value)}
                     />{" "}
                     Private
+                  </div>
+                  <div>
+                    <label>Tags:</label>
+                    <MultiSelect
+                      options={options}
+                      value={selectedPostTags}
+                      onChange={(value) => {
+                        setSelectedPostTags(value);
+                      }}
+                      labelledBy="Select"
+                    />
                   </div>
                   <button
                     type="button"
