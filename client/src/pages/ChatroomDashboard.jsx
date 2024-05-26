@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import io from "socket.io-client";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AnimatePresence, motion } from "framer-motion";
 import { iconSrcList } from "../utils/icons";
 
-const socket = io(process.env.REACT_APP_BASE_URL);
+const socket = new WebSocket("wss://socket-io-codevault-1.onrender.com");
 
 const ChatroomDashboard = () => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -15,11 +14,27 @@ const ChatroomDashboard = () => {
   const [showCreatePopup, setShowCreatePopup] = useState(false);
   const [showJoinPopup, setShowJoinPopup] = useState(false);
   const nav = useNavigate();
+  let socket;
 
   const createRoom = () => {
-    socket.emit("createRoom", { username, avatar }, (roomId) => {
-      nav(`/room/${roomId}`);
-    });
+    socket = new WebSocket("wss://socket-io-codevault-1.onrender.com");
+
+    socket.onopen = () => {
+      socket.send(JSON.stringify({ type: "createRoom", payload: { username, avatar } }));
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const { type, payload } = data;
+      if (type === "roomId") {
+        nav(`/room/${payload}`);
+      }
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      toast.error("Error creating room. Please try again.");
+    };
   };
 
   const joinRoom = () => {

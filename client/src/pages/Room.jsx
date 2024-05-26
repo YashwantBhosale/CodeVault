@@ -1,13 +1,8 @@
-// src/components/Room.js
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import io from "socket.io-client";
+import { toast } from "react-toastify";
 import "tailwindcss/tailwind.css";
 import { iconSrcList } from "../utils/icons";
-import { toast } from "react-toastify";
-
-const socket = io(process.env.REACT_APP_BASE_URL);
 
 const Room = ({ allStudents }) => {
   const { roomId } = useParams();
@@ -17,46 +12,56 @@ const Room = ({ allStudents }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    socket.connect();
-    return () => {
-      socket.disconnect();
+    socketRef.current = new WebSocket("wss://socket-io-codevault-1.onrender.com");
+    socketRef.current.onopen = () => {
+      socketRef.current.send(JSON.stringify({
+        type: "joinRoom",
+        payload: { roomId, username, avatar }
+      }));
     };
-  }, []);
 
-  useEffect(() => {
-    socket.emit(
-      "joinRoom",
-      { roomId, username, avatar },
-      (isValid, existingMessages) => {
-        if (!isValid) {
-          alert("Room does not exist");
-        } else {
-          setMessages(existingMessages);
-        }
+    socketRef.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const { type, payload , messages } = data;
+      console.log(data);
+      if (type === "roomData") {
+        setUsers(payload);
+      } else if (type === "message") {
+        setMessages((messages) => [...messages, payload]);
+      } else if (type === "existingMessages") {
+        setMessages(messages);
       }
-    );
+    };
 
-    socket.on("roomData", (users) => {
-      setUsers(users);
-    });
+    socketRef.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
 
-    socket.on("message", (message) => {
-      setMessages((messages) => [...messages, message]);
-    });
+    socketRef.current.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
 
     return () => {
-      socket.off("message");
-      socket.off("roomData");
-      socket.off("joinRoom");
+      if (socketRef.current) {
+        socketRef.current.close();
+      }
     };
-  }, [roomId, username]);
+  }, [roomId, username, avatar]);
 
   const sendMessage = () => {
     if (message.trim()) {
-      socket.emit("sendMessage", { roomId, message, username });
-      setMessage("");
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: "sendMessage",
+          payload: { roomId, message, username }
+        }));
+        setMessage("");
+      } else {
+        toast.error("Connection not ready. Please wait...");
+      }
     }
   };
 
@@ -80,7 +85,7 @@ const Room = ({ allStudents }) => {
       if (response.ok) {
         toast.success(`Invitation sent to ${student.username}`);
       } else {
-          console.log(response);
+        console.log(response);
       }
     } catch (error) {
       console.error("Error sending invitation:", error);
@@ -93,31 +98,24 @@ const Room = ({ allStudents }) => {
       <div className="flex flex-col flex-grow">
         <div className="flex-grow p-4 h-[30vh] overflow-y-auto">
           <div className="flex flex-col space-y-4">
-            {messages.map((msg, index) => (
+            {messages?.length > 0 && messages?.map((msg, index) => (
               <div
                 key={index}
-                className={`flex ${
-                  msg.user === username ? "justify-end" : "justify-start"
-                }`}
+                className={`flex ${msg.user === username ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`p-3 rounded-lg max-w-xs shadow-lg ${
-                    msg.user === username
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-700"
-                  }`}
+                  className={`p-3 rounded-lg max-w-xs shadow-lg ${msg.user === username ? "bg-blue-600 text-white" : "bg-gray-700"}`}
                 >
                   <div className="flex items-center space-x-2">
                     <img
                       src={
                         msg.user === username
-                          ? (avatar.length > 15 ? avatar : iconSrcList[avatar])
-                          : (users.find((user) => user.username === msg.user)
-                          ?.avatar.length > 15 ? users.find((user) => user.username === msg.user)
-                          ?.avatar : iconSrcList[
-                              users.find((user) => user.username === msg.user)
-                                ?.avatar
-                            ])
+                          ? avatar.length > 15
+                            ? avatar
+                            : iconSrcList[avatar]
+                          : users.find((user) => user.username === msg.user)?.avatar.length > 15
+                          ? users.find((user) => user.username === msg.user)?.avatar
+                          : iconSrcList[users.find((user) => user.username === msg.user)?.avatar]
                       }
                       alt="avatar"
                       className="w-6 h-6 rounded-full"
@@ -146,7 +144,7 @@ const Room = ({ allStudents }) => {
           </button>
         </div>
       </div>
-      <div className=" w-full md:w-1/4 p-4 bg-gray-800 overflow-y-scroll">
+      <div className="w-full md:w-1/4 p-4 bg-gray-800 overflow-y-scroll">
         <h2 className="mb-4 text-xl font-bold">Users in Room</h2>
         <ul className="space-y-2">
           {users
@@ -157,9 +155,7 @@ const Room = ({ allStudents }) => {
                 className="flex items-center p-2 my-[2px] bg-gray-700 rounded-lg shadow-md"
               >
                 <img
-                  src={
-                    user.avatar.length > 15 ? user.avatar : iconSrcList[user.avatar]
-                  }
+                  src={user.avatar.length > 15 ? user.avatar : iconSrcList[user.avatar]}
                   alt="avatar"
                   className="w-6 h-6 mr-2 rounded-full"
                 />
@@ -171,8 +167,7 @@ const Room = ({ allStudents }) => {
         <ul className="space-y-2">
           {allStudents
             .filter(
-              (student) =>
-                !users.some((user) => user.username === student.username)
+              (student) => !users.some((user) => user.username === student.username)
             )
             .map((student, index) => (
               <li
@@ -181,11 +176,7 @@ const Room = ({ allStudents }) => {
               >
                 <div className="flex items-center">
                   <img
-                    src={
-                      student.avtar.length > 15
-                        ? student.avtar
-                        : iconSrcList[student.avtar]
-                    }
+                    src={student.avtar.length > 15 ? student.avtar : iconSrcList[student.avtar]}
                     alt="avatar"
                     className="w-6 h-6 mr-2 rounded-full"
                   />
