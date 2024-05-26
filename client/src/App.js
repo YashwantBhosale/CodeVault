@@ -21,6 +21,7 @@ import News from "./pages/News";
 import About from "./pages/About";
 import ChatroomDashboard from "./pages/ChatroomDashboard";
 import Room from "./pages/Room";
+import { ChatroomButton } from "./components/ChatroomButton";
 
 function App() {
   const { user } = useAuthContext();
@@ -74,6 +75,7 @@ function App() {
         <Route path="/room/:roomId" element={<Room allStudents={allStudents} />} />
       </Routes>
       <Footer />
+      <ChatroomButton />
     </>
   );
 }
