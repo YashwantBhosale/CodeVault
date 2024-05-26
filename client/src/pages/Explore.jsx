@@ -55,12 +55,17 @@ export const Explore = () => {
     }
 
     if (posts) {
-      let feedposts = posts.filter((post) => post.tags.includes(activeFeed));
-      setFeedPosts(feedposts);
+      if(activeFeed === "all") {
+        setFeedPosts(posts);
+        return;
+      }else{
+        let feedposts = posts.filter((post) => post.tags.includes(activeFeed));
+        setFeedPosts(feedposts);
+      }
     }
   }, [posts, activeFeed]);
 
-  const tags = ["trending", "new", "popular", "top", "non-tech", "following"];
+  const tags = ["all", "trending", "new", "popular", "top", "non-tech", "following"];
   async function fetchAllUsers() {
     try {
       const response = await fetch(BASE_URL + "api/public/getallusers", {
