@@ -40,9 +40,17 @@ export const Explore = () => {
   const [feedPosts, setFeedPosts] = useState([]);
 
   useEffect(() => {
-    if(activeFeed == "following") {
+    if (activeFeed == "following") {
       setFollowingFeedOpen(true);
-    }else{
+      if (posts) {
+        let followfeed = posts.filter((post) => {
+          return user.following.some(
+            (followingUser) => followingUser.username === post.author.username
+          );
+        });
+        setFollowingFeed(followfeed);
+      }
+    } else {
       setFollowingFeedOpen(false);
     }
 
@@ -158,13 +166,12 @@ export const Explore = () => {
     }
 
     if (posts) {
-      setFollowingFeed(
-        posts.filter((post) =>
-          user.following.some(
-            (followingUser) => followingUser.username === post.author.username
-          )
-        )
-      );
+      let followfeed = posts.filter((post) => {
+        return user.following.some(
+          (followingUser) => followingUser.username === post.author.username
+        );
+      });
+      setFollowingFeed(followfeed);
       console.log(followingFeed);
     }
   }, []);
@@ -299,7 +306,7 @@ export const Explore = () => {
   }
 
   function createMostFollowedUsersDiv(userobj) {
-    if(userobj.username === user.username){
+    if (userobj.username === user.username) {
       return;
     }
     return (
@@ -558,44 +565,47 @@ export const Explore = () => {
         })}
       </div>
 
-      <InfiniteScroll
-        dataLength={posts.length}
-        next={() => {
-          fetchPublicPostsBatch(page);
-          setPage(page + 1);
-        }}
-        hasMore={!fetched}
-        endMessage={
-          <p style={{ textAlign: "center" }}>
-            {!followingFeedOpen && <b>Yay! You have seen it all</b>}
-          </p>
-        }
-      >
-        {postsLoading ? (
-          <SyncLoader className="w-fit mx-auto my-4" />
-        ) : followingFeedOpen ? null : (
-          feedPosts?.map((post, index) => {
-            return createPostsDiv(post, index);
-          })
-        )}
-      </InfiniteScroll>
-      <InfiniteScroll
-        dataLength={followingFeed.length}
-        next={() => {
-          fetchPublicPostsBatch(page);
-          setPage(page + 1);
-        }}
-        hasMore={!fetched}
-        endMessage={
-          <p style={{ textAlign: "center" }}>
-            {followingFeedOpen && <b>Yay! You have seen it all</b>}
-          </p>
-        }
-      >
-        {followingFeedOpen
-          ? followingFeed.map((post, index) => createPostsDiv(post, index))
-          : null}
-      </InfiniteScroll>
+      {postsLoading ? (
+        <SyncLoader className="w-fit mx-auto my-4" />
+      ) : (
+        <InfiniteScroll
+          dataLength={posts.length}
+          next={() => {
+            fetchPublicPostsBatch(page);
+            setPage(page + 1);
+          }}
+          hasMore={!fetched}
+          endMessage={
+            <p style={{ textAlign: "center" }}>
+              {!followingFeedOpen && <b>Yay! You have seen it all</b>}
+            </p>
+          }
+        >
+          {followingFeedOpen
+            ? null
+            : feedPosts?.map((post, index) => {
+                return createPostsDiv(post, index);
+              })}
+        </InfiniteScroll>
+      )}
+
+      {followingFeedOpen ? (
+        <InfiniteScroll
+          dataLength={followingFeed.length}
+          next={() => {
+            fetchPublicPostsBatch(page);
+            setPage(page + 1);
+          }}
+          hasMore={!fetched}
+          endMessage={
+            <p style={{ textAlign: "center" }}>
+              {followingFeedOpen && <b>Yay! You have seen it all</b>}
+            </p>
+          }
+        >
+          {followingFeed.map((post, index) => createPostsDiv(post, index))}
+        </InfiniteScroll>
+      ) : null}
 
       <DeleteConfirmation
         type="post"

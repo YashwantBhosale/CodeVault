@@ -12,7 +12,6 @@ export const useLogin = () => {
     const BASE_URL = process.env.REACT_APP_BASE_URL;
     const loginWithEmail = async (email, password) => {
         setIsLoading(true);
-        console.log(email, password);
         const response = await axios.post(BASE_URL+"api/user/loginwithemail", {
             email,
             password
@@ -34,7 +33,6 @@ export const useLogin = () => {
 
     const loginWithUsername = async (username, password) => {
         setIsLoading(true);
-        console.log(username, password);
         const response = await axios.post(BASE_URL+"api/user/loginwithusername", {
             username,
             password
@@ -65,7 +63,6 @@ export const useLogin = () => {
             // toast.error("Sorry! We are facing some issues with server!");
         }
         else {
-            console.log(response.data.user);
             const user = response.data.user;
             user.token = response.data.token;
             localStorage.setItem("user", JSON.stringify(user));
