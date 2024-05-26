@@ -336,10 +336,9 @@ async function removeFollower(req, res) {
   try {
     await User.removeFollower(email, username, followObj);
     res.status(200).json({ message: "SUCCESS!" });
-  }catch(error) {
+  } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
-  
   }
 }
 
@@ -386,11 +385,13 @@ async function clearNotifications(req, res) {
     if (!user) throw Error("User not found!");
 
     ids.forEach(async (id) => {
-      const notification = await Notification.deleteOne({ _id: id});
+      const notification = await Notification.deleteOne({ _id: id });
       console.log("notification: ", notification);
       if (!notification.acknowledged) throw Error("Notification not found!");
-    })
-    user.notifications = user.notifications.filter((notification) => !ids.includes(notification._id));
+    });
+    user.notifications = user.notifications.filter(
+      (notification) => !ids.includes(notification._id)
+    );
     await user.save();
   } catch (e) {
     console.log("error in clearNotifications: ", e.message);
@@ -482,7 +483,7 @@ async function uploadFiles(req, res) {
 
 async function inviteUser(req, res) {
   const { email, roomId, username } = req.body;
-  console.log(req.body)
+  console.log(req.body);
   try {
     const user = await User.findOne({ email });
     if (!user) throw Error("User not found!");
@@ -494,7 +495,7 @@ async function inviteUser(req, res) {
     });
 
     await notification.save();
-  
+
     user.notifications.push(notification._id);
 
     const html = `<!DOCTYPE html>
@@ -553,20 +554,29 @@ async function inviteUser(req, res) {
         </div>
     </body>
     </html>`;
-  
+
     // Use your existing sendMail function
     sendMail(email, "Chatroom Invitation", html);
 
     await user.save();
 
     res.status(200).json({ message: "SUCCESS!" });
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
   }
 }
 
+async function toggleFavouriteSnippet(req, res) {
+  const { email, snippetId } = req.body;
+  try {
+    await User.toggleFavouriteSnippet(email, snippetId);
+    res.status(200).json({ message: "SUCCESS!" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
 
 //exporting all the functions
 module.exports = {
@@ -596,5 +606,6 @@ module.exports = {
   updateReadStatus,
   clearNotifications,
   inviteUser,
-  removeFollower
+  removeFollower,
+  toggleFavouriteSnippet
 };

@@ -7,7 +7,10 @@ import {
   FaComment,
   FaArrowDown,
   FaStar,
+  FaThumbtack,
 } from "react-icons/fa";
+import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 import { iconSrcList } from "../utils/icons";
 import { useNavigate } from "react-router-dom";
@@ -20,11 +23,16 @@ import { SyncLoader } from "react-spinners";
 import DeleteConfirmation from "../components/DeleteConfirmation";
 export const Explore = () => {
   const [page, setPage] = useState(2);
-  const { postsLoading, fetchPublicPosts, fetchPublicPostsBatch } =
-    useFetchPosts();
+  const {
+    postsLoading,
+    fetchPublicPosts,
+    fetchMostFavouritedSnippets,
+    fetchPublicPostsBatch,
+  } = useFetchPosts();
   const { fetchPublicUsers, publicUsersLoading, mostfollowed } =
     useFetchUsers();
-  const { user, dispatch, posts, fetched } = useAuthContext();
+  const { user, dispatch, posts, fetched, mostFavouritedSnippets } =
+    useAuthContext();
   const navigate = useNavigate();
   const [allstudents, setAllStudents] = useState([]);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -55,17 +63,25 @@ export const Explore = () => {
     }
 
     if (posts) {
-      if(activeFeed === "all") {
+      if (activeFeed === "all") {
         setFeedPosts(posts);
         return;
-      }else{
+      } else {
         let feedposts = posts.filter((post) => post.tags.includes(activeFeed));
         setFeedPosts(feedposts);
       }
     }
   }, [posts, activeFeed]);
 
-  const tags = ["all", "trending", "new", "popular", "top", "non-tech", "following"];
+  const tags = [
+    "all",
+    "trending",
+    "new",
+    "popular",
+    "top",
+    "non-tech",
+    "following",
+  ];
   async function fetchAllUsers() {
     try {
       const response = await fetch(BASE_URL + "api/public/getallusers", {
@@ -81,6 +97,12 @@ export const Explore = () => {
     }
   }
 
+  function truncateDescription(description, maxLength) {
+    if (description.length > maxLength) {
+      return description.slice(0, maxLength) + "...";
+    }
+    return description;
+  }
   async function Upvote(e, post) {
     e.preventDefault();
     e.stopPropagation();
@@ -166,6 +188,8 @@ export const Explore = () => {
     fetchAllUsers();
     // fetchMostFollowed();
     fetchPublicUsers();
+    fetchMostFavouritedSnippets();
+    console.log(mostFavouritedSnippets);
     if (!fetched) {
       fetchPublicPosts();
     }
@@ -269,7 +293,6 @@ export const Explore = () => {
     }
   }
 
-  function handleCommentSubmit(e, id) {}
   async function handleDelete(id) {
     setDeletePostId(id);
     setShowDeleteConfirmation(true);
@@ -350,6 +373,98 @@ export const Explore = () => {
           </button>
         </div>
       </div>
+    );
+  }
+
+  function getMonthFromIndex(index) {
+    switch (index) {
+      case 0:
+        return "Jan";
+      case 1:
+        return "Feb";
+      case 2:
+        return "Mar";
+      case 3:
+        return "Apr";
+      case 4:
+        return "May";
+      case 5:
+        return "Jun";
+      case 6:
+        return "Jul";
+      case 7:
+        return "Aug";
+      case 8:
+        return "Sep";
+      case 9:
+        return "Oct";
+      case 10:
+        return "Nov";
+      case 11:
+        return "Dec";
+      default:
+        return "Invalid month index";
+    }
+  }
+
+  function displaySnippets(snippet, isPinned = false) {
+    const month = getMonthFromIndex(
+      Number.parseInt(snippet.dateCreated.split("-")[1]) - 1
+    );
+    const day = snippet.dateCreated.split("-")[2].split("T")[0];
+    const date = `${month} ${day}`;
+
+    return (
+      <article
+        key={snippet._id}
+        className="flex bg-white transition hover:shadow-xl w-[29%] border-2 rounded-xl m-[20px] min-w-[340px]"
+      >
+        {isPinned && (
+          <FontAwesomeIcon
+            icon={faThumbtack}
+            className="text-yellow-500 text-xl ml-2 mt-2"
+          />
+        )}
+        <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
+          <time
+            // dateTime={date}
+            className="flex items-center justify-between gap-4 text-xs font-bold uppercase text-gray-900"
+          >
+            <span>{date}</span>
+            <span className="w-px flex-1 bg-gray-900/10"></span>
+            <span>
+              {/* {getMonthAndDayFromSeconds(snippet.dateCreated.seconds)} */}
+            </span>
+          </time>
+        </div>
+        <div className="flex flex-1 flex-col justify-between">
+          <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6 min-h-[150px]">
+            <a href="#">
+              <h3 className="font-bold uppercase text-gray-900">
+                {snippet.title}
+              </h3>
+            </a>
+            <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
+              <span className="font-bold text-gray-900">Description:</span>{" "}
+              {truncateDescription(snippet.description || "N/A", 17)}
+            </p>
+            <p>
+              <span className="font-bold text-gray-900">Language:</span>{" "}
+              {snippet.language}
+            </p>
+          </div>
+          <div className="flex items-end justify-end">
+            <button
+              onClick={() => {
+                navigate(`/viewpublicsnippet?snippetId=${snippet._id}`);
+              }}
+              className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 "
+            >
+              Open
+            </button>
+          </div>
+        </div>
+      </article>
     );
   }
 
@@ -542,6 +657,33 @@ export const Explore = () => {
           &#10095;
         </button>
       </div>
+      <h1 className="text-center text-xl font-bold">Popular Snippets</h1>
+      <div className="relative my-4 flex items-center">
+        <button
+          onClick={() =>
+            scrollLeft(document.getElementById("mostFavouritedSnippets"))
+          }
+          className="absolute left-4 md:left-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
+        >
+          &#10094;
+        </button>
+        <div
+          id="mostFavouritedSnippets"
+          className="flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4"
+        >
+          {mostFavouritedSnippets &&
+            mostFavouritedSnippets.map((snippet) => displaySnippets(snippet))}
+        </div>
+        <button
+          onClick={() =>
+            scrollRight(document.getElementById("mostFavouritedSnippets"))
+          }
+          className="absolute right-4 md:right-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
+        >
+          &#10095;
+        </button>
+      </div>
+
       <button
         onClick={() => {
           dispatch({ type: "UPDATE_FETCH_STATE", payload: false });

@@ -4,7 +4,7 @@ const Snippet = require("./snippetModel");
 const Post = require("./postModel");
 const mongodb = require("mongodb");
 const sendMail = require("../config/mailer");
-const Notification = require("../models/notificationModel")
+const Notification = require("../models/notificationModel");
 const mongoClient = mongodb.MongoClient;
 
 // User Schema
@@ -26,10 +26,12 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  notifications: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Notification",
-  }],
+  notifications: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Notification",
+    },
+  ],
   snipeets: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -50,38 +52,32 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  followers: {
-    type: Array,
-    default: [
-      {
-        id: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        username: String,
-        avtar: String,
-        unique: true,
+  followers: [
+    {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
-    ],
-  },
-  following: {
-    type: Array,
-    default: [
-      {
-        id: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        username: {
-          type: String,
-        },
-        avtar: {
-          type: String,
-        },
-        unique: true,
+      username: String,
+      avtar: String,
+    },
+  ],
+  following: [
+    {
+      id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
-    ],
-  },
+      username: String,
+      avtar: String,
+    },
+  ],
+  favouriteSnippets: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Snippet",
+    },
+  ],
 });
 
 // find user by usrname
@@ -368,7 +364,7 @@ userSchema.statics.follow = async function (email, username, followObj) {
 
   // followingUser.notifications.push({
   //   type: "Follow",
-    
+
   //   content: `"${user.username}" started following you!`,
   //   timestamp: date,
   // });
@@ -438,11 +434,7 @@ userSchema.statics.follow = async function (email, username, followObj) {
       </div>
   </body>
   </html>`;
-  sendMail(
-    followingUser.email,
-    "New Follower",
-    html
-  );
+  sendMail(followingUser.email, "New Follower", html);
 
   await user.save();
   await followingUser.save();
@@ -471,7 +463,11 @@ userSchema.statics.unfollow = async function (email, username, followObj) {
   await followingUser.save();
 };
 
-userSchema.statics.removeFollower = async function (email, username, followObj) {
+userSchema.statics.removeFollower = async function (
+  email,
+  username,
+  followObj
+) {
   const user = await this.findOne({ email, username }); // current user
   if (!user) throw Error("User not found!");
 
@@ -492,6 +488,44 @@ userSchema.statics.removeFollower = async function (email, username, followObj) 
 
   await user.save();
   await followerUser.save();
-}
+};
+
+userSchema.statics.toggleFavouriteSnippet = async function (email, snippetId) {
+  const user = await this.findOne({ email });
+  if (!user) throw Error("User not found!");
+
+  const snippet = await Snippet.findOne({ _id: snippetId });
+  if (!snippet) throw Error("Snippet not found!");
+
+  let userObj = {
+    id: user._id,
+    username: user.username,
+    avtar: user.avtar,
+  };
+
+  if (snippet.favourites) {
+    if (snippet.favourites.includes(userObj)) {
+      snippet.favourites = snippet.favourites.filter(
+        (favourite) => favourite.id != user._id
+      );
+    } else {
+      snippet.favourites.push(userObj);
+    }
+  } else {
+    snippet.favourites = [];
+    snippet.favourites.push(userObj);
+  }
+
+  if (user.favouriteSnippets.includes(snippetId)) {
+    user.favouriteSnippets = user.favouriteSnippets.filter(
+      (favouriteSnippet) => favouriteSnippet != snippetId
+    );
+  } else {
+    user.favouriteSnippets.push(snippetId);
+  }
+
+  await user.save();
+  await snippet.save();
+};
 
 module.exports = mongoose.model("User", userSchema);

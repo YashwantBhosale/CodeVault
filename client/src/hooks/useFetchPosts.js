@@ -6,6 +6,7 @@ export const useFetchPosts = () => {
   const [postsLoading, setPostsLoading] = useState(false);
   const { dispatch, user } = useAuthContext();
   const [posts, setPosts] = useState([]);
+  const [mostFavouritedSnippets, setMostsFavouritedSnippets] = useState([]);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   async function fetchPublicPosts() {
@@ -67,5 +68,30 @@ export const useFetchPosts = () => {
     }
   }
 
-  return { fetchPublicPosts, fetchPublicPostsBatch, postsLoading, posts };
+  async function fetchMostFavouritedSnippets() {
+    try{
+      const _snippets = JSON.parse(sessionStorage.getItem("mostFavouritedSnippets"));
+      if (_snippets) {
+        setMostsFavouritedSnippets(_snippets.mostFavouritedSnippets);
+        dispatch({ type: "MOST_FAVOURITED_SNIPPETS", payload: _snippets });
+        return;
+      }
+      const response = await fetch(BASE_URL + "api/public/mostfavourited", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      console.log("most favourited snippets : ", data);
+      dispatch({ type: "MOST_FAVOURITED_SNIPPETS", payload: data });
+      sessionStorage.setItem("mostFavouritedSnippets", JSON.stringify(data));
+      setMostsFavouritedSnippets(data.mostFavouritedSnippets);
+    }catch(error){
+      console.error(error.message);
+      toast.error("Error fetching most favourited snippets");
+    }
+  }
+
+  return { fetchPublicPosts, mostFavouritedSnippets, fetchPublicPostsBatch, fetchMostFavouritedSnippets, postsLoading, posts };
 };

@@ -11,6 +11,7 @@ const {
   getMostFollowedUsers,
   handleFiles,
   deletePostById,
+  getMostFavouritedSnippets
 } = require("../controllers/publiccontroller");
 
 router.get("/getpublicposts", getPublicPosts);
@@ -24,6 +25,7 @@ router.get("/viewuser", getPublicInfo);
 
 router.get("/getallusers", getAllUsers);
 router.get("/mostfollowed", getMostFollowedUsers);
+router.get("/mostFavourited", getMostFavouritedSnippets);
 
 router.get("/files", handleFiles);
 

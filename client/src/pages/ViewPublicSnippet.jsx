@@ -13,6 +13,7 @@ import {
   languageExtensions,
   placeholders,
 } from "../utils/languages.js";
+import { Likebutton } from "../components/Likebutton.jsx";
 
 export const ViewPublicSnippet = () => {
   const [searchParams] = useSearchParams();
@@ -56,7 +57,9 @@ export const ViewPublicSnippet = () => {
       "typescript",
     ];
 
-    let language = supportedLanguagesForDownload.includes(snippet.language) ? `${snippet.language}` : "javascript";
+    let language = supportedLanguagesForDownload.includes(snippet.language)
+      ? `${snippet.language}`
+      : "javascript";
     fetch(
       `https://code2img.vercel.app/api/to-image?language=${language}&theme=dracula&background-color=rgba(171,184,195,1)`,
       requestOptions
@@ -105,7 +108,6 @@ export const ViewPublicSnippet = () => {
     }
   }, [user, id]);
 
-
   const copyToClipboard = () => {
     navigator.clipboard
       .writeText(code)
@@ -134,9 +136,11 @@ export const ViewPublicSnippet = () => {
           style={{ backgroundColor: "#fff" }}
         >
           <div className="flex items-center justify-between mb-2">
-              <h1 className="text-3xl font-semibold">
-                {snippet?.title?.toUpperCase() || "N/A"}
-              </h1>
+            <h1 className="text-3xl font-semibold">
+              {snippet?.title?.toUpperCase() || "N/A"}
+            </h1>
+
+            <Likebutton snippetId={snippet._id}/>
           </div>
           <div className="relative" style={{ height: "fit-content" }}>
             <button

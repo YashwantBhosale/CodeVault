@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const Post = require("../models/postModel");
 const mongodb = require("mongodb");
+const Snippet = require("../models/snippetModel");
 const mongoClient = mongodb.MongoClient;
 
 async function getPublicPosts(req, res) {
@@ -48,6 +49,33 @@ async function getPublicPosts(req, res) {
   }
 }
 
+async function getMostFavouritedSnippets(req, res) {
+  try {
+    const mostFavouritedSnippetIds = await Snippet.aggregate([
+      {
+        $project: {
+          _id: 1,
+          favouritesCount: { $size: { $ifNull: ["$favourites", []] } },
+        },
+      },
+      {
+        $sort: { favouritesCount: -1 },
+      },
+      {
+        $limit: 10,
+      },
+    ]);
+
+    const mostFavouritedSnippets = await Snippet.find({
+      _id: { $in: mostFavouritedSnippetIds.map((doc) => doc._id) },
+    });
+
+    res.status(200).json(mostFavouritedSnippets);
+  } catch (error) {
+    console.log(error.message);
+    res.status(400).json({ error: error.message });
+  }
+}
 async function updateUpvotes(req, res) {
   try {
     const { id, userObj } = req.body;
@@ -186,4 +214,5 @@ module.exports = {
   getMostFollowedUsers,
   handleFiles,
   deletePostById,
+  getMostFavouritedSnippets,
 };

@@ -5,9 +5,9 @@ export const AuthContext = createContext();
 const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      return {...state,  user: action.payload };
+      return { ...state, user: action.payload };
     case "LOGOUT":
-      return { user: null, fetched: false, posts: []};
+      return { user: null, fetched: false, posts: [] };
     case "UPDATE":
       return { ...state, user: action.payload };
     case "FETCH_POSTS":
@@ -17,18 +17,27 @@ const authReducer = (state, action) => {
     case "FETCH_USERS":
       return { ...state, public_users: action.payload };
     case "DELETE_POST":
-      return { ...state, posts: state.posts.filter((post) => post._id !== action.payload) };
+      return {
+        ...state,
+        posts: state.posts.filter((post) => post._id !== action.payload),
+      };
     case "UPDATE_FETCH_STATE":
-      return { ...state, fetched: action.payload}
+      return { ...state, fetched: action.payload };
     case "ADD_POST":
       return { ...state, posts: [action.payload, ...state.posts] };
+    case "MOST_FAVOURITED_SNIPPETS":
+      return { ...state, mostFavouritedSnippets: action.payload };
     default:
       return state;
   }
 };
 
 export const AuthContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, { user: null, fetched:false, posts: [] });
+  const [state, dispatch] = useReducer(authReducer, {
+    user: null,
+    fetched: false,
+    posts: [],
+  });
   console.log("AuthContext state: ", state);
 
   useEffect(() => {

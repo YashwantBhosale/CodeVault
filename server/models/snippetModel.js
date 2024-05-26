@@ -43,6 +43,13 @@ const snippetSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  favourites: [
+    {
+      id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      username: String,
+      avtar: String,
+    },
+  ],
 });
 
 module.exports = mongoose.model("Snippet", snippetSchema);

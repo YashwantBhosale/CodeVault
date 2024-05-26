@@ -38,7 +38,6 @@ function App() {
       });
       const data = await response.json();
       setAllStudents(data);
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
