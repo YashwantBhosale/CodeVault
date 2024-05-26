@@ -25,7 +25,8 @@ const {
   uploadFiles,
   updateReadStatus,
   clearNotifications,
-  inviteUser
+  inviteUser,
+  removeFollower
 } = require("../controllers/usercontroller");
 const multer = require("multer");
 const upload = multer();
@@ -61,6 +62,7 @@ router.post("/deletesnippet", verifyjwt, deleteSnippet);
 
 router.post("/follow", followUser);
 router.post("/unfollow", unfollowUser);
+router.post("/removefollower", removeFollower);
 
 router.post("/getsnippet", verifyjwt, getSnippet);
 router.post("/updatesnippet", verifyjwt, updateSnippet);

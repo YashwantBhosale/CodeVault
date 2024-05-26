@@ -331,6 +331,18 @@ async function unfollowUser(req, res) {
   }
 }
 
+async function removeFollower(req, res) {
+  const { email, username, followObj } = req.body;
+  try {
+    await User.removeFollower(email, username, followObj);
+    res.status(200).json({ message: "SUCCESS!" });
+  }catch(error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  
+  }
+}
+
 async function getnotifications(req, res) {
   const { username } = req.body;
   try {
@@ -583,5 +595,6 @@ module.exports = {
   uploadFiles,
   updateReadStatus,
   clearNotifications,
-  inviteUser
+  inviteUser,
+  removeFollower
 };

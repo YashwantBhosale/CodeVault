@@ -471,4 +471,27 @@ userSchema.statics.unfollow = async function (email, username, followObj) {
   await followingUser.save();
 };
 
+userSchema.statics.removeFollower = async function (email, username, followObj) {
+  const user = await this.findOne({ email, username }); // current user
+  if (!user) throw Error("User not found!");
+
+  const followerUser = await this.findOne({
+    // follower to be removed
+    _id: followObj.id,
+    username: followObj.username,
+  });
+  if (!followerUser) throw Error("Invalid user was removed!");
+
+  user.followers = user.followers.filter(
+    (follower) => follower.username != followObj.username
+  );
+
+  followerUser.following = followerUser.following.filter(
+    (followingUser) => followingUser.username != user.username
+  );
+
+  await user.save();
+  await followerUser.save();
+}
+
 module.exports = mongoose.model("User", userSchema);

@@ -13,10 +13,130 @@ export const Profile = () => {
   const [followerspopup, setfollowerspopup] = useState(false);
   const [followingpopup, setfollowingpopup] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   const navigate = useNavigate();
-  const { user } = useAuthContext();
+  const { user, dispatch } = useAuthContext();
   const { logout } = useLogout();
+
+  function removeLocalFollower(userObj) {
+    user.followers = user.followers.filter(
+      (User) => userObj.username != User.username
+    );
+    localStorage.setItem("user", JSON.stringify(user));
+    dispatch({ type: "UPDATE", payload: user });
+  }
+
+  async function handleRemoveFollower(userObj) {
+    removeLocalFollower(userObj);
+    try {
+      const response = await fetch(BASE_URL + "api/user/removefollower", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          username: user.username,
+          followObj: userObj,
+        }),
+      });
+      if (response.ok) {
+        toast.success("Follower removed successfully!");
+      }
+    } catch (error) {
+      console.error(error.message);
+      toast.error("Error removing follower!");
+    }
+  }
+
+  function localFollow(e, userObj) {
+    if (userObj.username == user.uername) {
+      toast.info("You cannot follow Yourself!");
+      return;
+    }
+    switch (e.target.innerText) {
+      case "Follow": {
+        user.following.push(userObj);
+        console.log(user);
+        localStorage.setItem("user", JSON.stringify(user));
+        dispatch({ type: "UPDATE", payload: user });
+        return;
+      }
+      case "Following": {
+        user.following = user.following.filter(
+          (User) => userObj.username != User.username
+        );
+        console.log(user);
+        localStorage.setItem("user", JSON.stringify(user));
+        dispatch({ type: "UPDATE", payload: user });
+        return;
+      }
+      default: {
+        toast.warn("Unexpected Behaviour!");
+        return;
+      }
+    }
+  }
+
+  async function handleFollowButton(e, userobj) {
+    console.log(e.target.innerText);
+    if (userobj.username == user.username) {
+      toast.info("You cannot follow Yourself!");
+      return;
+    }
+    localFollow(e, userobj);
+    switch (e.target.innerText) {
+      case "Follow": {
+        try {
+          const response = await fetch(BASE_URL + "api/user/follow", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: user.email,
+              username: user.username,
+              followObj: userobj,
+            }),
+          });
+          if (response.ok) {
+            toast.success("Follow successful!");
+          }
+        } catch (error) {
+          console.error(error.message);
+          toast.error("Error following user!");
+        }
+        return;
+      }
+      case "Following": {
+        try {
+          const response = await fetch(BASE_URL + "api/user/unfollow", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: user.email,
+              username: user.username,
+              followObj: userobj,
+            }),
+          });
+          if (response.ok) {
+            toast.success("Unfollow successful!");
+          }
+        } catch (error) {
+          console.error(error.message);
+          toast.error("Error unfollowing user!");
+        }
+        return;
+      }
+      default: {
+        toast.warn("Unexpected Behaviour!");
+        return;
+      }
+    }
+  }
 
   return (
     <>
@@ -103,7 +223,7 @@ export const Profile = () => {
               initial={{ y: "-100vh" }}
               animate={{ y: 0 }}
               transition={{ type: "spring", stiffness: 150 }}
-              className="bg-white p-8 rounded-xl lg:w-1/5 m-[20px]"
+              className="bg-white p-8 rounded-xl lg:w-2/5 m-[20px]"
             >
               <button
                 onClick={() => setfollowerspopup(false)}
@@ -113,8 +233,15 @@ export const Profile = () => {
               </button>
               <h2 className="text-xl font-bold mb-4">Followers</h2>
               {user?.followers.map((follower) => (
-                <div key={follower.uid} className="flex items-center mb-2">
-                  <FaUser
+                <div
+                  key={follower.uid}
+                  className="flex items-center mb-2 justify-between"
+                  style={{
+                    borderBottom: "1px solid #92929291",
+                    padding: "5px 0",
+                  }}
+                >
+                  {/* <FaUser
                     style={{
                       border: "1px solid black",
                       padding: 4,
@@ -122,17 +249,46 @@ export const Profile = () => {
                       boxSizing: "content-box",
                       marginRight: "1vw",
                     }}
-                  />
-                  <p>
+                  /> */}
+                  <p className="flex gap-3">
+                    <img
+                      src={
+                        follower?.avtar?.length > 15
+                          ? follower.avtar
+                          : iconSrcList[follower.avtar]
+                      }
+                      className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
+                    />
                     {follower.username}
-                    <hr
+                    {/* <hr
                       style={{
                         color: "black",
                         borderColor: "black",
                         height: "5px",
                       }}
-                    />
+                    /> */}
                   </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={(e) => handleFollowButton(e, follower)}
+                      className={`block mx-[5px] ${
+                        user?.following.includes(follower)
+                          ? "bg-transparent text-black-700"
+                          : "bg-black-700"
+                      } hover:bg-grey-800 font-semibold py-2 px-4 border border-black text-black-700 rounded`}
+                    >
+                      {(user?.following.includes(follower) && "Following") ||
+                        "Follow"}
+                    </button>
+                    <button title="Remove Follower">
+                      <a
+                        href="#"
+                        onClick={() => handleRemoveFollower(follower)}
+                      >
+                        &#x2715;
+                      </a>
+                    </button>
+                  </div>
                 </div>
               ))}
             </motion.div>
@@ -152,7 +308,7 @@ export const Profile = () => {
               initial={{ y: "-100vh" }}
               animate={{ y: 0 }}
               transition={{ type: "spring", stiffness: 150 }}
-              className="bg-white p-8 rounded-xl lg:w-1/5 m-[20px]"
+              className="bg-white p-8 rounded-xl lg:w-2/5 m-[20px]"
             >
               <button
                 onClick={() => setfollowingpopup(false)}
@@ -162,8 +318,15 @@ export const Profile = () => {
               </button>
               <h2 className="text-xl font-bold mb-4">Following</h2>
               {user?.following.map((followinguser) => (
-                <div key={followinguser.uid} className="flex items-center mb-2">
-                  <FaUser
+                <div
+                  key={followinguser.uid}
+                  className="flex items-center mb-2 justify-between"
+                  style={{
+                    borderBottom: "1px solid #92929291",
+                    padding: "5px 0",
+                  }}
+                >
+                  {/* <FaUser
                     style={{
                       border: "1px solid black",
                       padding: 4,
@@ -171,17 +334,38 @@ export const Profile = () => {
                       boxSizing: "content-box",
                       marginRight: "1vw",
                     }}
-                  />
-                  <p>
+                  /> */}
+                  <p className="flex gap-3">
+                    <img
+                      src={
+                        followinguser?.avtar?.length > 15
+                          ? followinguser.avtar
+                          : iconSrcList[followinguser.avtar]
+                      }
+                      className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
+                    />
                     {followinguser.username}{" "}
-                    <hr
+                    {/* <hr
                       style={{
                         color: "black",
                         borderColor: "black",
                         height: "5px",
-                      }}
+                      }} 
+                      
                     />
+                      */}
                   </p>
+                  <button
+                    onClick={(e) => handleFollowButton(e, followinguser)}
+                    className={`block mx-[5px] ${
+                      user?.following.includes(followinguser)
+                        ? "bg-transparent text-black-700"
+                        : "bg-black text-white"
+                    } hover:bg-grey-800 font-semibold py-2 px-4 border border-black rounded`}
+                  >
+                    {(user?.following.includes(followinguser) && "Following") ||
+                      "Follow"}
+                  </button>
                 </div>
               ))}
             </motion.div>
