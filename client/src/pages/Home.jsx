@@ -346,7 +346,7 @@ function Home() {
     console.log("postContent: ", result);
 
     let tags = selectedPostTags.map((tag) => tag.value);
-    console.log("tags: ", tags)
+    console.log("tags: ", tags);
     const post = {
       email: user.email,
       title: postTitle,
@@ -500,7 +500,7 @@ function Home() {
 
   return (
     <div
-      className="flex flex-col items-center mt-[13vh] md:mt-18"
+      className="flex flex-col h-screen items-center mt-[13vh] md:mt-18"
       style={{
         backgroundColor: "#fff",
         backgroundImage:
@@ -886,6 +886,17 @@ function Home() {
                     />
                   </div>
                   <div>
+                    <label>Tags:</label>
+                    <MultiSelect
+                      options={options}
+                      value={selectedPostTags}
+                      onChange={(value) => {
+                        setSelectedPostTags(value);
+                      }}
+                      labelledBy="Select"
+                    />
+                  </div>
+                  <div>
                     <label
                       for="description"
                       class="block mb-2 text-sm font-medium text-gray-900"
@@ -935,17 +946,6 @@ function Home() {
                       onChange={(e) => setPostVisibility(e.target.value)}
                     />{" "}
                     Private
-                  </div>
-                  <div>
-                    <label>Tags:</label>
-                    <MultiSelect
-                      options={options}
-                      value={selectedPostTags}
-                      onChange={(value) => {
-                        setSelectedPostTags(value);
-                      }}
-                      labelledBy="Select"
-                    />
                   </div>
                   <button
                     type="button"

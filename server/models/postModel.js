@@ -35,18 +35,10 @@ const postSchema = new mongoose.Schema({
       },
     },
   ],
-  comments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-      replies: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Comment",
-        },
-      ],
-    },
-  ],
+  comments: {
+    type: Array,
+    default: [],
+  },
   author: {
     id: {
       type: mongoose.Schema.Types.ObjectId,

@@ -1,5 +1,5 @@
 const Comment = require("../models/commentModel");
-
+const Post = require("../models/postModel");
 async function getComments(req, res) {
   try {
     const postId = req.query.postId;
@@ -14,7 +14,9 @@ async function getComments(req, res) {
 async function addComment(req, res) {
   try {
     const { postId, content, username, avtar } = req.body;
-    console.log(username);
+    const post = await Post.find({ _id: postId});
+    
+    console.log(post);
     const newComment = new Comment({
       author: {
         username,
@@ -24,6 +26,10 @@ async function addComment(req, res) {
       post: postId,
     });
     const savedComment = await newComment.save();
+    console.log(post[0]);
+    console.log(post[0].comments);
+    post[0].comments.push(savedComment);
+    await post[0].save();
     res.status(201).json(savedComment);
   } catch (error) {
     console.error("Error adding comment:", error);
