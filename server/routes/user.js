@@ -27,7 +27,8 @@ const {
   clearNotifications,
   inviteUser,
   removeFollower,
-  toggleFavouriteSnippet
+  toggleFavouriteSnippet,
+  getFavouriteSnippets
 } = require("../controllers/usercontroller");
 const multer = require("multer");
 const upload = multer();
@@ -77,6 +78,7 @@ router.post("/readnotifications", updateReadStatus);
 router.post("/clearnotifications", clearNotifications);
 
 router.post("/handleFavouriteSnippet", toggleFavouriteSnippet);
+router.post("/getfavouritesnippets", getFavouriteSnippets);
 
 router.post("/invite", inviteUser);
 

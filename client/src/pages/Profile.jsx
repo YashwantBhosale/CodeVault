@@ -57,6 +57,10 @@ export const Profile = () => {
     }
     switch (e.target.innerText) {
       case "Follow": {
+        if (user.following.some((User) => userObj.username == User.username)) {
+          toast.info("You are already following this user!");
+          return;
+        }
         user.following.push(userObj);
         console.log(user);
         localStorage.setItem("user", JSON.stringify(user));

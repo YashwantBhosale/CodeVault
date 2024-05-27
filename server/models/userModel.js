@@ -353,6 +353,12 @@ userSchema.statics.follow = async function (email, username, followObj) {
   });
   if (!followingUser) throw Error("Invalid user was followed!");
 
+  if (
+    user.following.find((following) => following.username == followObj.username)
+  ) {
+    throw Error("Already following the user");
+  }
+
   user.following.push(followObj);
   followingUser.followers.push({
     id: user._id,
@@ -504,9 +510,9 @@ userSchema.statics.toggleFavouriteSnippet = async function (email, snippetId) {
   };
 
   if (snippet.favourites) {
-    if (snippet.favourites.includes(userObj)) {
+    if (snippet.favourites.some((favourite) => favourite.id.equals(user._id))) {
       snippet.favourites = snippet.favourites.filter(
-        (favourite) => favourite.id != user._id
+        (favourite) => !favourite.id.equals(user._id)
       );
     } else {
       snippet.favourites.push(userObj);
@@ -516,9 +522,13 @@ userSchema.statics.toggleFavouriteSnippet = async function (email, snippetId) {
     snippet.favourites.push(userObj);
   }
 
-  if (user.favouriteSnippets.includes(snippetId)) {
+  if (
+    user.favouriteSnippets.some((favouriteSnippet) =>
+      favouriteSnippet.equals(snippetId)
+    )
+  ) {
     user.favouriteSnippets = user.favouriteSnippets.filter(
-      (favouriteSnippet) => favouriteSnippet != snippetId
+      (favouriteSnippet) => !favouriteSnippet.equals(snippetId)
     );
   } else {
     user.favouriteSnippets.push(snippetId);

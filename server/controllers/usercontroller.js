@@ -399,6 +399,27 @@ async function clearNotifications(req, res) {
   }
 }
 
+async function getFavouriteSnippets(req, res) {
+  const {username} = req.body;
+  console.log(username, req.body);
+  try {
+    const user = await User.findOne({username});
+    if(!user) throw Error("User not found!");
+
+    console.log("user: ", user);
+
+    if(!user.favouriteSnippets || user.favouriteSnippets.length === 0) {
+      return res.status(200).json({favourites: []});
+    }else{
+      const favouriteSnippets = await Snippet.find({_id: {$in: user.favouriteSnippets}});
+      res.status(200).json({favouriteSnippets});
+    }
+  }catch(error) {
+    console.log(error.message);
+    res.status(400).json({ message: error.message });
+  }
+}
+
 /*
 async function uploadFile(req, res) {
   try {
@@ -607,5 +628,6 @@ module.exports = {
   clearNotifications,
   inviteUser,
   removeFollower,
-  toggleFavouriteSnippet
+  toggleFavouriteSnippet,
+  getFavouriteSnippets
 };
