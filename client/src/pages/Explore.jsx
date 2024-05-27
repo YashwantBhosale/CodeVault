@@ -610,7 +610,7 @@ export const Explore = () => {
               }
             />
             <span  className="font-bold text-white">
-              {post.comments.length}
+              {post?.comments?.length}
             </span>
           </div>
           <div

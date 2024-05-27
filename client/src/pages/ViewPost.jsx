@@ -166,6 +166,7 @@ export const ViewPost = () => {
       } else {
         toast.error("Failed to post comment");
       }
+      e.target.reset();
     } catch (error) {
       console.error("Error posting comment:", error);
       toast.error("Failed to post comment");
