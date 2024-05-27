@@ -13,7 +13,8 @@ const Room = ({ allStudents }) => {
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
   const socketRef = useRef(null);
-
+  const messagesEndRef = useRef(null);
+  
   useEffect(() => {
     socketRef.current = new WebSocket("wss://socket-io-codevault-1.onrender.com");
     socketRef.current.onopen = () => {
@@ -56,7 +57,7 @@ const Room = ({ allStudents }) => {
       if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
         socketRef.current.send(JSON.stringify({
           type: "sendMessage",
-          payload: { roomId, message, username }
+          payload: { roomId, message, username, avatar}
         }));
         setMessage("");
       } else {
@@ -93,6 +94,10 @@ const Room = ({ allStudents }) => {
     }
   };
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
     <div className="flex flex-col md:flex-row h-[calc(95vh-40px)] bg-gray-900 text-gray-100 mt-[11vh]">
       <div className="flex flex-col flex-grow">
@@ -108,15 +113,7 @@ const Room = ({ allStudents }) => {
                 >
                   <div className="flex items-center space-x-2">
                     <img
-                      src={
-                        msg.user === username
-                          ? avatar.length > 15
-                            ? avatar
-                            : iconSrcList[avatar]
-                          : users.find((user) => user.username === msg.user)?.avatar.length > 15
-                          ? users.find((user) => user.username === msg.user)?.avatar
-                          : iconSrcList[users.find((user) => user.username === msg.user)?.avatar]
-                      }
+                      src={msg.avatar?.length > 15 ? msg.avatar : iconSrcList[msg.avatar]}
                       alt="avatar"
                       className="w-6 h-6 rounded-full"
                     />
@@ -125,7 +122,8 @@ const Room = ({ allStudents }) => {
                 </div>
               </div>
             ))}
-          </div>
+            <div ref={messagesEndRef} />
+          </div >
         </div>
         <div className="flex p-4 bg-gray-800" style={{ marginBottom: "40px" }}>
           <input
@@ -144,7 +142,7 @@ const Room = ({ allStudents }) => {
           </button>
         </div>
       </div>
-      <div className="w-full md:w-1/4 p-4 bg-gray-800 overflow-y-scroll">
+      <div className="w-full md:w-1/4 p-4 bg-gray-800 overflow-y-scroll pb-[10vh]">
         <h2 className="mb-4 text-xl font-bold">Users in Room</h2>
         <ul className="space-y-2">
           {users

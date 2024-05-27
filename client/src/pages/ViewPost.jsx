@@ -238,9 +238,6 @@ export const ViewPost = () => {
                 {comment.downvotes.length}
               </span>
             </div>
-            <FaRegComment
-              className="font-4xl mr-[5px] cursor-pointer"
-            />
           </div>
         </div>
       </div>

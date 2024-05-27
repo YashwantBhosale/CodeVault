@@ -58,7 +58,7 @@ function Signup() {
         return;
       }
       await signup(formData.username, formData.email, formData.password);
-      // toast.success("Signed up successfully!");
+      navigate("/home");
     } catch (error) {
       toast.error("Error signing up!");
       console.error(error.message);

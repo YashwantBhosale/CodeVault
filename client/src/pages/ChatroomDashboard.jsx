@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AnimatePresence, motion } from "framer-motion";
 import { iconSrcList } from "../utils/icons";
-
-const socket = new WebSocket("wss://socket-io-codevault-1.onrender.com");
 
 const ChatroomDashboard = () => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -14,10 +12,9 @@ const ChatroomDashboard = () => {
   const [showCreatePopup, setShowCreatePopup] = useState(false);
   const [showJoinPopup, setShowJoinPopup] = useState(false);
   const nav = useNavigate();
-  let socket;
 
   const createRoom = () => {
-    socket = new WebSocket("wss://socket-io-codevault-1.onrender.com");
+    const socket = new WebSocket("wss://socket-io-codevault-1.onrender.com");
 
     socket.onopen = () => {
       socket.send(JSON.stringify({ type: "createRoom", payload: { username, avatar } }));
@@ -46,25 +43,26 @@ const ChatroomDashboard = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen ">
-      <div className="p-6 bg-white w-[90%] md:w-fit rounded-lg shadow-lg text-black">
-        <div className="flex items-center mb-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <h1 className="text-2xl md:text-4xl font-bold mb-8 ">Let's Interact with People!</h1>
+      <div className="p-6 bg-white w-fit max-w-2xl rounded-lg shadow-lg text-black">
+        <div className="flex items-center mb-6">
           <img
             src={avatar?.length > 15 ? avatar : iconSrcList[avatar]}
             alt="avatar"
-            className="w-10 h-10 mr-2 rounded-full"
+            className="w-16 h-16 mr-4 rounded-full"
           />
-          <h1 className="text-2xl font-bold">Welcome, {username}</h1>
+          <h1 className="text-3xl font-bold">Welcome, {username}</h1>
         </div>
-        <div className="flex space-x-4 justify-between">
+        <div className="flex flex-col md:flex-row md:space-x-4 justify-between space-y-4 md:space-y-0">
           <button
-            className="p-2 bg-black text-white rounded-lg hover:bg-gray-800"
+            className="p-4 w-full md:w-auto bg-black text-white rounded-lg hover:bg-gray-800"
             onClick={() => setShowCreatePopup(true)}
           >
             Create Room
           </button>
           <button
-            className="p-2 bg-black text-white rounded-lg hover:bg-gray-800"
+            className="p-4 w-full md:w-auto bg-black text-white rounded-lg hover:bg-gray-800"
             onClick={() => setShowJoinPopup(true)}
           >
             Join Room
@@ -85,14 +83,14 @@ const ChatroomDashboard = () => {
               initial={{ y: "-100vh" }}
               animate={{ y: 0 }}
               transition={{ type: "spring", stiffness: 150 }}
-              className="bg-white p-8 rounded-xl lg:w-2/5 m-[20px]"
+              className="bg-white p-8 rounded-xl w-full max-w-md m-4"
             >
-              <h2 className="mb-4 text-xl font-bold">Create a Room</h2>
+              <h2 className="mb-4 text-xl font-bold">Click Continue to Create a Room</h2>
               <button
                 className="p-2 bg-black text-white rounded-lg hover:bg-gray-800 mr-4"
                 onClick={createRoom}
               >
-                Continue to Create a Chatroom
+                Continue
               </button>
               <button
                 className="p-2 mt-4 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
@@ -116,7 +114,7 @@ const ChatroomDashboard = () => {
               initial={{ y: "-100vh" }}
               animate={{ y: 0 }}
               transition={{ type: "spring", stiffness: 150 }}
-              className="bg-white p-8 rounded-xl lg:w-2/5 m-[20px]"
+              className="bg-white p-8 rounded-xl w-full max-w-md m-4"
             >
               <h2 className="mb-4 text-xl font-bold">Join a Room</h2>
               <input

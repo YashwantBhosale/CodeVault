@@ -529,7 +529,7 @@ export default function Header(props) {
                 notifications.map((notification) =>
                   notification ? createNotifications(notification) : null
                 )
-              ) : null}
+              ) : <h1 className="text-center text-slate-400">No New notifications!</h1>}             
             </motion.div>
           </motion.div>
         )}

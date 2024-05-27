@@ -458,7 +458,7 @@ export const Explore = () => {
               onClick={() => {
                 navigate(`/viewpublicsnippet?snippetId=${snippet._id}`);
               }}
-              className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 "
+              className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
             >
               Open
             </button>
@@ -603,12 +603,15 @@ export const Explore = () => {
               </span>
             </div>
             <FaComment
-              className="font-4xl mr-[5px] cursor-pointer"
+              className="font-4xl cursor-pointer"
               color="white"
               onClick={() =>
                 navigate(`/viewpost?id=${post._id}&avtar=${post.author.avtar}`)
               }
             />
+            <span  className="font-bold text-white">
+              {post.comments.length}
+            </span>
           </div>
           <div
             className={`${
@@ -659,29 +662,13 @@ export const Explore = () => {
       </div>
       <h1 className="text-center text-xl font-bold">Popular Snippets</h1>
       <div className="relative my-4 flex items-center">
-        <button
-          onClick={() =>
-            scrollLeft(document.getElementById("mostFavouritedSnippets"))
-          }
-          className="absolute left-4 md:left-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
-        >
-          &#10094;
-        </button>
         <div
           id="mostFavouritedSnippets"
-          className="flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-[70%] mx-auto px-4"
+          className="flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-full mx-auto px-4"
         >
           {mostFavouritedSnippets &&
             mostFavouritedSnippets.map((snippet) => displaySnippets(snippet))}
         </div>
-        <button
-          onClick={() =>
-            scrollRight(document.getElementById("mostFavouritedSnippets"))
-          }
-          className="absolute right-4 md:right-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
-        >
-          &#10095;
-        </button>
       </div>
 
       <button
@@ -695,15 +682,16 @@ export const Explore = () => {
       >
         <FaArrowDown /> Fetch Latest Posts....{" "}
       </button>
-      <div className="flex mx-auto my-5 w-[60%] flex-wrao">
+      <div className="flex justify-center mx-auto my-5 w-full sm:w-[80%] md:w-[60%] flex-wrap gap-2">
         {tags.map((tag) => {
           return (
             <button
-              className={`block mx-[5px] ${
+              key={tag}
+              className={`block ${
                 activeFeed === tag
-                  ? "bg-blue-700 text-white"
-                  : "bg-transparent text-blue-700"
-              } hover:bg-blue-500 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded`}
+                  ? "bg-black text-white"
+                  : "bg-transparent text-black"
+              } hover:bg-gray-800 hover:text-white font-semibold py-2 px-4 border border-black hover:border-transparent rounded transition-all duration-300 ease-in-out`}
               onClick={() => setActiveFeed(tag)}
             >
               {tag}
