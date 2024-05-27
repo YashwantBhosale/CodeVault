@@ -571,7 +571,7 @@ async function inviteUser(req, res) {
             <h1><b>${username}</b> has invited you to join a chatroom!</h1>
             <p>Hi there,</p>
             <p>You have been invited to join a chatroom by <b>${username}</b>. Click the button below to join the chatroom and start chatting!</p>
-            <a href="https://code-vault-new-frontend/room/${roomId}" class="button">Join Chatroom</a>
+            <a href="https://code-vault-new-frontend.vercel.app/room/${roomId}" class="button">Join Chatroom</a>
         </div>
     </body>
     </html>`;
