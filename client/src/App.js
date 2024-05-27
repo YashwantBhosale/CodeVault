@@ -22,6 +22,7 @@ import About from "./pages/About";
 import ChatroomDashboard from "./pages/ChatroomDashboard";
 import Room from "./pages/Room";
 import { ChatroomButton } from "./components/ChatroomButton";
+import { FavouriteSnippets } from "./pages/FavouriteSnippets";
 
 function App() {
   const { user } = useAuthContext();
@@ -73,6 +74,7 @@ function App() {
         <Route path="/news" element={<News />} />
         <Route path="/chatroom" element={<ChatroomDashboard />} />
         <Route path="/room/:roomId" element={<Room allStudents={allStudents} />} />
+        <Route path="/favourites" element={<FavouriteSnippets />} />
       </Routes>
       <Footer />
       <ChatroomButton />

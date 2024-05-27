@@ -322,7 +322,7 @@ export default function Header(props) {
                   {unreadNotifications.length}
                 </p>
               ) : null}
-              {user? <FaBell /> : null}
+              {user ? <FaBell /> : null}
             </a>
             <button
               type="button"
@@ -381,6 +381,15 @@ export default function Header(props) {
               className="text-md font-semibold leading-6 text-gray-900"
             >
               About
+            </a>
+            <a
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/favourites");
+              }}
+              className="text-md font-semibold leading-6 text-gray-900"
+            >
+              Favourites
             </a>
           </div>
           {!user ? (
@@ -464,6 +473,15 @@ export default function Header(props) {
                     className="-mx-3 block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     About
+                  </a>
+                  <a
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate("/favourites");
+                    }}
+                    className="text-md font-semibold leading-6 text-gray-900"
+                  >
+                    Favourites
                   </a>
                 </div>
               </div>
