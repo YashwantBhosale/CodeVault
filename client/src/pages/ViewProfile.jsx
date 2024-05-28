@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { iconSrcList } from "../utils/icons";
+import { SyncLoader } from "react-spinners";
 import {
   FaFontAwesome,
   FaRegArrowAltCircleDown,

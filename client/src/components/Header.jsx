@@ -301,7 +301,7 @@ export default function Header(props) {
                             console.log("error logging out : ", error.message);
                           }
                         }}
-                        className="block font-semibold text-gray-900 hover:bg-grey"
+                        className="block font-semibold cursor-pointer text-gray-900 hover:bg-grey"
                       >
                         Logout
                         {/* <span className="absolute inset-0" /> */}
@@ -378,7 +378,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/about");
               }}
-              className="text-md font-semibold leading-6 text-gray-900"
+              className="text-md font-semibold cursor-pointer leading-6 text-gray-900"
             >
               About
             </a>
@@ -387,7 +387,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/favourites");
               }}
-              className="text-md font-semibold leading-6 text-gray-900"
+              className="text-md font-semibold cursor-pointer leading-6 text-gray-900"
             >
               Favourites
             </a>
@@ -479,7 +479,7 @@ export default function Header(props) {
                       e.preventDefault();
                       navigate("/favourites");
                     }}
-                    className="text-md font-semibold leading-6 text-gray-900"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Favourites
                   </a>
