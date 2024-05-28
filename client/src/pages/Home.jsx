@@ -51,6 +51,7 @@ function Home() {
   const [visibility, setVisibility] = useState("public");
   const [postVisibility, setPostVisibility] = useState("public");
   const [selectedPostTags, setSelectedPostTags] = useState([]);
+  const [fileUploadLoading, setFileUploadLoading] = useState(false);
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -312,6 +313,7 @@ function Home() {
   }
 
   async function handleFileUpload(files, author, post, extensions) {
+    setFileUploadLoading(true);
     // const extension = getExtensionFromFileType(file.type);
     // if (!extension) {
     //   toast.error("Invalid file type! You can only upload images!");
@@ -344,6 +346,7 @@ function Home() {
       toast.error("Error uploading file!");
       return false;
     }
+    setFileUploadLoading(false);
   }
 
   // Submit function for post
@@ -408,7 +411,7 @@ function Home() {
       }
 
       let json = await response.json();
-      let stored_posts = JSON.parse(sessionStorage.getItem("public_posts"));
+      let stored_posts = JSON.parse(sessionStorage.getItem("posts"));
       console.log("stored_posts: ", stored_posts);
       if (stored_posts != null) {
         sessionStorage.setItem(
@@ -966,10 +969,11 @@ function Home() {
                   </button>
                   <button
                     type="button"
+                    disabled={fileUploadLoading}
                     onClick={handlePostSubmit}
                     className="bg-black text-white px-4 py-2 rounded-md hover:bg-slate-700"
                   >
-                    Save
+                    {fileUploadLoading ? <SyncLoader color="white"/> : "Save" }
                   </button>
                 </form>
               </div>

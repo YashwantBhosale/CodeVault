@@ -317,7 +317,7 @@ export default function Header(props) {
               className="relative text-md leading text-gray-900 cursor-pointer mr-8"
               onClick={() => setNotificationsOpen(true)}
             >
-              {unreadNotifications.length > 0 ? (
+              {user && unreadNotifications.length > 0 ? (
                 <p className="absolute bottom-2 left-2 bg-red-700 text-white p-[1px] px-[5px] rounded-full text-xs">
                   {unreadNotifications.length}
                 </p>
@@ -338,7 +338,7 @@ export default function Header(props) {
               className="relative text-md leading-6 text-gray-900 cursor-pointer"
               onClick={() => setNotificationsOpen(true)}
             >
-              {unreadNotifications.length > 0 ? (
+              {user && unreadNotifications.length > 0 ? (
                 <p className="absolute bottom-2 left-2 bg-red-700 text-white p-[1px] px-[5px] rounded-full text-xs">
                   {unreadNotifications.length}
                 </p>
@@ -346,7 +346,7 @@ export default function Header(props) {
               {user ? <FaBell /> : null}
             </a>
             <a
-              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer"
+              className="cursor-pointer text-md font-semibold leading-6 text-gray-900 cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
                 setMobileMenuOpen(false);
@@ -360,7 +360,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/explore");
               }}
-              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer"
+              className="cursor-pointer text-md font-semibold leading-6 text-gray-900 cursor-pointer"
             >
               Explore
             </a>
@@ -369,7 +369,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/news");
               }}
-              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer"
+              className="cursor-pointer text-md font-semibold leading-6 text-gray-900 cursor-pointer"
             >
               News
             </a>
@@ -378,7 +378,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/about");
               }}
-              className="text-md font-semibold leading-6 text-gray-900"
+              className="cursor-pointer text-md font-semibold leading-6 text-gray-900"
             >
               About
             </a>
@@ -387,7 +387,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/favourites");
               }}
-              className="text-md font-semibold leading-6 text-gray-900"
+              className="cursor-pointer text-md font-semibold leading-6 text-gray-900"
             >
               Favourites
             </a>
@@ -440,7 +440,7 @@ export default function Header(props) {
                       setMobileMenuOpen(false);
                       user ? navigate("/home") : navigate("/login");
                     }}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 cursor-pointer block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Home
                   </a>
@@ -450,7 +450,7 @@ export default function Header(props) {
                       navigate("/explore");
                       setMobileMenuOpen(false);
                     }}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 cursor-pointer block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Explore
                   </a>
@@ -460,7 +460,7 @@ export default function Header(props) {
                       navigate("/news");
                       setMobileMenuOpen(false);
                     }}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 cursor-pointer block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     News
                   </a>
@@ -470,7 +470,7 @@ export default function Header(props) {
                       navigate("/about");
                       setMobileMenuOpen(false);
                     }}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 cursor-pointer block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     About
                   </a>
@@ -478,8 +478,9 @@ export default function Header(props) {
                     onClick={(e) => {
                       e.preventDefault();
                       navigate("/favourites");
+                      setMobileMenuOpen(false);
                     }}
-                    className="text-md font-semibold leading-6 text-gray-900"
+                    className="-mx-3 cursor-pointer block rounded-lg px-3 py-2 text-md font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                   >
                     Favourites
                   </a>

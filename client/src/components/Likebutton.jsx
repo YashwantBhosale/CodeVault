@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
-export const Likebutton = ({snippetId}) => {
+export const Likebutton = ({ snippetId }) => {
   const [fillColor, setFillColor] = useState("#000000");
   const BASE_URL = process.env.REACT_APP_BASE_URL;
-  const {user, dispatch} = useAuthContext();
+  const { user, dispatch } = useAuthContext();
 
   function handleLocalFavourites(snippetId) {
-    
     //   if(user.favouriteSnippets){
     //     if (user?.favouriteSnippets?.includes(snippetId)) {
     //     user.favouriteSnippets = user.favoriteSnipeets.filter((id) => id !== snippetId);
@@ -19,33 +18,35 @@ export const Likebutton = ({snippetId}) => {
     //     dispatch({type: "UPDATE", payload: user});
     //   }
     // }
-      
+
     //   else{
     //     user.favouriteSnippets = [];
     //     user.favouriteSnippets.push(snippetId);
     //   }
 
-    if(user.favouriteSnippets){
-      if (user?.favouriteSnippets?.includes(snippetId)) {
+    if (user.favouriteSnippets) {
+      /* if (user?.favouriteSnippets?.includes(snippetId)) {
         user.favouriteSnippets = user.favouriteSnippets.filter((id) => id !== snippetId);
       } else {
         user.favouriteSnippets.push(snippetId);
+      }*/
+      if (user.favouriteSnippets?.some((id) => id === snippetId)) {
+        user.favouriteSnippets = user.favouriteSnippets.filter(
+          (id) => id !== snippetId
+        );
       }
-    }else{
+    } else {
       user.favouriteSnippets = [];
       user.favouriteSnippets.push(snippetId);
     }
     localStorage.setItem("user", JSON.stringify(user));
-    dispatch({type: "UPDATE", payload: user});
-
-    
+    dispatch({ type: "UPDATE", payload: user });
   }
 
   useEffect(() => {
-    if(user.favouriteSnippets?.some(id => id === snippetId)){
+    if (user.favouriteSnippets?.some((id) => id === snippetId)) {
       setFillColor("black");
-    }
-    else{
+    } else {
       setFillColor("white");
     }
   }, [user]);
@@ -53,22 +54,21 @@ export const Likebutton = ({snippetId}) => {
 
   async function handleAddToFavorites(snippetId) {
     handleLocalFavourites(snippetId);
-    try{
+    try {
       await fetch(BASE_URL + "api/user/handleFavouriteSnippet", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify({
           email: user.email,
-          snippetId
+          snippetId,
         }),
-      })
-    }catch(error){
+      });
+    } catch (error) {
       console.error(error.message);
-
-    } 
+    }
   }
 
   return (

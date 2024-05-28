@@ -23,11 +23,11 @@ function Login() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if(localStorage.getItem("user")) {
+    if (localStorage.getItem("user")) {
       navigate("/home");
     }
   }, []);
-  
+
   // handle change in form data
   function handleFormData(e) {
     const { name, value } = e.target;
@@ -38,7 +38,6 @@ function Login() {
     setProvider(provider);
     setIsOpen(true);
   }
-
 
   function handleGoogle() {
     window.open(BASE_URL + "api/user/google", "_self");
@@ -398,7 +397,7 @@ function Login() {
                 <button
                   type="button"
                   class="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300"
-                  onClick={()=>handleOAuth("Google")}
+                  onClick={() => handleOAuth("Google")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -430,7 +429,7 @@ function Login() {
                 <button
                   type="button"
                   class="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300"
-                  onClick={()=>handleOAuth("Github")}
+                  onClick={() => handleOAuth("Github")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -450,24 +449,6 @@ function Login() {
             <form onSubmit={handleLogIn} class="space-y-4">
               <div>
                 <label
-                  for="username"
-                  class="block text-sm font-medium text-gray-700"
-                >
-                  Username
-                </label>
-                <input
-                  type="text"
-                  id="email"
-                  name="username"
-                  onChange={handleFormData}
-                  class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
-                />
-              </div>
-              <div class="text-sm text-gray-600 text-center">
-                <p>or</p>
-              </div>
-              <div>
-                <label
                   for="email"
                   class="block text-sm font-medium text-gray-700"
                 >
@@ -481,6 +462,25 @@ function Login() {
                   class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
                 />
               </div>
+              <div class="text-sm text-gray-600 text-center">
+                <p>or</p>
+              </div>
+              <div>
+                <label
+                  for="username"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Username
+                </label>
+                <input
+                  type="text"
+                  id="email"
+                  name="username"
+                  onChange={handleFormData}
+                  class="mt-1 p-2 w-full border rounded-md focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                />
+              </div>
+
               <div>
                 <label
                   for="password"
