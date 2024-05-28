@@ -25,7 +25,7 @@ import { ChatroomButton } from "./components/ChatroomButton";
 import { FavouriteSnippets } from "./pages/FavouriteSnippets";
 
 function App() {
-  const { user } = useAuthContext();
+  const { user, userLoading } = useAuthContext();
   const navigate = useNavigate();
   const [allStudents, setAllStudents] = useState([]);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -44,14 +44,14 @@ function App() {
       console.error(error);
     }
   }
-
   useEffect(() => {
     fetchAllUsers();
-    if (!localStorage.getItem("user")) {
-      navigate("/login");
-    }
-  }
-  , []);
+  }, []);
+
+  // if (!userLoading && !user) {
+  //   return <Navigate to="/login" />;
+  // }
+  console.log("userloading:", userLoading);
 
   return (
     <>
@@ -59,21 +59,145 @@ function App() {
       <Header userObj={user} />
 
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route
+          path="/"
+          element={
+            !user ? (
+              <Login />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/home" />
+            )
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            !user ? (
+              <Login />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/home" />
+            )
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            !user ? (
+              <SignUp />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/home" />
+            )
+          }
+        />
         <Route path="/about" element={<About />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/snippets" element={<Snippet />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/home"
+          element={
+            user ? (
+              <Home />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/snippets"
+          element={
+            user ? (
+              <Snippet />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            user ? (
+              <Profile />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
         <Route path="/oauth" element={<OAuth />} />
-        <Route path="/explore" element={<Explore />} />
-        <Route path="/viewpost" element={<ViewPost />} />
-        <Route path="/viewprofile" element={<ViewProfile />} />
-        <Route path="/viewpublicsnippet" element={<ViewPublicSnippet />} />
+        <Route
+          path="/explore"
+          element={
+            user ? (
+              <Explore />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/viewpost"
+          element={
+            user ? (
+              <ViewPost />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/viewprofile"
+          element={
+            user ? (
+              <ViewProfile />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/viewpublicsnippet"
+          element={
+            user ? (
+              <ViewPublicSnippet />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
         <Route path="/news" element={<News />} />
-        <Route path="/chatroom" element={<ChatroomDashboard />} />
-        <Route path="/room/:roomId" element={<Room allStudents={allStudents} />} />
+        <Route
+          path="/chatroom"
+          element={
+            user ? (
+              <ChatroomDashboard />
+            ) : userLoading ? (
+              <h1>Loading....</h1>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/room/:roomId"
+          element={<Room allStudents={allStudents} />}
+        />
         <Route path="/favourites" element={<FavouriteSnippets />} />
       </Routes>
       <Footer />

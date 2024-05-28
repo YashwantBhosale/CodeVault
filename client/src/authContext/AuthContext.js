@@ -58,8 +58,8 @@ export const AuthContextProvider = ({ children }) => {
     }
     if (user) {
       dispatch({ type: "LOGIN", payload: user });
-      dispatch({ type: "USER_LOADING", payload: false });
     }
+    dispatch({ type: "USER_LOADING", payload: false });
   }, []);
 
   return (
