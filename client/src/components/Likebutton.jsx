@@ -42,9 +42,10 @@ export const Likebutton = ({snippetId}) => {
   }
 
   useEffect(() => {
-    if (user?.favouriteSnippets?.includes(snippetId)) {
+    if(user.favouriteSnippets?.some(id => id === snippetId)){
       setFillColor("black");
-    } else {
+    }
+    else{
       setFillColor("white");
     }
   }, [user]);
