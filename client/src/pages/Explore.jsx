@@ -552,8 +552,8 @@ export const Explore = () => {
             {/* {post.content ? "this is a description." :} */}
           </p>
         </h1>
-        <div className="w-[90%] flex flex-wrap">
-          {post?.files?.length
+        <div className="w-[95%] mx-auto flex flex-wrap">
+          {post?.files?.length 
             ? post.files.map((file, index) => {
                 return (
                   <img
