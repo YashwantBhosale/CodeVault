@@ -70,7 +70,7 @@ function Home() {
 
   // Function to fetch snippets
   async function fetchsnippets(initial = false) {
-    if(!user || userLoading){
+    if (!user || userLoading) {
       return;
     }
     if (initial) {
@@ -97,7 +97,7 @@ function Home() {
   }
 
   useEffect(() => {
-    if(user && !userLoading){
+    if (user && !userLoading) {
       fetchsnippets(true);
     }
   }, [user, userLoading]);
@@ -264,7 +264,7 @@ function Home() {
   }
 
   // function to save snippet
-  const handleSaveButtonClick = async () => {
+  const handleSaveButtonClick = async (e) => {
     try {
       console.log("snippet", codeValue);
       const response = await fetch(BASE_URL + "api/user/addsnippet", {
@@ -289,6 +289,9 @@ function Home() {
         toast.success("Snippet saved successfully!");
         fetchsnippets();
         setShowPopup(false);
+        setSnippetName("");
+        setSnippetLanguage("javascript");
+        setDescription("");
       } else {
         toast.error("Error saving snippet!");
       }
