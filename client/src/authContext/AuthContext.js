@@ -27,6 +27,8 @@ const authReducer = (state, action) => {
       return { ...state, posts: [action.payload, ...state.posts] };
     case "MOST_FAVOURITED_SNIPPETS":
       return { ...state, mostFavouritedSnippets: action.payload };
+    case "USER_LOADING":
+      return { ...state, userLoading: action.payload };
     default:
       return state;
   }
@@ -37,11 +39,13 @@ export const AuthContextProvider = ({ children }) => {
     user: null,
     fetched: false,
     posts: [],
+    userLoading: true,
   });
   console.log("AuthContext state: ", state);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    dispatch({ type: "USER_LOADING", payload: true });
+    const user = JSON.parse(localStorage.getItem("user"));;
     try {
       if (sessionStorage.getItem("posts")) {
         sessionStorage.removeItem("posts");
@@ -54,6 +58,7 @@ export const AuthContextProvider = ({ children }) => {
     }
     if (user) {
       dispatch({ type: "LOGIN", payload: user });
+      dispatch({ type: "USER_LOADING", payload: false });
     }
   }, []);
 

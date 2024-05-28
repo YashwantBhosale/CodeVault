@@ -41,7 +41,7 @@ function Home() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deleteSnippetId, setDeleteSnippetId] = useState(null);
   const [usersnippets, setUserSnippets] = React.useState([]);
-  const { user, dispatch } = useAuthContext();
+  const { user, dispatch, userLoading } = useAuthContext();
   const [dataloading, setdataloading] = useState(false);
   const [value, setValue] = useState(null);
   const [fetched, setfetched] = useState(false);
@@ -70,6 +70,9 @@ function Home() {
 
   // Function to fetch snippets
   async function fetchsnippets(initial = false) {
+    if(!user || userLoading){
+      return;
+    }
     if (initial) {
       setdataloading(true);
     }
@@ -94,8 +97,10 @@ function Home() {
   }
 
   useEffect(() => {
-    fetchsnippets(true);
-  }, []);
+    if(user && !userLoading){
+      fetchsnippets(true);
+    }
+  }, [user, userLoading]);
 
   // Function to toggle pin status of a snippet
   async function togglePinSnippet(snippet, snippetId, isPinned) {
