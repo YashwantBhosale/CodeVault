@@ -175,7 +175,7 @@ export const Profile = () => {
             <div class="profile-bio">
               <div>
                 <h1 className="font-bold">about me:</h1>
-                <p>{user?.about || "I like guys"}</p>
+                <p>{user?.about || "I like to Code!"}</p>
               </div>
               <div className="flex w-full justify-between">
                 <div
