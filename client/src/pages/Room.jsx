@@ -99,7 +99,7 @@ const Room = ({ allStudents }) => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(95vh-40px)] bg-gray-900 text-gray-100 mt-[11vh]">
+    <div className="flex flex-col md:flex-row h-[calc(93vh-40px)] bg-gray-900 text-gray-100 mt-[11vh]">
       <div className="flex flex-col flex-grow">
         <div className="flex-grow p-4 h-[30vh] overflow-y-auto">
           <div className="flex flex-col space-y-4">

@@ -11,7 +11,7 @@ const Footer = () => {
   const toggleDevs = () => setShowDevs(!showDevs);
 
   return (
-    <footer className="fixed bottom-0 left-0 w-full bg-gradient-to-t from-black to-transparent text-white py-4 px-6 flex flex-col items-center sm:flex-row sm:justify-between text-md font-semibold">
+    <footer className="fixed bottom-0 left-0 w-full bg-black text-white py-2 px-6 flex flex-col items-center sm:flex-row sm:justify-between text-md font-semibold">
       <div className="flex items-center mb-2 sm:mb-0">
         <FaGithub
           onClick={() => {
