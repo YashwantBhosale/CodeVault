@@ -325,6 +325,81 @@ userSchema.statics.createPost = async function (
   user.posts.push(post._id);
   await user.save();
 
+  const html = `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Post Notification</title>
+      <style>
+          body {
+              font-family: Arial, sans-serif;
+              background-color: #f4f4f4;
+              margin: 0;
+              padding: 0;
+          }
+          .container {
+              max-width: 600px;
+              margin: 50px auto;
+              background-color: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              padding: 20px;
+          }
+          h1 {
+              font-size: 24px;
+              color: #333333;
+              text-align: center;
+          }
+          p {
+              font-size: 16px;
+              color: #666666;
+              line-height: 1.5;
+          }
+          .button {
+              display: block;
+              width: 200px;
+              margin: 20px auto;
+              padding: 10px 20px;
+              text-align: center;
+              background-color: #007BFF;
+              color: #ffffff;
+              text-decoration: none;
+              border-radius: 5px;
+          }
+          .button:hover {
+              background-color: #0056b3;
+          }
+      </style>
+  </head>
+
+  <body>
+      <div class="container">
+          <h1><b>${user.username}</b> has posted something new!</h1>
+          <p>Hi there,</p>
+          <p>We are excited to let you know that <b>${user.username}</b> has posted something new. Check out their post and stay connected!</p>
+          <a href="https://code-vault-new-frontend.vercel.app/viewpost?postId=${post._id}" class="button">View Post</a>
+      </div>
+  </body>
+  </html>`;
+
+  user.followers.forEach(async (follower) => {
+    let followingUser = await this.findOne({ _id: follower.id });
+    let date = new Date();
+
+    let notification = new Notification({
+      type: "Post",
+      content: `"${user.username}" has posted something new!`,
+      user: followingUser._id,
+    });
+    await notification.save();
+
+    followingUser.notifications.push(notification._id);
+
+    sendMail(followingUser.email, "New Post Notification", html);
+    await followingUser.save();
+  });
+
   return post;
 };
 

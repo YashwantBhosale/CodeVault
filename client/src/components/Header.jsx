@@ -301,7 +301,7 @@ export default function Header(props) {
                             console.log("error logging out : ", error.message);
                           }
                         }}
-                        className="block font-semibold text-gray-900 hover:bg-grey"
+                        className="block font-semibold cursor-pointer text-gray-900 hover:bg-grey"
                       >
                         Logout
                         {/* <span className="absolute inset-0" /> */}
@@ -378,7 +378,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/about");
               }}
-              className="cursor-pointer text-md font-semibold leading-6 text-gray-900"
+              className="text-md font-semibold cursor-pointer leading-6 text-gray-900"
             >
               About
             </a>

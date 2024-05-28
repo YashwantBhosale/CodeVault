@@ -126,10 +126,10 @@ export const FavouriteSnippets = () => {
     );
   }
   return (
-    <div className="mt-[18vh]">
-      {userFavouriteSnippets
+    <div className="mt-[10vh] flex flex-col md:flex-row items-center justify-center flex-wrap mb-[20vh]">
+      {userFavouriteSnippets?.length
         ? userFavouriteSnippets.map((snippet) => createSnippetCards(snippet))
-        : null}
+        :  <h1 className="text-center text-slate-400">Your favourite snippets will appear here!</h1>}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
-export const Likebutton = ({ snippetId }) => {
+import { toast } from "react-toastify";
+export const Likebutton = ({snippetId}) => {
   const [fillColor, setFillColor] = useState("#000000");
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const { user, dispatch } = useAuthContext();
@@ -65,8 +66,10 @@ export const Likebutton = ({ snippetId }) => {
           email: user.email,
           snippetId,
         }),
-      });
-    } catch (error) {
+      })
+
+      toast.success("Added to favourite Snippets!!")
+    }catch(error){
       console.error(error.message);
     }
   }
