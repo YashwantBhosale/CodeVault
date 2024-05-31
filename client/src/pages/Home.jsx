@@ -468,10 +468,9 @@ function Home() {
         </div>
         <div className="flex flex-1 flex-col justify-between">
           <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6 min-h-[150px]">
-            <h3 className="font-bold uppercase text-gray-900">
-              {snippet.title}
-            </h3>
-
+              <h3 className="font-bold uppercase text-gray-900">
+                {snippet.title}
+              </h3>
             <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
               <span className="font-bold text-gray-900">Description:</span>{" "}
               {truncateDescription(snippet.description || "N/A", 17)}
@@ -525,9 +524,9 @@ function Home() {
         <article className="flex bg-white transition hover:shadow-xl w-1/5 border-2 rounded-xl m-[10px] min-w-[340px]">
           <div className="flex flex-1 flex-col justify-between">
             <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6">
-              <h3 className="font-bold uppercase text-gray-900">
-                Create a New Code Snippet
-              </h3>
+                <h3 className="font-bold uppercase text-gray-900">
+                  Create a New Code Snippet
+                </h3>
 
               <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
                 Add a code Snippet in Your favourite language
@@ -548,9 +547,9 @@ function Home() {
         <article className="flex bg-white transition hover:shadow-xl w-1/5 border-2 rounded-xl m-[10px] min-w-[340px]">
           <div className="flex flex-1 flex-col justify-between">
             <div className="border-s border-gray-900/10 p-4 sm:border-l-transparent sm:p-6">
-              <h3 className="font-bold uppercase text-gray-900">
-                Create a New Post
-              </h3>
+                <h3 className="font-bold uppercase text-gray-900">
+                  Create a New Post
+                </h3>
 
               <p className="mt-2 line-clamp-3 text-sm/relaxed text-gray-700">
                 Create a post....
@@ -585,7 +584,6 @@ function Home() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              onClick={handleClosePopup}
               className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50"
             >
               {window.innerWidth <= 768 ? (
@@ -869,9 +867,6 @@ function Home() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            onClick={() => {
-              setShowCreatePost(false);
-            }}
             className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50"
           >
             <motion.div
@@ -972,7 +967,7 @@ function Home() {
                     onClick={handlePostSubmit}
                     className="bg-black text-white px-4 py-2 rounded-md hover:bg-slate-700"
                   >
-                    {fileUploadLoading ? <SyncLoader color="white" /> : "Save"}
+                    {fileUploadLoading ? <SyncLoader color="white"/> : "Save" }
                   </button>
                 </form>
               </div>
