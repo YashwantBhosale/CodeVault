@@ -128,7 +128,7 @@ const Room = ({ allStudents }) => {
         <div className="flex p-4 bg-gray-800" style={{ marginBottom: "40px" }}>
           <input
             type="text"
-            className="flex-grow p-2 mr-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"
+            className="flex-grow p-2 mr-4 w-[100%] bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400"
             placeholder="Type your message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
