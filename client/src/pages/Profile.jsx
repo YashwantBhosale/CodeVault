@@ -174,7 +174,7 @@ export const Profile = () => {
             </header>
             <div class="profile-bio">
               <div>
-                <h1 className="font-bold">about me:</h1>
+                <h1 className="font-bold">About me:</h1>
                 <p>{user?.about || "I like to Code!"}</p>
               </div>
               <div className="flex w-full justify-between">
@@ -395,7 +395,7 @@ export const Profile = () => {
               <div>
                 <label>Email</label>
                 <input
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+                  className="w-full border border-gray-300rounded-md px-3 py-2 mt-1"
                   type="email"
                   disabled
                   value={user?.email}

@@ -102,6 +102,10 @@ CodeVault is developed by **Yashwant Bhosale** and **Mehmood Deshmukh**
 
 Feel free to reach out for collaboration, feedback, or just to say hi!
 
+## Credits
+
+Special thanks to [Tanmay Bansode](https://github.com/TanmayBansode) for the idea of chatroom without the need for a database or browser caching.
+
 ## Fun Fact
 
 The first version of CodeVault, when it was just an initial concept, is still hosted and available [Here](https://code-vault-beta.vercel.app/). Check it out to see how far we've come!

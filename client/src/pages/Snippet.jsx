@@ -22,7 +22,7 @@ export const Snippet = () => {
   const [editField, setEditField] = useState("");
   const { user } = useAuthContext();
   const [loading, setLoading] = useState(false);
-
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const id = searchParams.get("id");
   const state = EditorState.create({
     doc: "my source code",
@@ -58,7 +58,9 @@ export const Snippet = () => {
       "typescript",
     ];
 
-    let language = supportedLanguagesForDownload.includes(snippet.language) ? `${snippet.language}` : "javascript";
+    let language = supportedLanguagesForDownload.includes(snippet.language)
+      ? `${snippet.language}`
+      : "javascript";
     fetch(
       `https://code2img.vercel.app/api/to-image?language=${language}&theme=dracula&background-color=rgba(171,184,195,1)`,
       requestOptions
@@ -147,6 +149,11 @@ export const Snippet = () => {
 
   const handleChange = (value, viewUpdate) => {
     setCode(value);
+  };
+
+  const handleLanguageSelect = (id) => {
+    setSnippet((prev) => ({ ...prev, language: id }));
+    setDropdownOpen(false);
   };
 
   const copyToClipboard = () => {
@@ -248,17 +255,31 @@ export const Snippet = () => {
                   />
                 </label>{" "}
                 {editField === "language" && (
-                  <input
-                    type="text"
-                    value={snippet.language || ""}
-                    className="border border-gray-300 px-2 py-1 rounded-md ml-2"
-                    onChange={(e) =>
-                      setSnippet((prev) => ({
-                        ...prev,
-                        language: e.target.value,
-                      }))
-                    }
-                  />
+                  <>
+                    <input
+                      type="text"
+                      id="snippetLanguage"
+                      value={
+                        snippet.language
+                      }
+                      onFocus={() => setDropdownOpen(true)}
+                      readOnly
+                      className="border border-gray-300 rounded-md px-3 py-2 mt-1 cursor-pointer"
+                    />
+                    {dropdownOpen && (
+                      <ul className="absolute z-10 bg-white border border-gray-300 rounded-md mt-1 max-h-60 overflow-y-auto">
+                        {languages.map((language) => (
+                          <li
+                            key={language.id}
+                            onClick={() => handleLanguageSelect(language.id)}
+                            className="px-3 py-2 cursor-pointer hover:bg-gray-200"
+                          >
+                            {language.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
                 )}
               </div>
             </div>

@@ -10,6 +10,7 @@ const DeleteConfirmation = ({ type, isOpen, onClose, onDelete }) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.2 }}
+          onClick={onClose}
           className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50"
         >
           <motion.div
