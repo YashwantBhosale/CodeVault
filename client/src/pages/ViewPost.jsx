@@ -21,9 +21,7 @@ export const ViewPost = () => {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   async function fetchPost() {
     try {
-      const response = await fetch(
-        BASE_URL+`api/public/post?id=${id}`
-      );
+      const response = await fetch(BASE_URL + `api/public/post?id=${id}`);
       const data = await response.json();
       console.log(data);
       setPost(data);
@@ -56,16 +54,13 @@ export const ViewPost = () => {
           (obj) => obj.username !== user.username
         );
       }
-      let response = await fetch(
-        BASE_URL+"api/public/updateupvotes",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: post._id, userObj }),
-        }
-      );
+      let response = await fetch(BASE_URL + "api/public/updateupvotes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: post._id, userObj }),
+      });
       if (response.ok) {
         toast.success("added to upvoted posts");
       } else {
@@ -99,16 +94,13 @@ export const ViewPost = () => {
         );
       }
 
-      let response = await fetch(
-        BASE_URL+"api/public/updatedownvotes",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: post._id, userObj }),
-        }
-      );
+      let response = await fetch(BASE_URL + "api/public/updatedownvotes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: post._id, userObj }),
+      });
 
       if (response.ok) {
         toast.success("added to downvoted posts");
@@ -124,7 +116,7 @@ export const ViewPost = () => {
     try {
       setComments(null);
       const response = await fetch(
-        BASE_URL+`api/comment/getcomments?postId=${id}`
+        BASE_URL + `api/comment/getcomments?postId=${id}`
       );
       const data = await response.json();
       setComments(data);
@@ -145,21 +137,18 @@ export const ViewPost = () => {
       return;
     }
     try {
-      const response = await fetch(
-        BASE_URL+"api/comment/addcomment",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            postId: id,
-            content,
-            username: user.username,
-            avtar: user.avtar,
-          }),
-        }
-      );
+      const response = await fetch(BASE_URL + "api/comment/addcomment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postId: id,
+          content,
+          username: user.username,
+          avtar: user.avtar,
+        }),
+      });
       if (response.ok) {
         toast.success("Comment posted successfully");
         fetchComments();
@@ -232,10 +221,7 @@ export const ViewPost = () => {
                 style={{ zIndex: -1 }}
                 className="text-xl -z-1"
               />{" "}
-              <span
-                style={{ zIndex: -1 }}
-                className="font-bold -z-1"
-              >
+              <span style={{ zIndex: -1 }} className="font-bold -z-1">
                 {comment.downvotes.length}
               </span>
             </div>
@@ -260,10 +246,13 @@ export const ViewPost = () => {
       e.target.lastElementChild.innerHTML = comment.upvotes.length + 1;
       comment.upvotes.push(userObj);
       if (comment.downvotes.some((obj) => obj.username === user.username)) {
-        e.target.nextSibling.lastElementChild.innerHTML = comment.downvotes.length - 1;
-        comment.downvotes = comment.downvotes.filter((obj) => obj.username !== user.username);
+        e.target.nextSibling.lastElementChild.innerHTML =
+          comment.downvotes.length - 1;
+        comment.downvotes = comment.downvotes.filter(
+          (obj) => obj.username !== user.username
+        );
       }
-      const response = await fetch(BASE_URL+"api/comment/upvote", {
+      const response = await fetch(BASE_URL + "api/comment/upvote", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -280,13 +269,13 @@ export const ViewPost = () => {
       toast.error("Error upvoting comment");
     }
   }
-  
+
   async function downvoteComment(e, comment) {
     e.preventDefault();
     e.stopPropagation();
     try {
       const userObj = {
-        id: user.id, 
+        id: user.id,
         username: user.username,
         avtar: user.avtar,
       };
@@ -296,10 +285,13 @@ export const ViewPost = () => {
       e.target.lastElementChild.innerHTML = comment.downvotes.length + 1;
       comment.downvotes.push(userObj);
       if (comment.upvotes.some((obj) => obj.username === user.username)) {
-        e.target.previousSibling.lastElementChild.innerHTML = comment.upvotes.length - 1;
-        comment.upvotes = comment.upvotes.filter((obj) => obj.username !== user.username);
+        e.target.previousSibling.lastElementChild.innerHTML =
+          comment.upvotes.length - 1;
+        comment.upvotes = comment.upvotes.filter(
+          (obj) => obj.username !== user.username
+        );
       }
-      const response = await fetch(BASE_URL+"api/comment/downvote", {
+      const response = await fetch(BASE_URL + "api/comment/downvote", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -317,13 +309,9 @@ export const ViewPost = () => {
     }
   }
 
-  
-
-
   useEffect(() => {
     fetchPost();
     fetchComments();
-
   }, []);
 
   const calculateTimeAgo = (createdAt) => {
@@ -445,8 +433,10 @@ export const ViewPost = () => {
         </form>
       </div>
       <div className="w-[90%] md:w-[60%] mx-auto border border-gray-300 p-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-        <span className="text-black font-bold font-8xl">{comments?.length}{" "}Comments</span>
-        {comments?.map(createCommentsDiv)}
+        <span className="text-black font-bold font-8xl">
+          {comments && comments?.length} Comments
+        </span>
+        {comments && comments?.map(createCommentsDiv)}
       </div>
     </div>
   );

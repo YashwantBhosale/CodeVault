@@ -389,6 +389,7 @@ userSchema.statics.createPost = async function (
 
     let notification = new Notification({
       type: "Post",
+      postId: post._id,
       content: `"${user.username}" has posted something new!`,
       user: followingUser._id,
     });

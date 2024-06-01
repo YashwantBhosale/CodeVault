@@ -93,12 +93,28 @@ export default function Header(props) {
   function createNotifications(notification, index) {
     let content = notification?.content;
     let username = "";
-    if (notification?.type === "Follow") {
-      username = content.substring(1, content.lastIndexOf(`"`));
-      content = `${content.substring(
-        content.lastIndexOf(`"`) + 1,
-        content.length - 1
-      )}`;
+    let link = null;
+    switch (notification?.type) {
+      case "Follow": {
+        username = content.substring(1, content.lastIndexOf(`"`));
+        content = `${content.substring(
+          content.lastIndexOf(`"`) + 1,
+          content.length - 1
+        )}`;
+        link = `/viewprofile?username=${username}`;
+        break;
+      }
+      case "Post": {
+        username = content.substring(1, content.lastIndexOf(`"`));
+        content = `${content.substring(
+          content.lastIndexOf(`"`) + 1,
+          content.length - 1
+        )}`;
+        console.log(notification.postId);
+        if (notification?.postId)
+          link = `/viewpost?id=${notification?.postId}`;
+        break;
+      }
     }
 
     async function handleNotificationClear(ids) {
@@ -141,9 +157,30 @@ export default function Header(props) {
       <div
         key={index}
         className="flex items-center gap-4 px-4 py-4 border-b border-gray-300 text-sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (link) {
+            navigate(link);
+            setNotificationsOpen(false);
+          }
+        }}
       >
         <FaRegBell className="text-xl" />
         <p className="w-full ">
+          {notification?.type == "Post" ? (
+            <span>
+              <span
+                className="text-sky-500 cursor-pointer"
+                onClick={() => {
+                  setNotificationsOpen(false);
+                  navigate(`/viewprofile?username=${username}`);
+                }}
+              >
+                @{username}
+              </span>{" "}
+              <span>{content}</span>
+            </span>
+          ) : null}
           {notification?.type == "Follow" ? (
             <span>
               <span
@@ -157,9 +194,10 @@ export default function Header(props) {
               </span>{" "}
               <span>{content}</span>
             </span>
-          ) : (
-            notification?.content
-          )}
+          ) : null}
+          {notification?.type != "Follow" && notification?.type != "Post" ? (
+            <span>{content}</span>
+          ) : null}
         </p>
         <span className="whitespace-nowrap">
           {notification?.timestamp
@@ -530,7 +568,11 @@ export default function Header(props) {
                 notifications.map((notification) =>
                   notification ? createNotifications(notification) : null
                 )
-              ) : <h1 className="text-center text-slate-400">No New notifications!</h1>}             
+              ) : (
+                <h1 className="text-center text-slate-400">
+                  No New notifications!
+                </h1>
+              )}
             </motion.div>
           </motion.div>
         )}
