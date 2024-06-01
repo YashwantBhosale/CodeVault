@@ -90,6 +90,40 @@ export default function Header(props) {
     }
   };
 
+  async function handleNotificationClear(ids) {
+    console.log(ids);
+    setnotifications((prev) => prev.filter((item) => !ids.includes(item._id)));
+    setUnreadNotifications((prev) =>
+      prev.filter((item) => !ids.includes(item._id))
+    );
+
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_BASE_URL + "api/user/clearnotifications",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user?.username,
+            ids,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        toast.success("Notifications cleared successfully!");
+      } else {
+        toast.error("Error clearing notifications!");
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Error clearing notifications!");
+    }
+  }
+
   function createNotifications(notification, index) {
     let content = notification?.content;
     let username = "";
@@ -111,45 +145,8 @@ export default function Header(props) {
           content.length - 1
         )}`;
         console.log(notification.postId);
-        if (notification?.postId)
-          link = `/viewpost?id=${notification?.postId}`;
+        if (notification?.postId) link = `/viewpost?id=${notification?.postId}`;
         break;
-      }
-    }
-
-    async function handleNotificationClear(ids) {
-      console.log(ids);
-      setnotifications((prev) =>
-        prev.filter((item) => !ids.includes(item._id))
-      );
-      setUnreadNotifications((prev) =>
-        prev.filter((item) => !ids.includes(item._id))
-      );
-
-      try {
-        const response = await fetch(
-          process.env.REACT_APP_BASE_URL + "api/user/clearnotifications",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username: user?.username,
-              ids,
-            }),
-          }
-        );
-        const data = await response.json();
-        console.log(data);
-        if (response.ok) {
-          toast.success("Notifications cleared successfully!");
-        } else {
-          toast.error("Error clearing notifications!");
-        }
-      } catch (error) {
-        console.log(error.message);
-        toast.error("Error clearing notifications!");
       }
     }
 
@@ -559,7 +556,13 @@ export default function Header(props) {
               >
                 <FontAwesomeIcon icon={faArrowsRotate} />
               </button>
-              <button>
+              <button
+                onClick={() => {
+                  handleNotificationClear(
+                    notifications.map((notification) => notification._id)
+                  );
+                }}
+              >
                 <FaEraser />{" "}
               </button>
               {notificationsLoading ? (
