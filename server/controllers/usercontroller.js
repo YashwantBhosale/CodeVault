@@ -93,6 +93,7 @@ async function loginWithUsername(req, res) {
     const user = await User.loginWithUsername(username, password);
     const token = createToken(user._id);
     const response = {
+      id: user._id,
       username: user.username,
       avtar: user.avtar,
       email: user.email,
@@ -115,6 +116,7 @@ async function loginWithEmail(req, res) {
     const user = await User.loginWithEmail(email, password);
     const token = createToken(user._id);
     const response = {
+      id: user._id,
       username: user.username,
       avtar: user.avtar,
       email: user.email,
@@ -137,6 +139,7 @@ async function signupUser(req, res) {
     const user = await User.signup(username, email, password, avtar);
     const token = createToken(user._id);
     const response = {
+      id: user._id,
       username: user.username,
       avtar: user.avtar,
       email: user.email,
