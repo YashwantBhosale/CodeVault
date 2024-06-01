@@ -90,6 +90,42 @@ export default function Header(props) {
     }
   };
 
+  async function updateReadStatus(unreads) {
+    console.log("unreads : ", unreads);
+    try {
+      setUnreadNotifications((prev) =>
+        prev.filter((item) => !unreads.includes(item._id))
+      );
+      unreads.forEach((id) => {
+        updateReadStatusLocal(id);
+      });
+      console.log("after clearing notification status : ", unreads);
+      const response = await fetch(
+        process.env.REACT_APP_BASE_URL + "api/user/readnotifications",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user?.username,
+            notificationIds: unreads,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        toast.success("Read status updated successfully!");
+      } else {
+        toast.error("Error updating read status!");
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Error updating read status!");
+    }
+  }
+
   async function handleNotificationClear(ids) {
     console.log(ids);
     setnotifications((prev) => prev.filter((item) => !ids.includes(item._id)));
@@ -234,49 +270,15 @@ export default function Header(props) {
 
   // local read status update
   async function updateReadStatusLocal(id) {
-    let updated = notifications.map((notification) => {
-      if (notification._id === id) {
-        return { ...notification, isSeen: true };
-      }
-      return notification;
-    });
-    setnotifications(updated);
+    const notificationToUpdate = notifications.find(
+      (notification) => notification._id === id
+    );
+    if (notificationToUpdate) {
+      notificationToUpdate.isSeen = true;
+    }
+    setnotifications(notifications); // assuming setNotifications updates the state
   }
 
-  async function updateReadStatus(unreads) {
-    console.log("unreads : ", unreads);
-    try {
-      setUnreadNotifications((prev) =>
-        prev.filter((item) => !unreads.includes(item._id))
-      );
-      unreads.forEach((id) => {
-        updateReadStatusLocal(id);
-      });
-      const response = await fetch(
-        process.env.REACT_APP_BASE_URL + "api/user/readnotifications",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: user?.username,
-            notificationIds: unreads,
-          }),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      if (response.ok) {
-        toast.success("Read status updated successfully!");
-      } else {
-        toast.error("Error updating read status!");
-      }
-    } catch (error) {
-      console.log(error.message);
-      toast.error("Error updating read status!");
-    }
-  }
   return (
     <>
       <header className="bg-white fixed top-0 left-0 w-full h-[10vh] bg-white z-50">
@@ -564,6 +566,20 @@ export default function Header(props) {
                 }}
               >
                 <FaEraser />{" "}
+              </button>
+              <button
+                className="cursor-pointer border border-gray-200 hover:bg-gray-100 bg-white p-2 rounded inline-flex items-center justify-center mx-5"
+                title="Mark all as read"
+                onClick={() => {
+                  updateReadStatus(
+                    notifications
+                      .filter((notification) => !notification.isSeen)
+                      .map((notification) => notification._id)
+                  );
+                  setUnreadNotifications([]);
+                }}
+              >
+                <FaCheck />
               </button>
               {notificationsLoading ? (
                 <SyncLoader className="w-fit mx-auto mt-4" />
