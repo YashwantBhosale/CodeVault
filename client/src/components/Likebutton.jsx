@@ -36,6 +36,9 @@ export const Likebutton = ({snippetId}) => {
           (id) => id !== snippetId
         );
       }
+      else{
+        user.favouriteSnippets.push(snippetId);
+      }
     } else {
       user.favouriteSnippets = [];
       user.favouriteSnippets.push(snippetId);
@@ -51,7 +54,6 @@ export const Likebutton = ({snippetId}) => {
       setFillColor("white");
     }
   }, [user]);
-  console.log(snippetId);
 
   async function handleAddToFavorites(snippetId) {
     handleLocalFavourites(snippetId);

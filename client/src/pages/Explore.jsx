@@ -414,6 +414,8 @@ export const Explore = () => {
     const day = snippet.dateCreated.split("-")[2].split("T")[0];
     const date = `${month} ${day}`;
 
+    console.log(user.username, snippet.author);
+
     return (
       <article
         key={snippet._id}
@@ -456,7 +458,11 @@ export const Explore = () => {
           <div className="flex items-end justify-end">
             <button
               onClick={() => {
-                navigate(`/viewpublicsnippet?snippetId=${snippet._id}`);
+                if (snippet.author == user.id) {
+                  navigate(`/snippets?id=${snippet._id}`);
+                } else {
+                  navigate(`/viewpublicsnippet?snippetId=${snippet._id}`);
+                }
               }}
               className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl"
             >
@@ -553,7 +559,7 @@ export const Explore = () => {
           </p>
         </h1>
         <div className="w-[95%] mx-auto flex flex-wrap">
-          {post?.files?.length 
+          {post?.files?.length
             ? post.files.map((file, index) => {
                 return (
                   <img
@@ -609,7 +615,7 @@ export const Explore = () => {
                 navigate(`/viewpost?id=${post._id}&avtar=${post.author.avtar}`)
               }
             />
-            <span  className="font-bold text-white">
+            <span className="font-bold text-white">
               {post?.comments?.length}
             </span>
           </div>

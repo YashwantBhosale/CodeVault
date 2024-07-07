@@ -90,50 +90,99 @@ export default function Header(props) {
     }
   };
 
+  async function updateReadStatus(unreads) {
+    console.log("unreads : ", unreads);
+    try {
+      setUnreadNotifications((prev) =>
+        prev.filter((item) => !unreads.includes(item._id))
+      );
+      unreads.forEach((id) => {
+        updateReadStatusLocal(id);
+      });
+      console.log("after clearing notification status : ", unreads);
+      const response = await fetch(
+        process.env.REACT_APP_BASE_URL + "api/user/readnotifications",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user?.username,
+            notificationIds: unreads,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        toast.success("Read status updated successfully!");
+      } else {
+        toast.error("Error updating read status!");
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Error updating read status!");
+    }
+  }
+
+  async function handleNotificationClear(ids) {
+    console.log(ids);
+    setnotifications((prev) => prev.filter((item) => !ids.includes(item._id)));
+    setUnreadNotifications((prev) =>
+      prev.filter((item) => !ids.includes(item._id))
+    );
+
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_BASE_URL + "api/user/clearnotifications",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: user?.username,
+            ids,
+          }),
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        toast.success("Notifications cleared successfully!");
+      } else {
+        toast.error("Error clearing notifications!");
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Error clearing notifications!");
+    }
+  }
+
   function createNotifications(notification, index) {
     let content = notification?.content;
     let username = "";
-    if (notification?.type === "Follow") {
-      username = content.substring(1, content.lastIndexOf(`"`));
-      content = `${content.substring(
-        content.lastIndexOf(`"`) + 1,
-        content.length - 1
-      )}`;
-    }
-
-    async function handleNotificationClear(ids) {
-      console.log(ids);
-      setnotifications((prev) =>
-        prev.filter((item) => !ids.includes(item._id))
-      );
-      setUnreadNotifications((prev) =>
-        prev.filter((item) => !ids.includes(item._id))
-      );
-
-      try {
-        const response = await fetch(
-          process.env.REACT_APP_BASE_URL + "api/user/clearnotifications",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              username: user?.username,
-              ids,
-            }),
-          }
-        );
-        const data = await response.json();
-        console.log(data);
-        if (response.ok) {
-          toast.success("Notifications cleared successfully!");
-        } else {
-          toast.error("Error clearing notifications!");
-        }
-      } catch (error) {
-        console.log(error.message);
-        toast.error("Error clearing notifications!");
+    let link = null;
+    switch (notification?.type) {
+      case "Follow": {
+        username = content.substring(1, content.lastIndexOf(`"`));
+        content = `${content.substring(
+          content.lastIndexOf(`"`) + 1,
+          content.length - 1
+        )}`;
+        link = `/viewprofile?username=${username}`;
+        break;
+      }
+      case "Post": {
+        username = content.substring(1, content.lastIndexOf(`"`));
+        content = `${content.substring(
+          content.lastIndexOf(`"`) + 1,
+          content.length - 1
+        )}`;
+        console.log(notification.postId);
+        if (notification?.postId) link = `/viewpost?id=${notification?.postId}`;
+        break;
       }
     }
 
@@ -141,9 +190,30 @@ export default function Header(props) {
       <div
         key={index}
         className="flex items-center gap-4 px-4 py-4 border-b border-gray-300 text-sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (link) {
+            navigate(link);
+            setNotificationsOpen(false);
+          }
+        }}
       >
         <FaRegBell className="text-xl" />
         <p className="w-full ">
+          {notification?.type == "Post" ? (
+            <span>
+              <span
+                className="text-sky-500 cursor-pointer"
+                onClick={() => {
+                  setNotificationsOpen(false);
+                  navigate(`/viewprofile?username=${username}`);
+                }}
+              >
+                @{username}
+              </span>{" "}
+              <span>{content}</span>
+            </span>
+          ) : null}
           {notification?.type == "Follow" ? (
             <span>
               <span
@@ -157,9 +227,10 @@ export default function Header(props) {
               </span>{" "}
               <span>{content}</span>
             </span>
-          ) : (
-            notification?.content
-          )}
+          ) : null}
+          {notification?.type != "Follow" && notification?.type != "Post" ? (
+            <span>{content}</span>
+          ) : null}
         </p>
         <span className="whitespace-nowrap">
           {notification?.timestamp
@@ -199,49 +270,15 @@ export default function Header(props) {
 
   // local read status update
   async function updateReadStatusLocal(id) {
-    let updated = notifications.map((notification) => {
-      if (notification._id === id) {
-        return { ...notification, isSeen: true };
-      }
-      return notification;
-    });
-    setnotifications(updated);
+    const notificationToUpdate = notifications.find(
+      (notification) => notification._id === id
+    );
+    if (notificationToUpdate) {
+      notificationToUpdate.isSeen = true;
+    }
+    setnotifications(notifications); // assuming setNotifications updates the state
   }
 
-  async function updateReadStatus(unreads) {
-    console.log("unreads : ", unreads);
-    try {
-      setUnreadNotifications((prev) =>
-        prev.filter((item) => !unreads.includes(item._id))
-      );
-      unreads.forEach((id) => {
-        updateReadStatusLocal(id);
-      });
-      const response = await fetch(
-        process.env.REACT_APP_BASE_URL + "api/user/readnotifications",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: user?.username,
-            notificationIds: unreads,
-          }),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      if (response.ok) {
-        toast.success("Read status updated successfully!");
-      } else {
-        toast.error("Error updating read status!");
-      }
-    } catch (error) {
-      console.log(error.message);
-      toast.error("Error updating read status!");
-    }
-  }
   return (
     <>
       <header className="bg-white fixed top-0 left-0 w-full h-[10vh] bg-white z-50">
@@ -521,8 +558,28 @@ export default function Header(props) {
               >
                 <FontAwesomeIcon icon={faArrowsRotate} />
               </button>
-              <button>
+              <button
+                onClick={() => {
+                  handleNotificationClear(
+                    notifications.map((notification) => notification._id)
+                  );
+                }}
+              >
                 <FaEraser />{" "}
+              </button>
+              <button
+                className="cursor-pointer border border-gray-200 hover:bg-gray-100 bg-white p-2 rounded inline-flex items-center justify-center mx-5"
+                title="Mark all as read"
+                onClick={() => {
+                  updateReadStatus(
+                    notifications
+                      .filter((notification) => !notification.isSeen)
+                      .map((notification) => notification._id)
+                  );
+                  setUnreadNotifications([]);
+                }}
+              >
+                <FaCheck />
               </button>
               {notificationsLoading ? (
                 <SyncLoader className="w-fit mx-auto mt-4" />
@@ -530,7 +587,11 @@ export default function Header(props) {
                 notifications.map((notification) =>
                   notification ? createNotifications(notification) : null
                 )
-              ) : <h1 className="text-center text-slate-400">No New notifications!</h1>}             
+              ) : (
+                <h1 className="text-center text-slate-400">
+                  No New notifications!
+                </h1>
+              )}
             </motion.div>
           </motion.div>
         )}
