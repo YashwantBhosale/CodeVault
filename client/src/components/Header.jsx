@@ -319,7 +319,7 @@ export default function Header(props) {
             >
               {user && unreadNotifications.length > 0 ? (
                 <p className="absolute bottom-2 left-2 bg-red-700 text-white p-[1px] px-[5px] rounded-full text-xs">
-                  {unreadNotifications.length}
+                  {unreadNotifications.length > 9? '9+': unreadNotifications.length}
                 </p>
               ) : null}
               {user ? <FaBell /> : null}
@@ -340,7 +340,7 @@ export default function Header(props) {
             >
               {user && unreadNotifications.length > 0 ? (
                 <p className="absolute bottom-2 left-2 bg-red-700 text-white p-[1px] px-[5px] rounded-full text-xs">
-                  {unreadNotifications.length}
+                  {unreadNotifications.length > 9? '9+': unreadNotifications.length}
                 </p>
               ) : null}
               {user ? <FaBell /> : null}
