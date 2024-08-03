@@ -7,9 +7,11 @@ import {
   FaRegArrowAltCircleUp,
   FaUser,
   FaRegComment,
+  FaStar,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { iconSrcList } from "../utils/icons";
+import ImageViewer from "react-simple-image-viewer";
 
 export const ViewPost = () => {
   const [searchParams] = useSearchParams();
@@ -18,13 +20,26 @@ export const ViewPost = () => {
   const [comments, setComments] = useState([]);
   const user = useAuthContext().user;
   const navigate = useNavigate();
+  const [postUpvotes, setPostUpvotes] = useState(0);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const [currentSrcSet, setCurrentSrcSet] = useState([]);
+  const [srcSet, setSrcSet] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+
   async function fetchPost() {
     try {
       const response = await fetch(BASE_URL + `api/public/post?id=${id}`);
       const data = await response.json();
       console.log(data);
       setPost(data);
+      if (data.files) {
+        let filesrc = data.files.map(
+          (file) =>
+            `${BASE_URL}api/public/files?filename=${encodeURIComponent(file)}`
+        );
+        setSrcSet([...filesrc]);
+      }
     } catch (error) {
       console.log(error.message);
       toast.error("Failed to fetch post");
@@ -35,6 +50,17 @@ export const ViewPost = () => {
     e.preventDefault();
     e.stopPropagation();
     try {
+      if (
+        post?.downvotes?.some((downvote) => downvote.username === user.username)
+      ) {
+        let updatedPost = {
+          ...post,
+          downvotes: post?.downvotes?.filter(
+            (downvote) => downvote.username != user.username
+          ),
+        };
+        setPost(updatedPost);
+      }
       let userObj = {
         username: user.username,
         avtar: user.avtar,
@@ -42,14 +68,14 @@ export const ViewPost = () => {
       if (post.upvotes.some((obj) => obj.username == user.username)) {
         return;
       }
-      e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
+      // e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
       post.upvotes.push({
         username: user.username,
         avtar: user.avtar,
       });
       if (post.downvotes.some((obj) => obj.username == user.username)) {
-        e.target.nextSibling.lastElementChild.innerHTML =
-          post.downvotes.length - 1;
+        // e.target.nextSibling.lastElementChild.innerHTML =
+        //   post.downvotes.length - 1;
         post.downvotes = post.downvotes.filter(
           (obj) => obj.username !== user.username
         );
@@ -75,6 +101,15 @@ export const ViewPost = () => {
     e.preventDefault();
     e.stopPropagation();
     try {
+      if (post.upvotes?.some((upvote) => upvote.username === user.username)) {
+        let updatedPost = {
+          ...post,
+          upvotes: post.upvotes?.filter(
+            (upvote) => upvote.username != user.username
+          ),
+        };
+        setPost(updatedPost);
+      }
       let userObj = {
         username: user.username,
         avtar: user.avtar,
@@ -84,11 +119,11 @@ export const ViewPost = () => {
         return;
       }
 
-      e.target.lastElementChild.innerHTML = post.downvotes.length + 1;
-      post.downvotes.push(userObj);
+      // e.target.lastElementChild.innerHTML = post.downvotes.length + 1;
+      // post.downvotes.push(userObj);
       if (post.upvotes.some((obj) => obj.username == user.username)) {
-        e.target.previousSibling.lastElementChild.innerHTML =
-          post.upvotes.length - 1;
+        // e.target.previousSibling.lastElementChild.innerHTML =
+        //   post.upvotes.length - 1;
         post.upvotes = post.upvotes.filter(
           (obj) => obj.username !== user.username
         );
@@ -166,14 +201,14 @@ export const ViewPost = () => {
     return (
       <div
         key={comment._id}
-        className="mx-auto border border-gray-300 p-4 my-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px]
+        className="mx-auto border border-gray-300 my-4 rounded-lg" // shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px] newer:shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]
         style={{ zIndex: -99 }}
       >
         <p
           onClick={() =>
             navigate(`/viewprofile?username=${comment.author.username}`)
           }
-          className="flex items-center gap-2 text-black text-md font-bold mb-2 border-b border-gray-200 p-2"
+          className="flex items-center gap-2 text-black text-md font-bold p-2"
         >
           {(
             <img
@@ -185,10 +220,12 @@ export const ViewPost = () => {
               className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
             />
           ) || <FaUser className="border border-black p-1 rounded-full" />}
-          {comment.author.username}
-          <span className="text-sm ml-2 text-gray-500">
-            {calculateTimeAgo(comment.timestamp)}
-          </span>
+          <div className="flex flex-col justify-start">
+            <span>{comment.author.username}</span>
+            <span className="text-xs font-light text-gray-500">
+              {calculateTimeAgo(comment.timestamp)}
+            </span>
+          </div>
         </p>
         <h1 className="text-xl">
           <span className="font-semibold"> </span>
@@ -200,27 +237,104 @@ export const ViewPost = () => {
           </p>
         </h1>
         <div className="w-[50%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
-          <div className="w-full md:w-[70%] flex justify-between items-center p-2 rounded-md -z-50 text-black">
+          <div className="w-full md:w-[70%] flex justify-start gap-[15px] items-center p-2 rounded-md -z-50 text-black">
             <div
-              className="flex items-center gap-1 cursor-pointer z-99"
+              className="flex items-center gap-[10px] cursor-pointer z-99 justify-center"
               onClick={(e) => upvoteComment(e, comment)}
             >
-              <FaRegArrowAltCircleUp
+              {comment?.upvotes?.some(
+                (upvote) =>
+                  upvote.username === user.username || upvote.id === user.id
+              ) ? (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14z"></path>
+                  </g>
+                </svg>
+              ) : (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601 17.919 12H15z"></path>
+                  </g>
+                </svg>
+              )}
+              {/* <FaRegArrowAltCircleUp
                 style={{ zIndex: -1 }}
                 className="text-xl "
-              />{" "}
+              />
+               */}{" "}
               <span style={{ zIndex: -1 }} className="font-bold">
                 {comment.upvotes.length}
               </span>
             </div>
             <div
-              className="flex items-center z-99 gap-1 cursor-pointer"
+              className="flex items-center z-99 gap-[10px] cursor-pointer justify-center"
               onClick={(e) => downvoteComment(e, comment)}
             >
-              <FaRegArrowAltCircleDown
+              {/* <FaRegArrowAltCircleDown
                 style={{ zIndex: -1 }}
                 className="text-xl -z-1"
-              />{" "}
+              /> */}
+              {comment?.downvotes?.some(
+                (downvote) =>
+                  downvote.username === user.username || downvote.id === user.id
+              ) ? (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059z"></path>
+                  </g>
+                </svg>
+              ) : (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0" height="25px"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059zM12 19.399 6.081 12H10V4h4v8h3.919L12 19.399z"></path>
+                  </g>
+                </svg>
+              )}{" "}
               <span style={{ zIndex: -1 }} className="font-bold -z-1">
                 {comment.downvotes.length}
               </span>
@@ -230,28 +344,37 @@ export const ViewPost = () => {
       </div>
     );
   }
-
   async function upvoteComment(e, comment) {
+    console.log(comment);
     e.preventDefault();
     e.stopPropagation();
     try {
       const userObj = {
         id: user.id,
         username: user.username,
-        avtar: user.avtar,
+        avatar: user.avatar,
       };
+
       if (comment.upvotes.some((obj) => obj.username === user.username)) {
         return;
       }
-      e.target.lastElementChild.innerHTML = comment.upvotes.length + 1;
-      comment.upvotes.push(userObj);
+
+      let updatedComments = [...comments];
+
       if (comment.downvotes.some((obj) => obj.username === user.username)) {
-        e.target.nextSibling.lastElementChild.innerHTML =
-          comment.downvotes.length - 1;
-        comment.downvotes = comment.downvotes.filter(
+        const updatedDownvotes = comment.downvotes.filter(
           (obj) => obj.username !== user.username
         );
+
+        updatedComments = updatedComments.map((c) =>
+          c._id === comment._id ? { ...c, downvotes: updatedDownvotes } : c
+        );
       }
+      updatedComments = updatedComments.map((c) =>
+        c._id === comment._id ? { ...c, upvotes: [...c.upvotes, userObj] } : c
+      );
+      setComments(updatedComments);
+
       const response = await fetch(BASE_URL + "api/comment/upvote", {
         method: "POST",
         headers: {
@@ -259,6 +382,7 @@ export const ViewPost = () => {
         },
         body: JSON.stringify({ id: comment._id, userObj }),
       });
+
       if (response.ok) {
         toast.success("Comment upvoted");
       } else {
@@ -269,7 +393,6 @@ export const ViewPost = () => {
       toast.error("Error upvoting comment");
     }
   }
-
   async function downvoteComment(e, comment) {
     e.preventDefault();
     e.stopPropagation();
@@ -277,20 +400,32 @@ export const ViewPost = () => {
       const userObj = {
         id: user.id,
         username: user.username,
-        avtar: user.avtar,
+        avatar: user.avatar,
       };
+
       if (comment.downvotes.some((obj) => obj.username === user.username)) {
         return;
       }
-      e.target.lastElementChild.innerHTML = comment.downvotes.length + 1;
-      comment.downvotes.push(userObj);
+
+      let updatedComments = [...comments];
+
+      updatedComments = updatedComments.map((c) =>
+        c._id === comment._id
+          ? { ...c, downvotes: [...c.downvotes, userObj] }
+          : c
+      );
+
       if (comment.upvotes.some((obj) => obj.username === user.username)) {
-        e.target.previousSibling.lastElementChild.innerHTML =
-          comment.upvotes.length - 1;
-        comment.upvotes = comment.upvotes.filter(
+        const updatedUpvotes = comment.upvotes.filter(
           (obj) => obj.username !== user.username
         );
+
+        updatedComments = updatedComments.map((c) =>
+          c._id === comment._id ? { ...c, upvotes: updatedUpvotes } : c
+        );
       }
+      setComments(updatedComments);
+
       const response = await fetch(BASE_URL + "api/comment/downvote", {
         method: "POST",
         headers: {
@@ -298,6 +433,7 @@ export const ViewPost = () => {
         },
         body: JSON.stringify({ id: comment._id, userObj }),
       });
+
       if (response.ok) {
         toast.success("Comment downvoted");
       } else {
@@ -344,7 +480,7 @@ export const ViewPost = () => {
           onClick={() =>
             navigate(`/viewprofile?username=${post?.author?.username}`)
           }
-          className="flex items-center gap-2 text-black text-md font-bold mb-2 border-b border-gray-200 p-2"
+          className="flex items-center gap-2 text-black text-md font-bold mb-2 border-b border-gray-200 py-2"
         >
           {(
             <img
@@ -356,10 +492,13 @@ export const ViewPost = () => {
               className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
             />
           ) || <FaUser className="border border-black p-1 rounded-full" />}
-          {post?.author?.username}
-          <span className="text-sm ml-2 text-gray-500">
-            {calculateTimeAgo(post?.createdAt)}
-          </span>
+          <div className="flex flex-col justify-start">
+            <span>{post?.author?.username}</span>
+            {!post?.isPublic && <FaStar title="This is a private post." />}
+            <span className="text-xs font-light text-gray-500">
+              {calculateTimeAgo(post.createdAt)}
+            </span>
+          </div>
         </p>
         <h1 className="text-xl mb-2">
           <p
@@ -380,31 +519,134 @@ export const ViewPost = () => {
             {/* {post?.content || "this is a description."} */}
           </p>
         </h1>
+        {isViewerOpen && (
+          <div style={{ position: "absolute", zIndex: 999999 }}>
+            <ImageViewer
+              src={srcSet}
+              currentIndex={currentIndex}
+              onClose={() => setIsViewerOpen(false)}
+            />
+          </div>
+        )}
+        <div className="w-[95%] mx-auto flex flex-wrap">
+          {post?.files?.length
+            ? post.files.map((file, index) => {
+                return (
+                  <img
+                    onClick={() => {
+                      setCurrentIndex(index);
+                      setIsViewerOpen(true);
+                    }}
+                    src={`${BASE_URL}api/public/files?filename=${encodeURIComponent(
+                      file
+                    )}`}
+                    alt="post"
+                    className="my-2 mx-2 object-cover rounded-lg h-[200px] w-[200px] cursor-pointer shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                  />
+                );
+              })
+            : null}
+        </div>
         <div className="w-[40%] md:w-[30%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
-          <div className="w-[80%] md:w-[50%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
+          <div className="w-[80%] md:w-[50%] flex justify-start gap-[15px] items-center p-2 rounded-md -z-50">
             <div
-              className="flex items-center gap-1 cursor-pointer z-99"
+              className="flex items-center gap-1 cursor-pointer z-99 w-[70px] justify-center"
               onClick={(e) => Upvote(e, post)}
             >
-              <FaRegArrowAltCircleUp
-                style={{ zIndex: -1 }}
-                className="text-white text-xl "
-              />{" "}
-              <span style={{ zIndex: -1 }} className="font-bold text-white">
+              {post?.upvotes?.some(
+                (upvote) =>
+                  upvote.username === user.username || upvote.id === user.id
+              ) ? (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14z"></path>
+                  </g>
+                </svg>
+              ) : (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601 17.919 12H15z"></path>
+                  </g>
+                </svg>
+              )}{" "}
+              <span
+                style={{
+                  zIndex: -1,
+                  fontSize: "20px",
+                  verticalAlign: "center",
+                }}
+                className=" text-black"
+              >
                 {post?.upvotes?.length}
               </span>
             </div>
             <div
-              className="flex items-center z-99 gap-1 cursor-pointer"
+              className="flex items-center z-99 gap-1 cursor-pointer w-[70px] justify-center"
               onClick={(e) => Downvote(e, post)}
             >
-              <FaRegArrowAltCircleDown
-                style={{ zIndex: -1 }}
-                className="text-white text-xl -z-1"
-              />{" "}
+              {post?.downvotes?.some(
+                (downvote) =>
+                  downvote.username === user.username || downvote.id === user.id
+              ) ? (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059z"></path>
+                  </g>
+                </svg>
+              ) : (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0" height="25px"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059zM12 19.399 6.081 12H10V4h4v8h3.919L12 19.399z"></path>
+                  </g>
+                </svg>
+              )}{" "}
               <span
-                style={{ zIndex: -1 }}
-                className="font-bold -z-1 text-white"
+                style={{ zIndex: -1, fontSize: "20px" }}
+                className=" -z-1 text-black"
               >
                 {post?.downvotes?.length}
               </span>
@@ -421,7 +663,7 @@ export const ViewPost = () => {
               placeholder="Add a comment"
               name="comment"
               type="text"
-              className="border border-gray-300 rounded-md p-2 w-3/4 mt-2"
+              className="border border-gray-300 rounded-md p-2 mt-2 mr-[10px] w-full"
             />
             <button
               type="submit"
@@ -431,12 +673,14 @@ export const ViewPost = () => {
             </button>
           </div>
         </form>
-      </div>
-      <div className="w-[90%] md:w-[60%] mx-auto border border-gray-300 p-4 rounded-lg shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px]">
-        <span className="text-black font-bold font-8xl">
-          {comments && comments?.length} Comments
-        </span>
-        {comments && comments?.map(createCommentsDiv)}
+        <div className="w-[95%] mx-auto rounded-lg  mt-[15px]">
+          {" "}
+          {/* md:w-[60%] border border-gray-300 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] */}
+          <span className="text-black font-bold font-8xl">
+            {comments && comments?.length} Comments
+          </span>
+          {comments && comments?.map(createCommentsDiv)}
+        </div>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import {
   FaStar,
   FaThumbtack,
 } from "react-icons/fa";
-import { faThumbtack } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faThumbtack } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 import { iconSrcList } from "../utils/icons";
@@ -46,6 +46,7 @@ export const Explore = () => {
   const [followingFeedOpen, setFollowingFeedOpen] = useState(false);
   const [activeFeed, setActiveFeed] = useState("trending");
   const [feedPosts, setFeedPosts] = useState([]);
+  const [popularSnippetsOpen, setPopularSnippetsOpen] = useState(false);
 
   useEffect(() => {
     if (activeFeed == "following") {
@@ -339,7 +340,7 @@ export const Explore = () => {
     }
     return (
       <div
-        class="w-[18vw] min-w-[250px] my-2 shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center h-full"
+        class="w-[18vw] min-w-[250px] s:min-w-[200px] my-2 shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px] rounded-lg sahdow-lg p-12 flex flex-col justify-center items-center h-full s:max-h-[250px]"
         onClick={() => {
           userobj.username === user.username
             ? navigate("/profile")
@@ -348,7 +349,7 @@ export const Explore = () => {
       >
         <div className="h-full">
           <img
-            class="object-center object-cover rounded-full h-36 w-36"
+            class="object-center object-cover rounded-full h-36 w-36 s:w-[100px] s:h-[100px]"
             src={
               userobj?.avtar.length > 15
                 ? userobj.avtar
@@ -362,7 +363,11 @@ export const Explore = () => {
             {userobj.username}
           </p>
           <button
-            onClick={(e) => handleFollowButton(e, userobj)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleFollowButton(e, userobj);
+            }}
             className="px-4 py-2 bg-gray-800 text-white rounded-md mt-2 hover:bg-slate-700"
           >
             {user.following.some(
@@ -533,11 +538,13 @@ export const Explore = () => {
               className="hoverZoomLink w-8 h-8 rounded-full object-cover mx-3"
             />
           ) || <FaUser className="border border-black p-1 rounded-full" />}
-          {post.author.username}
-          {!post?.isPublic && <FaStar title="This is a private post." />}
-          <span className="text-sm ml-2 text-gray-500">
-            {calculateTimeAgo(post.createdAt)}
-          </span>
+          <div className="flex flex-col justify-start">
+            <span>{post.author.username}</span>
+            {!post?.isPublic && <FaStar title="This is a private post." />}
+            <span className="text-xs font-light text-gray-500">
+              {calculateTimeAgo(post.createdAt)}
+            </span>
+          </div>
         </p>
         <h1 className="text-xl mb-2">
           <p
@@ -572,7 +579,7 @@ export const Explore = () => {
                       file
                     )}`}
                     alt="post"
-                    className="w-[40%] my-2 mx-2 h-fit object-cover rounded-lg h-[200px] cursor-pointer"
+                    className="my-2 mx-2 object-cover rounded-lg h-[200px] w-[200px] cursor-pointer shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]"
                   />
                 );
               })
@@ -647,7 +654,7 @@ export const Explore = () => {
           onClick={() =>
             scrollLeft(document.getElementById("mostFollowedContainer"))
           }
-          className="absolute left-4 md:left-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
+          className="absolute left-4 md:left-20 z-1 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
         >
           &#10094;
         </button>
@@ -661,21 +668,36 @@ export const Explore = () => {
           onClick={() =>
             scrollRight(document.getElementById("mostFollowedContainer"))
           }
-          className="absolute right-4 md:right-20 z-10 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
+          className="absolute right-4 md:right-20 z-1 p-4 bg-gray-800 hover:bg-gray-600 text-white rounded-full"
         >
           &#10095;
         </button>
       </div>
-      <h1 className="text-center text-xl font-bold">Popular Snippets</h1>
-      <div className="relative my-4 flex items-center">
-        <div
-          id="mostFavouritedSnippets"
-          className="flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-full mx-auto px-4"
-        >
-          {mostFavouritedSnippets &&
-            mostFavouritedSnippets.map((snippet) => displaySnippets(snippet))}
+      <h1
+        className="text-center text-xl font-bold cursor-pointer"
+        onClick={(e) => setPopularSnippetsOpen((prev) => !prev)}
+      >
+        Popular Snippets
+        <FontAwesomeIcon
+          icon={faChevronDown}
+          style={{
+            margin: "0 10px",
+            transform: popularSnippetsOpen && "rotate(180deg)",
+            transitionDuration: "0.5s",
+          }}
+        />
+      </h1>
+      {popularSnippetsOpen && (
+        <div className="relative my-4 flex items-center">
+          <div
+            id="mostFavouritedSnippets"
+            className="flex items-center flex-row overflow-x-auto no-scrollbar gap-5 w-full mx-auto px-4"
+          >
+            {mostFavouritedSnippets &&
+              mostFavouritedSnippets.map((snippet) => displaySnippets(snippet))}
+          </div>
         </div>
-      </div>
+      )}
 
       <button
         onClick={() => {
@@ -684,7 +706,7 @@ export const Explore = () => {
           fetchPublicPosts();
           setPage(2);
         }}
-        className="font-bold text-center flex gap-4 items-center text-xl m-auto"
+        className="font-bold text-center flex gap-4 items-center text-xl m-auto mt-[25px] text-gray-400"
       >
         <FaArrowDown /> Fetch Latest Posts....{" "}
       </button>

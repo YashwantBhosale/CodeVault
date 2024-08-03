@@ -281,7 +281,7 @@ export default function Header(props) {
 
   return (
     <>
-      <header className="bg-white fixed top-0 left-0 w-full h-[10vh] bg-white z-50">
+      <header className="fixed top-0 left-0 w-full h-[10vh] bg-white z-50 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
         <nav
           className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8"
           aria-label="Global"
@@ -383,7 +383,7 @@ export default function Header(props) {
               {user ? <FaBell /> : null}
             </a>
             <a
-              className="cursor-pointer text-md font-semibold leading-6 text-gray-900 cursor-pointer"
+              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
                 setMobileMenuOpen(false);
@@ -397,7 +397,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/explore");
               }}
-              className="cursor-pointer text-md font-semibold leading-6 text-gray-900 cursor-pointer"
+              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer"
             >
               Explore
             </a>
@@ -406,7 +406,7 @@ export default function Header(props) {
                 e.preventDefault();
                 navigate("/news");
               }}
-              className="cursor-pointer text-md font-semibold leading-6 text-gray-900 cursor-pointer"
+              className="text-md font-semibold leading-6 text-gray-900 cursor-pointer"
             >
               News
             </a>
@@ -448,8 +448,8 @@ export default function Header(props) {
           open={mobileMenuOpen}
           onClose={setMobileMenuOpen}
         >
-          <div className="fixed inset-0 z-10" />
-          <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <div className="fixed inset-0 z-1000" />
+          <Dialog.Panel className="fixed inset-y-0 right-0 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 z-50">
             <div className="flex items-center justify-between">
               <a href="#" className="-m-1.5 p-1.5">
                 <span className="sr-only">Your Company</span>

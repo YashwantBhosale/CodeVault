@@ -278,7 +278,7 @@ export const ViewProfile = () => {
     return (
       <article
         key={snippet._id}
-        className="flex bg-white transition hover:shadow-xl w-[29%] border-2 rounded-xl m-[20px] min-w-[340px]"
+        className="flex bg-white transition hover:shadow-xl w-[29%] border-2 rounded-xl m-[20px] min-w-[340px] s:min-w-[300px]"
       >
         <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
           <time
@@ -309,9 +309,12 @@ export const ViewProfile = () => {
             </p>
           </div>
           <div className="flex items-end justify-end">
-            <button 
-            onClick={() => navigate(`/viewpublicsnippet?snippetId=${snippet._id}`)}
-            className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl mt-2 ml-2">
+            <button
+              onClick={() =>
+                navigate(`/viewpublicsnippet?snippetId=${snippet._id}`)
+              }
+              className="block bg-black px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-slate-600 rounded-br-xl mt-2 ml-2"
+            >
               View Snippet
             </button>
           </div>
@@ -402,13 +405,13 @@ export const ViewProfile = () => {
     );
   }
   return (
-    <div className="mx-auto mt-[20vh]">
+    <div className="mx-auto mt-[20vh] pb-[15vh]">
       <div
-        className={`w-[80%] h-fit min-h-[30vh] md:w-[40%] overflow-y-scroll rounded-xl p-4 flex shadow-[rgba(0,_0,_0,_0.2)_0px_10px_10px] mx-auto items-center  justify-between ${
+        className={`w-fit px-[15px] h-fit min-h-[30vh] md:w-[45%] s:w-[70%] overflow-y-scroll rounded-xl p-4 flex shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px] mx-auto items-center  justify-center ${
           windowWidth < 500 ? "flex-col" : ""
         }`}
       >
-        <div className="h-full w-[80%] mx-auto flex flex-col items-center justify-between">
+        <div className="h-full w-fit px-[15px] mr-[20px] flex flex-col items-center justify-between">
           <img
             src={
               currentuser?.avtar?.length > 15
@@ -421,25 +424,25 @@ export const ViewProfile = () => {
           <h2 className="font-bold text-xl">{currentuser.username}</h2>
         </div>
 
-        <div className="h-full flex flex-col w-full md:mr-4">
+        <div className="h-full flex flex-col w-full s:mt-4 max-w-[380px]">
           <div className="flex justify-between md:mt-4">
             <div className="flex flex-col items-center justify-between">
               <p className="text-4xl font-light">
                 {currentuser.followers?.length}
               </p>
-              <p className="font-bold text-md">Followers</p>
+              <p className="text-sm">Followers</p>
             </div>
             <div className="flex flex-col items-center justify-between">
               <p className="text-4xl font-light">
                 {currentuser.following?.length}
               </p>
-              <p className="font-bold text-md">Following</p>
+              <p className="text-sm">Following</p>
             </div>
             <div className="flex flex-col items-center justify-between ml-4">
               <p className="text-4xl font-light">
                 {currentuser.publicPosts?.length}
               </p>
-              <p className="font-bold text-md">Posts</p>
+              <p className="text-sm">Posts</p>
             </div>
           </div>
           <button
@@ -463,14 +466,14 @@ export const ViewProfile = () => {
       <div className="w-fit mx-auto my-6">
         <button
           type="button"
-          class="p-2.5 m-2 text-md font-md rounded-xl text-white bg-black focus:ring-gray-100 focus:ring-4 focus:bg-slate-700 hover:bg-slate-700"
+          class="p-2.5 m-2 text-md font-md rounded-xl text-white bg-black focus:ring-gray-100 focus:ring-4 focus:bg-slate-700 hover:bg-slate-700 w-[100px]"
           onClick={() => setSnippetsWindow(true)}
         >
           Snippets
         </button>
         <button
           type="button"
-          class="w-[18vw] md:w-[6vw] p-2.5 m-2 text-md font-md rounded-xl text-white bg-black focus:ring-gray-100 focus:ring-4 focus:bg-slate-700 hover:bg-slate-700"
+          class=" p-2.5 m-2 text-md font-md rounded-xl text-white bg-black focus:ring-gray-100 focus:ring-4 focus:bg-slate-700 hover:bg-slate-700 w-[100px]"
           onClick={() => setSnippetsWindow(false)}
         >
           Posts
