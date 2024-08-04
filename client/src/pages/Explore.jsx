@@ -115,18 +115,26 @@ export const Explore = () => {
       if (post.upvotes.some((obj) => obj.username == user.username)) {
         return;
       }
-      e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
-      post.upvotes.push({
-        username: user.username,
-        avtar: user.avtar,
-      });
+      // e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
+      let updatedPost = { ...post };
       if (post.downvotes.some((obj) => obj.username == user.username)) {
-        e.target.nextSibling.lastElementChild.innerHTML =
-          post.downvotes.length - 1;
-        post.downvotes = post.downvotes.filter(
+        // e.target.nextSibling.lastElementChild.innerHTML =
+        // post.downvotes.length - 1;
+        let updatedDownvotes = post.downvotes.filter(
           (obj) => obj.username !== user.username
         );
+
+        updatedPost = { ...updatedPost, downvotes: updatedDownvotes };
       }
+      updatedPost = {
+        ...updatedPost,
+        upvotes: [...updatedPost.upvotes, userObj],
+      };
+      let updatedFeedPosts = feedPosts.map((p) =>
+        p._id === updatedPost._id ? updatedPost : p
+      );
+      setFeedPosts(updatedFeedPosts);
+
       let response = await fetch(BASE_URL + "api/public/updateupvotes", {
         method: "POST",
         headers: {
@@ -149,6 +157,7 @@ export const Explore = () => {
     e.stopPropagation();
     try {
       let userObj = {
+        user_id: user.id,
         username: user.username,
         avtar: user.avtar,
       };
@@ -156,16 +165,21 @@ export const Explore = () => {
       if (post.downvotes.some((obj) => obj.username == user.username)) {
         return;
       }
-
-      e.target.lastElementChild.innerHTML = post.downvotes.length + 1;
-      post.downvotes.push(userObj);
+      let updatedPost = { ...post };
       if (post.upvotes.some((obj) => obj.username == user.username)) {
-        e.target.previousSibling.lastElementChild.innerHTML =
-          post.upvotes.length - 1;
-        post.upvotes = post.upvotes.filter(
+        let updatedUpvotes = post.upvotes.filter(
           (obj) => obj.username !== user.username
         );
+        updatedPost = { ...updatedPost, upvotes: updatedUpvotes };
       }
+      updatedPost = {
+        ...updatedPost,
+        downvotes: [...updatedPost.downvotes, userObj],
+      };
+      let updatedFeedPosts = feedPosts.map((p) =>
+        p._id === updatedPost._id ? updatedPost : p
+      );
+      setFeedPosts(updatedFeedPosts);
 
       let response = await fetch(BASE_URL + "api/public/updatedownvotes", {
         method: "POST",
@@ -587,44 +601,145 @@ export const Explore = () => {
         </div>
 
         <div className="w-full md:w-[95%] relative z-0 flex items-center justify-between mt-4 mx-[1.5vw]">
-          <div className="w-[40%] md:w-[20%] flex justify-between items-center bg-black p-2 rounded-md -z-50">
+          <div className="w-fit s:max-w-[70%] flex justify-start items-center p-2 rounded-md -z-50">
             <div
-              className="flex items-center gap-1 cursor-pointer z-99"
+              className="flex items-center gap-[10px] justify-center cursor-pointer z-99 w-[70px]"
               onClick={(e) => Upvote(e, post)}
             >
-              <FaRegArrowAltCircleUp
+              {/* <FaRegArrowAltCircleUp
                 style={{ zIndex: -1 }}
                 className="text-white text-xl "
-              />{" "}
-              <span style={{ zIndex: -1 }} className="font-bold text-white">
+              /> */}
+              {post?.upvotes?.some(
+                (upvote) =>
+                  upvote.username === user.username || upvote.id === user.id
+              ) ? (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14z"></path>
+                  </g>
+                </svg>
+              ) : (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10zM15 12h-1v8h-4v-8H6.081L12 4.601 17.919 12H15z"></path>
+                  </g>
+                </svg>
+              )}{" "}
+              <span
+                style={{ zIndex: -1, fontSize: "20px" }}
+                className="text-black"
+              >
                 {post.upvotes.length}
               </span>
             </div>
             <div
-              className="flex items-center z-99 gap-1 cursor-pointer"
+              className="flex items-center z-99 gap-1 cursor-pointer w-[70px] justify-center"
               onClick={(e) => Downvote(e, post)}
             >
-              <FaRegArrowAltCircleDown
-                style={{ zIndex: -1 }}
-                className="text-white text-xl -z-1"
-              />{" "}
+              {post?.downvotes?.some(
+                (downvote) =>
+                  downvote.username === user.username || downvote.id === user.id
+              ) ? (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059z"></path>
+                  </g>
+                </svg>
+              ) : (
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="25px"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0" height="25px"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    <path d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059zM12 19.399 6.081 12H10V4h4v8h3.919L12 19.399z"></path>
+                  </g>
+                </svg>
+              )}{" "}
               <span
-                style={{ zIndex: -1 }}
-                className="font-bold -z-1 text-white"
+                style={{ zIndex: -1, fontSize: "20px" }}
+                className=" -z-1 text-black"
               >
-                {post.downvotes.length}
+                {post?.downvotes?.length}
               </span>
             </div>
-            <FaComment
-              className="font-4xl cursor-pointer"
-              color="white"
+            <div
               onClick={() =>
                 navigate(`/viewpost?id=${post._id}&avtar=${post.author.avtar}`)
               }
-            />
-            <span className="font-bold text-white">
-              {post?.comments?.length}
-            </span>
+              className="flex gap-[10px] items-center justify-center cursor-pointer w-[70px]"
+            >
+              <svg
+                height="30px"
+                viewBox="0 -0.5 25 25"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  {" "}
+                  <path
+                    d="M9.0001 8.517C8.58589 8.517 8.2501 8.85279 8.2501 9.267C8.2501 9.68121 8.58589 10.017 9.0001 10.017V8.517ZM16.0001 10.017C16.4143 10.017 16.7501 9.68121 16.7501 9.267C16.7501 8.85279 16.4143 8.517 16.0001 8.517V10.017ZM9.8751 11.076C9.46089 11.076 9.1251 11.4118 9.1251 11.826C9.1251 12.2402 9.46089 12.576 9.8751 12.576V11.076ZM15.1251 12.576C15.5393 12.576 15.8751 12.2402 15.8751 11.826C15.8751 11.4118 15.5393 11.076 15.1251 11.076V12.576ZM9.1631 5V4.24998L9.15763 4.25002L9.1631 5ZM15.8381 5L15.8438 4.25H15.8381V5ZM19.5001 8.717L18.7501 8.71149V8.717H19.5001ZM19.5001 13.23H18.7501L18.7501 13.2355L19.5001 13.23ZM18.4384 15.8472L17.9042 15.3207L17.9042 15.3207L18.4384 15.8472ZM15.8371 16.947V17.697L15.8426 17.697L15.8371 16.947ZM9.1631 16.947V16.197C9.03469 16.197 8.90843 16.23 8.79641 16.2928L9.1631 16.947ZM5.5001 19H4.7501C4.7501 19.2662 4.89125 19.5125 5.12097 19.6471C5.35068 19.7817 5.63454 19.7844 5.86679 19.6542L5.5001 19ZM5.5001 8.717H6.25012L6.25008 8.71149L5.5001 8.717ZM6.56175 6.09984L6.02756 5.5734H6.02756L6.56175 6.09984ZM9.0001 10.017H16.0001V8.517H9.0001V10.017ZM9.8751 12.576H15.1251V11.076H9.8751V12.576ZM9.1631 5.75H15.8381V4.25H9.1631V5.75ZM15.8324 5.74998C17.4559 5.76225 18.762 7.08806 18.7501 8.71149L20.2501 8.72251C20.2681 6.2708 18.2955 4.26856 15.8438 4.25002L15.8324 5.74998ZM18.7501 8.717V13.23H20.2501V8.717H18.7501ZM18.7501 13.2355C18.7558 14.0153 18.4516 14.7653 17.9042 15.3207L18.9726 16.3736C19.7992 15.5348 20.2587 14.4021 20.2501 13.2245L18.7501 13.2355ZM17.9042 15.3207C17.3569 15.8761 16.6114 16.1913 15.8316 16.197L15.8426 17.697C17.0201 17.6884 18.1461 17.2124 18.9726 16.3736L17.9042 15.3207ZM15.8371 16.197H9.1631V17.697H15.8371V16.197ZM8.79641 16.2928L5.13341 18.3458L5.86679 19.6542L9.52979 17.6012L8.79641 16.2928ZM6.2501 19V8.717H4.7501V19H6.2501ZM6.25008 8.71149C6.24435 7.93175 6.54862 7.18167 7.09595 6.62627L6.02756 5.5734C5.20098 6.41216 4.74147 7.54494 4.75012 8.72251L6.25008 8.71149ZM7.09595 6.62627C7.64328 6.07088 8.38882 5.75566 9.16857 5.74998L9.15763 4.25002C7.98006 4.2586 6.85413 4.73464 6.02756 5.5734L7.09595 6.62627Z"
+                    fill="#000000"
+                  ></path>{" "}
+                </g>
+              </svg>
+              <span
+                className="
+               text-black"
+                style={{
+                  fontSize: "20px",
+                }}
+              >
+                {post?.comments?.length}
+              </span>
+            </div>
           </div>
           <div
             className={`${
@@ -633,7 +748,7 @@ export const Explore = () => {
           >
             <button
               onClick={() => handleDelete(post._id)}
-              className="block bg-red-500 px-5 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-red-600 rounded-xl mt-2 ml-2"
+              className="block bg-red-500 px-4 py-3 text-center text-xs font-bold uppercase text-white transition hover:bg-red-600 rounded-xl ml-2"
             >
               Delete
             </button>

@@ -26,6 +26,7 @@ export const ViewPost = () => {
   const [srcSet, setSrcSet] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const { dispatch } = useAuthContext();
 
   async function fetchPost() {
     try {
@@ -71,6 +72,18 @@ export const ViewPost = () => {
         upvotes: [...updatedPost.upvotes, userObj],
       };
       setPost(updatedPost);
+      let _public_posts = JSON.parse(sessionStorage.getItem("public_posts"));
+      let _updated = _public_posts.map((p) =>
+        p._id === updatedPost._id ? updatedPost : p
+      );
+      dispatch({ action: "UPDATE_POSTS", payload: _updated });
+      sessionStorage.setItem("public_posts", JSON.stringify(_updated));
+
+      let _posts = JSON.parse(sessionStorage.getItem("posts"));
+      let _updated_posts = _posts.map((p) =>
+        p._id === updatedPost._id ? updatedPost : p
+      );
+      sessionStorage.setItem("posts", JSON.stringify(_updated_posts));
 
       let response = await fetch(BASE_URL + "api/public/updateupvotes", {
         method: "POST",
@@ -114,6 +127,18 @@ export const ViewPost = () => {
         downvotes: [...updatedPost.downvotes, userObj],
       };
       setPost(updatedPost);
+      let _public_posts = JSON.parse(sessionStorage.getItem("public_posts"));
+      let _updated = _public_posts.map((p) =>
+        p._id === updatedPost._id ? updatedPost : p
+      );
+      dispatch({ action: "UPDATE_POSTS", payload: _updated });
+      sessionStorage.setItem("public_posts", JSON.stringify(_updated));
+
+      let _posts = JSON.parse(sessionStorage.getItem("posts"));
+      let _updated_posts = _posts.map((p) =>
+        p._id === updatedPost._id ? updatedPost : p
+      );
+      sessionStorage.setItem("posts", JSON.stringify(_updated_posts));
 
       let response = await fetch(BASE_URL + "api/public/updatedownvotes", {
         method: "POST",
