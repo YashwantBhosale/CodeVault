@@ -1,7 +1,6 @@
 import { createContext, useReducer, useEffect } from "react";
-
 export const AuthContext = createContext();
-
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
@@ -45,21 +44,62 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     dispatch({ type: "USER_LOADING", payload: true });
-    const user = JSON.parse(localStorage.getItem("user"));;
-    try {
-      if (sessionStorage.getItem("posts")) {
-        sessionStorage.removeItem("posts");
-      }
-      if (sessionStorage.getItem("public_users")) {
-        sessionStorage.removeItem("public_users");
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      dispatch({ type: "LOGIN", payload: user });
+      console.log("validating jwt");
+      fetch(BASE_URL + "api/user/verifyjwt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify({
+          id: user?.id,
+        }),
+      })
+        .then((res) => {
+          try {
+            console.log("res: ", res);
+            if (res.status === 200) {
+              // dispatch({ type: "USER_LOADING", payload: false });
+              // dispatch({ type: "LOGIN", payload: user });
+              console.log("control reached here1");
+
+            } else {
+              dispatch({ type: "USER_LOADING", payload: false });
+              localStorage.removeItem("user");
+              dispatch({ type: "LOGOUT" });
+            }
+            dispatch({ type: "USER_LOADING", payload: false });
+            dispatch({ type: "LOGIN", payload: user });
+            console.log("control reached here3");
+
+            if (sessionStorage.getItem("posts")) {
+              sessionStorage.removeItem("posts");
+            }
+            if (sessionStorage.getItem("public_users")) {
+              sessionStorage.removeItem("public_users");
+            }
+          } catch (error) {
+            localStorage.removeItem("user");
+            dispatch({ type: "LOGOUT" });
+            console.error(error.message);
+          } finally {
+            console.log("control reached here2");
+            dispatch({ type: "USER_LOADING", payload: false });
+          }
+        })
+        .catch((err) => {
+          console.error(err.message);
+          localStorage.removeItem("user");
+          dispatch({ type: "LOGOUT" });
+          dispatch({ type: "USER_LOADING", payload: false });
+        });
     }
-    dispatch({ type: "USER_LOADING", payload: false });
+    else{
+      dispatch({ type: "USER_LOADING", payload: false });
+    }
+    // dispatch({ type: "USER_LOADING", payload: false });
   }, []);
 
   return (

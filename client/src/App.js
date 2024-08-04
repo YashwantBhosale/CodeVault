@@ -1,6 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Header from "./components/Header";
@@ -26,7 +26,6 @@ import { FavouriteSnippets } from "./pages/FavouriteSnippets";
 
 function App() {
   const { user, userLoading } = useAuthContext();
-  const navigate = useNavigate();
   const [allStudents, setAllStudents] = useState([]);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -44,155 +43,66 @@ function App() {
       console.error(error);
     }
   }
+
   useEffect(() => {
     fetchAllUsers();
   }, []);
 
-  // if (!userLoading && !user) {
-  //   return <Navigate to="/login" />;
-  // }
-  console.log("userloading:", userLoading);
+  if (userLoading) {
+    return <h1>Loading....</h1>;
+  }
 
   return (
     <>
       <ToastContainer stacked="true" theme="dark" />
       <Header userObj={user} />
-
       <Routes>
         <Route
           path="/"
-          element={
-            !user ? (
-              <Login />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/home" />
-            )
-          }
+          element={user ? <Navigate to="/home" /> : <Login />}
         />
         <Route
           path="/login"
-          element={
-            !user ? (
-              <Login />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/home" />
-            )
-          }
+          element={user ? <Navigate to="/home" /> : <Login />}
         />
         <Route
           path="/signup"
-          element={
-            !user ? (
-              <SignUp />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/home" />
-            )
-          }
+          element={user ? <Navigate to="/home" /> : <SignUp />}
         />
         <Route path="/about" element={<About />} />
         <Route
           path="/home"
-          element={
-            user ? (
-              <Home />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={user ? <Home /> : <Navigate to="/login" />}
         />
         <Route
           path="/snippets"
-          element={
-            user ? (
-              <Snippet />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={user ? <Snippet /> : <Navigate to="/login" />}
         />
         <Route
           path="/profile"
-          element={
-            user ? (
-              <Profile />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={user ? <Profile /> : <Navigate to="/login" />}
         />
         <Route path="/oauth" element={<OAuth />} />
         <Route
           path="/explore"
-          element={
-            user ? (
-              <Explore />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={user ? <Explore /> : <Navigate to="/login" />}
         />
         <Route
           path="/viewpost"
-          element={
-            user ? (
-              <ViewPost />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={user ? <ViewPost /> : <Navigate to="/login" />}
         />
         <Route
           path="/viewprofile"
-          element={
-            user ? (
-              <ViewProfile />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={user ? <ViewProfile /> : <Navigate to="/login" />}
         />
         <Route
           path="/viewpublicsnippet"
-          element={
-            user ? (
-              <ViewPublicSnippet />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={user ? <ViewPublicSnippet /> : <Navigate to="/login" />}
         />
         <Route path="/news" element={<News />} />
         <Route
           path="/chatroom"
-          element={
-            user ? (
-              <ChatroomDashboard />
-            ) : userLoading ? (
-              <h1>Loading....</h1>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          element={user ? <ChatroomDashboard /> : <Navigate to="/login" />}
         />
         <Route
           path="/room/:roomId"

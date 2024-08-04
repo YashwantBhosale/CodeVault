@@ -11,7 +11,7 @@ const mongoClient = mongodb.MongoClient;
 const sendMail = require("../config/mailer");
 // for creating token
 function createToken(id) {
-  return jwt.sign({ id }, process.env.SECRET, { expiresIn: "1d" });
+  return jwt.sign({ id }, process.env.SECRET, { expiresIn: "2h" });
 }
 
 //for verifying token
@@ -31,6 +31,35 @@ function verifyjwt(req, res, next) {
     console.log("successfully verified token!", next);
     next();
   });
+}
+
+function validateJWT(req, res) {
+  try {
+    console.log("verifying jwt...");
+    const { id } = req.body;
+    console.log("id for jwt: ", id);
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "unauthorised" });
+    }
+    const token = authHeader.split(" ")[1];
+    jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(400).json({ message: "Invalid token" });
+      }
+      
+      if (decoded.id === id) {
+        console.log("valid token", decoded);
+        return res.status(200).json({ message: "Valid token" });
+      } else {
+        console.log("invalid token", decoded);
+        return res.status(401).json({ message: "Invalid token" });
+      }
+    });
+  } catch (e) {
+    console.log(e.message);
+    res.status(400).json({ message: e.message });
+  }
 }
 
 //for Google OAuth2.0
@@ -403,21 +432,23 @@ async function clearNotifications(req, res) {
 }
 
 async function getFavouriteSnippets(req, res) {
-  const {username} = req.body;
+  const { username } = req.body;
   console.log(username, req.body);
   try {
-    const user = await User.findOne({username});
-    if(!user) throw Error("User not found!");
+    const user = await User.findOne({ username });
+    if (!user) throw Error("User not found!");
 
     console.log("user: ", user);
 
-    if(!user.favouriteSnippets || user.favouriteSnippets.length === 0) {
-      return res.status(200).json({favourites: []});
-    }else{
-      const favouriteSnippets = await Snippet.find({_id: {$in: user.favouriteSnippets}});
-      res.status(200).json({favouriteSnippets});
+    if (!user.favouriteSnippets || user.favouriteSnippets.length === 0) {
+      return res.status(200).json({ favourites: [] });
+    } else {
+      const favouriteSnippets = await Snippet.find({
+        _id: { $in: user.favouriteSnippets },
+      });
+      res.status(200).json({ favouriteSnippets });
     }
-  }catch(error) {
+  } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
   }
@@ -632,5 +663,6 @@ module.exports = {
   inviteUser,
   removeFollower,
   toggleFavouriteSnippet,
-  getFavouriteSnippets
+  getFavouriteSnippets,
+  validateJWT
 };

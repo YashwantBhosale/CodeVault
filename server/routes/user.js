@@ -28,7 +28,8 @@ const {
   inviteUser,
   removeFollower,
   toggleFavouriteSnippet,
-  getFavouriteSnippets
+  getFavouriteSnippets,
+  validateJWT
 } = require("../controllers/usercontroller");
 const multer = require("multer");
 const upload = multer();
@@ -81,5 +82,5 @@ router.post("/handleFavouriteSnippet", toggleFavouriteSnippet);
 router.post("/getfavouritesnippets", getFavouriteSnippets);
 
 router.post("/invite", inviteUser);
-
+router.post("/verifyjwt", validateJWT);
 module.exports = router;

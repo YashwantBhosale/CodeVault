@@ -378,7 +378,7 @@ export const Profile = () => {
       </AnimatePresence>
       {editProfileOpen && (
         <div className="fixed top-0 left-0 w-[100vw] h-[100vh] flex justify-center items-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white p-2 rounded-xl w-4/5 m-[20px] p-5">
+          <div className="bg-white rounded-xl w-4/5 m-[20px] p-5">
             <h2 className="text-xl font-bold mb-4">Edit Your Profile</h2>
             <form className="space-y-4">
               <div>
