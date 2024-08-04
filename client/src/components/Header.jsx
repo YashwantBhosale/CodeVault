@@ -537,10 +537,10 @@ export default function Header(props) {
             className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-40 z-50"
           >
             <motion.div
-              initial={{ y: "-100vh" }}
-              animate={{ y: 0 }}
-              transition={{ type: "spring", stiffness: 150 }}
-              className="bg-white p-8 rounded-xl w-full lg:w-2/5 m-[20px] max-h-[60vh] overflow-y-scroll"
+              initial={{ y: "-20px", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              // transition={{ type: "spring", stiffness: 150 }}
+              className="bg-white p-8 rounded-xl w-full lg:w-2/5 m-[20px] max-h-[60vh] overflow-y-scroll min-h-[300px]"
             >
               <button
                 onClick={(e) => {
@@ -588,7 +588,7 @@ export default function Header(props) {
                   notification ? createNotifications(notification) : null
                 )
               ) : (
-                <h1 className="text-center text-slate-400">
+                <h1 className="text-center text-slate-400 mt-[50px]">
                   No New notifications!
                 </h1>
               )}

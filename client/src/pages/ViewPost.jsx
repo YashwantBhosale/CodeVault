@@ -50,36 +50,28 @@ export const ViewPost = () => {
     e.preventDefault();
     e.stopPropagation();
     try {
-      if (
-        post?.downvotes?.some((downvote) => downvote.username === user.username)
-      ) {
-        let updatedPost = {
-          ...post,
-          downvotes: post?.downvotes?.filter(
-            (downvote) => downvote.username != user.username
-          ),
-        };
-        setPost(updatedPost);
-      }
       let userObj = {
+        user_id: user.id,
         username: user.username,
         avtar: user.avtar,
       };
       if (post.upvotes.some((obj) => obj.username == user.username)) {
         return;
       }
-      // e.target.lastElementChild.innerHTML = post.upvotes.length + 1;
-      post.upvotes.push({
-        username: user.username,
-        avtar: user.avtar,
-      });
+      let updatedPost = { ...post };
       if (post.downvotes.some((obj) => obj.username == user.username)) {
-        // e.target.nextSibling.lastElementChild.innerHTML =
-        //   post.downvotes.length - 1;
-        post.downvotes = post.downvotes.filter(
+        let updatedDownvotes = post.downvotes.filter(
           (obj) => obj.username !== user.username
         );
+        updatedPost = { ...updatedPost, downvotes: updatedDownvotes };
       }
+
+      updatedPost = {
+        ...updatedPost,
+        upvotes: [...updatedPost.upvotes, userObj],
+      };
+      setPost(updatedPost);
+
       let response = await fetch(BASE_URL + "api/public/updateupvotes", {
         method: "POST",
         headers: {
@@ -101,16 +93,8 @@ export const ViewPost = () => {
     e.preventDefault();
     e.stopPropagation();
     try {
-      if (post.upvotes?.some((upvote) => upvote.username === user.username)) {
-        let updatedPost = {
-          ...post,
-          upvotes: post.upvotes?.filter(
-            (upvote) => upvote.username != user.username
-          ),
-        };
-        setPost(updatedPost);
-      }
       let userObj = {
+        user_id: user.id,
         username: user.username,
         avtar: user.avtar,
       };
@@ -118,16 +102,18 @@ export const ViewPost = () => {
       if (post.downvotes.some((obj) => obj.username == user.username)) {
         return;
       }
-
-      // e.target.lastElementChild.innerHTML = post.downvotes.length + 1;
-      // post.downvotes.push(userObj);
+      let updatedPost = { ...post };
       if (post.upvotes.some((obj) => obj.username == user.username)) {
-        // e.target.previousSibling.lastElementChild.innerHTML =
-        //   post.upvotes.length - 1;
-        post.upvotes = post.upvotes.filter(
+        let updatedUpvotes = post.upvotes.filter(
           (obj) => obj.username !== user.username
         );
+        updatedPost = { ...updatedPost, upvotes: updatedUpvotes };
       }
+      updatedPost = {
+        ...updatedPost,
+        downvotes: [...updatedPost.downvotes, userObj],
+      };
+      setPost(updatedPost);
 
       let response = await fetch(BASE_URL + "api/public/updatedownvotes", {
         method: "POST",
