@@ -74,25 +74,31 @@ function Home() {
     if (!user || userLoading) {
       return;
     }
-    if (initial) {
-      setdataloading(true);
-    }
-    const response = await fetch(BASE_URL + "api/user/getsnippets", {
-      method: "POST",
-      headers: {
-        authorization: `Bearer ${user.token}`,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        email: user.email,
-      }),
-    });
-    let json = await response.json();
-    const pinned = json.filter((snippet) => snippet.isPinned);
-    const unpinned = json.filter((snippet) => !snippet.isPinned);
 
-    setPinnedSnippets(pinned);
-    setUserSnippets(unpinned);
+    try{
+      if (initial) {
+        setdataloading(true);
+      }
+      const response = await fetch(BASE_URL + "api/user/getsnippets", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${user.token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+        }),
+      });
+      let json = await response.json();
+      const pinned = json.filter((snippet) => snippet.isPinned);
+      const unpinned = json.filter((snippet) => !snippet.isPinned);
+
+      setPinnedSnippets(pinned);
+      setUserSnippets(unpinned);
+    } catch (e) {
+      console.error("Error fetching snippets : ", e.message);
+      toast.error("Error fetching snippets!");
+    }
     // console.log("snippets: ", usersnippets);
     setdataloading(false);
   }
@@ -517,6 +523,7 @@ function Home() {
         backgroundSize: "40px 40px",
         backgroundPosition: "0 0, 20px 20px",
         // height: "100vh",
+        height:"fit-content",
         marginBottom: "10vh",
       }}
     >
